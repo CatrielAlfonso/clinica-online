@@ -1,0 +1,254 @@
+<div class="contenedor-registro">
+
+    <div *ngIf="this.subiendoDatos" class="spinner-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">-</span>
+        </div>
+    </div>
+
+    <div class="registro mat-elevation-z8">
+        <h1>Alta de usuarios</h1>
+        
+        <div class="form-registro">
+            <h4>¿Qué clase de usuario desea registrar?</h4>
+
+            <mat-radio-group [(ngModel)]="this.tipoUsuario">
+                <mat-radio-button value="Paciente">Paciente</mat-radio-button>
+                <mat-radio-button value="Especialista">Especialista</mat-radio-button>
+            </mat-radio-group>
+
+            <form [formGroup]="this.formPaciente" class="form-paciente" *ngIf="this.tipoUsuario == 'Paciente'" (ngSubmit)="this.RegistroPaciente()">
+                <div class="row g-3">
+                    <div class="col-sm-3">
+                        <label for="nombre-paciente" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre-paciente" placeholder="Ingrese el nombre del paciente" formControlName="nombre">
+                        <div *ngIf="formPaciente.get('nombre')?.invalid && formPaciente.get('nombre')?.touched" class="text-danger">
+                            El nombre es obligatorio y no debe exceder los 30 caracteres.
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-3">
+                        <label for="apellido-paciente" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="apellido-paciente" placeholder="Ingrese el apellido del paciente" formControlName="apellido">
+                        <div *ngIf="formPaciente.get('apellido')?.invalid && formPaciente.get('apellido')?.touched" class="text-danger">
+                            El apellido es obligatorio y no debe exceder los 30 caracteres.
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label for="documento" class="form-label">Documento</label>
+                        <input type="text" class="form-control" id="documento" placeholder="Ingrese el documento del paciente" formControlName="dni">
+                        <div *ngIf="formPaciente.get('dni')?.invalid && formPaciente.get('dni')?.touched" class="text-danger">
+                            El documento es obligatorio y debe estar compuesto entre 6 y 8 caracteres.
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label for="edad" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="edad" placeholder="Ingrese la edad del paciente" formControlName="edad">
+                        <div *ngIf="formPaciente.get('edad')?.invalid && formPaciente.get('edad')?.touched" class="text-danger">
+                          La edad es es obligatoria y su valor debe ser inferior a los 99 años.
+                      </div>
+                    </div>
+                </div>
+    
+                <div class="row g-3">
+                    <div class="col">
+                        <label>¿Tiene alguna obra social?</label>
+                        <br/>
+                        <mat-radio-group class="test" aria-label="¿Tiene obra social?" formControlName="obraSocial">
+                            <mat-radio-button value="no">No</mat-radio-button>
+                            <mat-radio-button value="Osde">Osde</mat-radio-button>
+                            <mat-radio-button value="Swiss Medical">Swiss Medical</mat-radio-button>
+                            <mat-radio-button value="Sami Salud">Sami Salud</mat-radio-button>
+                            <mat-radio-button value="Ioma">Ioma</mat-radio-button>
+                            <mat-radio-button value="Osmecon">Osmecon</mat-radio-button>
+                        </mat-radio-group>
+                        <div *ngIf="formPaciente.get('obraSocial')?.invalid && formPaciente.get('obraSocial')?.touched" class="text-danger">
+                            Debe ingresar este campo.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="email" placeholder="Ingrese el correo electrónico del paciente" formControlName="email">
+                        <div *ngIf="formPaciente.get('email')?.invalid && formPaciente.get('email')?.touched" class="text-danger">
+                            El correo electrónico es obligatorio.
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="clave" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="clave" placeholder="Ingrese una contraseña" formControlName="clave">
+                        <div *ngIf="formPaciente.get('clave')?.invalid && formPaciente.get('clave')?.touched" class="text-danger">
+                          El correo electrónico es obligatorio.
+                      </div>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                </div>
+                    
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="custum-file-upload" for="imagen1">
+                            <div class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24">
+                                    <g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g>
+                                    <g id="SVGRepo_iconCarrier"> 
+                                        <path fill="" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clip-rule="evenodd" fill-rule="evenodd"></path> 
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="text">
+                               <span>{{ this.mensajeImagen1 }}</span>
+                            </div>
+                            
+                            <!-- <input type="file" id="file"> -->
+                            <input type="file" accept="image/*" class="form-control" id="imagen1" placeholder="Ingrese una imagen" formControlName="imagen1" (change)="this.onArchivoSeleccionado($event, true)">
+                        </label>
+                        <div *ngIf="formPaciente.get('imagen1')?.invalid && formPaciente.get('imagen1')?.touched" class="text-danger">
+                          El ingreso de la imagen es obligatorio.
+                      </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="custum-file-upload" for="imagen2">
+                            <div class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24">
+                                    <g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g>
+                                    <g id="SVGRepo_iconCarrier"> 
+                                        <path fill="" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clip-rule="evenodd" fill-rule="evenodd"></path> 
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="text">
+                               <span>{{ this.mensajeImagen2 }}</span>
+                            </div>
+                            
+                            <input type="file" accept="image/*" class="form-control" id="imagen2" placeholder="Ingrese una imagen" formControlName="imagen2" (change)="this.onArchivoSeleccionado($event, false)">
+                        </label>
+
+                        <div *ngIf="formPaciente.get('imagen2')?.invalid && formPaciente.get('imagen2')?.touched" class="text-danger">
+                            El ingreso de la imagen es obligatorio.
+                        </div>
+                    </div>
+                </div>
+    
+                <hr class="my-4">
+
+                <button class="w-100 btn btn-primary btn-lg" type="submit" [disabled]="formPaciente.invalid">Registrar paciente.</button>
+            </form>
+
+            <form [formGroup]="this.formEspecialista" class="form-especialista" *ngIf="this.tipoUsuario == 'Especialista'" (ngSubmit)="this.RegistroEspecialista()">
+                <div class="row g-3">
+                    <div class="col-sm-3">
+                        <label for="nombre-especialista" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre-paciente" placeholder="Ingrese el nombre del especialista" formControlName="nombre">
+                        <div *ngIf="formEspecialista.get('nombre')?.invalid && formEspecialista.get('nombre')?.touched" class="text-danger">
+                            El nombre es obligatorio y no debe exceder los 30 caracteres.
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-3">
+                        <label for="apellido-especialista" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="apellido-especialista" placeholder="Ingrese el apellido del especialista" formControlName="apellido">
+                        <div *ngIf="formEspecialista.get('apellido')?.invalid && formEspecialista.get('apellido')?.touched" class="text-danger">
+                            El apellido es obligatorio y no debe exceder los 30 caracteres.
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label for="documento" class="form-label">Documento</label>
+                        <input type="text" class="form-control" id="documento" placeholder="Ingrese el documento del especialista" formControlName="dni">
+                        <div *ngIf="formEspecialista.get('dni')?.invalid && formEspecialista.get('dni')?.touched" class="text-danger">
+                            El documento es obligatorio y debe estar compuesto entre 6 y 8 caracteres.
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label for="edad" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="edad" placeholder="Ingrese la edad del especialista" formControlName="edad">
+                        <div *ngIf="formEspecialista.get('edad')?.invalid && formEspecialista.get('edad')?.touched" class="text-danger">
+                          La edad es es obligatoria y su valor debe estar entre los 18 y 65 años.
+                      </div>
+                    </div>
+                </div>
+    
+                <div class="row g-3">
+                    <div class="col">
+                        <label>¿Cual la especialidad del especialista?</label>
+                        <br/>
+                        <mat-radio-group class="test" aria-label="Selecciona una especialidad" [(ngModel)]="this.especialidadSeleccionada" formControlName="especialidad">
+                            <mat-radio-button value="Dermatologia">Dermatología</mat-radio-button>
+                            <mat-radio-button value="Traumatologia">Traumatología</mat-radio-button>
+                            <mat-radio-button value="Podologia">Podología</mat-radio-button>
+                            <mat-radio-button value="Kinesiologia">Kinesiología</mat-radio-button>
+                            <mat-radio-button value="otra">Otra...</mat-radio-button>
+                        </mat-radio-group>
+                        <div *ngIf="formEspecialista.get('especialidad')?.invalid && formEspecialista.get('especialidad')?.touched" class="text-danger">
+                            Debe ingresar este campo.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row especialidad-propia g-3" *ngIf="this.especialidadSeleccionada == 'otra'">
+                    <div class="col">
+                        <label for="especialidad" class="form-label">Especialidad personalizada</label>
+                        <input type="email" class="form-control" id="especialidad" placeholder="Ingrese la especialidad del especialista" formControlName="especialidad">
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="email" placeholder="Ingrese el correo electrónico del especialista" formControlName="email">
+                        <div *ngIf="formEspecialista.get('email')?.invalid && formEspecialista.get('email')?.touched" class="text-danger">
+                            El correo electrónico es obligatorio.
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="clave" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="clave" placeholder="Ingrese una contraseña" formControlName="clave">
+                        <div *ngIf="formEspecialista.get('clave')?.invalid && formEspecialista.get('clave')?.touched" class="text-danger">
+                          El correo electrónico es obligatorio.
+                      </div>
+                    </div>
+                </div>
+                
+                    
+                <div class="row g-3">
+                    <div class="col"></div>
+                    <div class="col">
+                        <label class="custum-file-upload" for="imagenPerfil">
+                            <div class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24">
+                                    <g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g>
+                                    <g id="SVGRepo_iconCarrier"> 
+                                        <path fill="" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clip-rule="evenodd" fill-rule="evenodd"></path> 
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="text">
+                               <span>{{ this.mensajeImagenPerfil }}</span>
+                            </div>
+                            
+                            <input type="file" accept="image/*" class="form-control" id="imagenPerfil" placeholder="Ingrese una imagen" formControlName="imagenPerfil" (change)="this.onArchivoSeleccionado($event)">
+                        </label>
+                        <div *ngIf="formEspecialista.get('imagenPerfil')?.invalid && formEspecialista.get('imagenPerfil')?.touched" class="text-danger">
+                          El ingreso de la imagen es obligatorio.
+                      </div>
+                    </div>  
+                    <div class="col"></div>
+                </div>
+    
+                <hr class="my-4">
+
+                <button class="w-100 btn btn-primary btn-lg" type="submit" [disabled]="formEspecialista.invalid">Registrar especialista.</button>
+            </form>
+        </div>
+    </div>
+</div>

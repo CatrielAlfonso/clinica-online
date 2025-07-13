@@ -1,0 +1,31 @@
+.contenedor-canvas {
+    canvas {
+        margin: 0 auto;
+        width: 100%;
+        max-height: 500px;
+    }
+}
+
+.contenedor-pdf {
+    margin-left: 40%;
+    button { height: 64px; }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th { background-color: #f2f2f2; }
+tbody {
+    td { background-color: #fff; }
+}
+
+h2 {
+    text-align: center;
+}

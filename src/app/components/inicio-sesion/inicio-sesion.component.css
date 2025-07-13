@@ -1,0 +1,79 @@
+@-webkit-keyframes bg-pan-right{0%{background-position:0 50%}100%{background-position:100% 50%}}@keyframes bg-pan-right{0%{background-position:0 50%}100%{background-position:100% 50%}}
+.contenedor-ingreso {
+    min-height: 860px;
+    background-image: url('/imgs/bg-lp.jpg'); 
+    padding-top: .5rem;
+    background-size: 150% auto;
+    /* // background-size: contain;
+    // background-size: 150% contain;
+    // background-position: center; */
+    padding-bottom: 1rem;
+    -webkit-animation:bg-pan-right 20s linear infinite alternate-reverse both;animation:bg-pan-right 20s linear infinite alternate-reverse both;
+    
+    .formulario-inicio-sesion{ text-align: start;}
+  
+    .ingreso {
+        max-width: 800px;
+        margin: 0 auto;
+        height: 100%;
+        padding: 2rem;
+        text-align: center;
+        background-color: #f8f9fae1;
+        border-radius: 8px;
+        margin-top: 5rem;
+
+        .form-control { margin-bottom: 2rem; }
+
+        label {
+            font-size: 1.5rem;
+            color: #0056b3;
+        }
+
+        button {
+            /* // margin-top: 2rem; */
+            font-size: 1.2rem;
+            padding: 0.5rem 2rem;
+        }
+    }
+}
+
+.fab-pacientes {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+}
+
+.fab-especialistas {
+    position: fixed;
+    bottom: 130px;
+    right: 20px;
+}
+
+.fab-admins {
+    position: fixed;
+    bottom: 200px;
+    right: 20px;
+}
+
+/* // mat-fab {width: 200px;} */
+
+/* Aplicamos la animación de despliegue hacia la izquierda */
+.mat-mdc-menu-content, .mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text {
+    background: azure !important;
+    color: black;
+}
+
+.fab-volver {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    transition: transform 0.2s;
+    button {
+        background: rgba(114, 199, 255, 0.301);
+        border-radius: 10rem;
+    }
+}
+
+.fab-volver:hover {
+    transform: scale(1.2)
+}

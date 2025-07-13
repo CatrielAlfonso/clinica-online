@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="container-fluid" id="container-fluid-header">
+        <header>
+            <ul class="nav nav-pills" >
+                <li class="nav-item"><a routerLink="inicio" class="nav-link" id="btn-inicio">Inicio</a></li>
+
+                <!-- Administrador logueado -->
+                <li class="nav-item" *ngIf="this.userService.rolUsuarioLogueado == 'Administrador'">
+                    <a routerLink="administrador/panel-administracion-usuarios" class="nav-link" id="btn-ayuda">Administrar usuarios</a>
+                </li>
+
+                <li class="nav-item" *ngIf="this.userService.rolUsuarioLogueado == 'Administrador'">
+                    <a routerLink="solicitar-turno" class="nav-link" id="btn-ayuda">Solicitar turno</a>
+                </li>
+
+                <li class="nav-item" *ngIf="this.userService.rolUsuarioLogueado == 'Administrador'">
+                    <a routerLink="administrador/turnos" class="nav-link" id="btn-ayuda">Turnos</a>
+                </li>
+
+                <!-- Especialista logueado -->
+                <li class="nav-item" *ngIf="this.userService.rolUsuarioLogueado == 'Especialista'">
+                    <a routerLink="mis-turnos" class="nav-link" id="btn-ayuda">Mis turnos</a>
+                </li>
+
+                <li class="nav-item" *ngIf="this.userService.rolUsuarioLogueado == 'Especialista'">
+                    <a routerLink="mis-pacientes" class="nav-link" id="btn-ayuda">Mis pacientes</a>
+                </li>
+
+                <!-- Paciente logueado -->
+                <li class="nav-item" *ngIf="this.userService.rolUsuarioLogueado == 'Paciente'">
+                    <a routerLink="mis-turnos" class="nav-link" id="btn-ayuda">Mis turnos</a>
+                </li>
+
+                <li class="nav-item" *ngIf="this.userService.rolUsuarioLogueado == 'Paciente'">
+                    <a routerLink="solicitar-turno" class="nav-link" id="btn-ayuda">Solicitar turno</a>
+                </li>
+
+                <div class="col">
+                    <li class="nav-item"> 
+                        <div ngbDropdown class="d-inline-block">
+                            <button class="btn" id="dropdownBasic1" ngbDropdownToggle style="font-size: 20px; font-weight: 500;"><img src="imgs/img-usuario.png" alt="mdo" width="32" height="32" class="rounded-circle"> {{ this.nombreUsuario | acortarNombre }} </button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                <button ngbDropdownItem routerLink="mi-perfil">Mi perfil</button>
+                                <button ngbDropdownItem (click)="CerrarSesion()">Cerrar Sesión</button>
+                            </div>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+        </header>
+    </div>
+</div>

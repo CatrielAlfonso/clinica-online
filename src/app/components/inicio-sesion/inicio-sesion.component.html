@@ -1,0 +1,98 @@
+<div class="contenedor-ingreso">
+    <div class="fab-volver">
+        <button routerLink="/landing">
+            <img src="imgs/back.png" height="42px"> Volver
+        </button>
+    </div>
+    
+    <div class="ingreso mat-elevation-z8">
+        <h1>Inicio de sesión.</h1>
+        
+        <div class="formulario-inicio-sesion">
+            <div class="row g-3">
+                <div class="col">
+                    <label for="email" class="form-label">Correo electrónico</label>
+                    <input type="email" class="form-control" id="email" [(ngModel)]="this.correoIngresado" placeholder="Ingrese su correo electrónico">
+                </div>
+            </div>
+            
+            <div class="row g-3">
+                <div class="col">
+                    <label for="clave" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="clave" [(ngModel)]="this.claveIngresada" placeholder="Ingrese su contraseña">
+                </div>
+            </div>
+        </div>
+
+        <!-- <mat-form-field>
+            <mat-label>Accesos rapidos</mat-label>
+            <mat-select [(ngModel)]="this.accesoRapidoSeleccionado" name="acceso">
+                <mat-option value="Administrador" (click)="this.LlenarCamposIngreso('Administrador')">Administrador</mat-option>
+                <mat-option value="Especialista" (click)="this.LlenarCamposIngreso('Especialista')">Especialista</mat-option>
+                <mat-option value="Paciente" (click)="this.LlenarCamposIngreso('Paciente')">Paciente</mat-option>
+            </mat-select>
+        </mat-form-field> -->
+        <p *ngIf="this.accesoRapidoSeleccionado"> Acceso rápido seleccionado: {{this.accesoRapidoSeleccionado}} </p>
+        <br>
+        <button mat-flat-button (click)="this.IniciarSesion()">Iniciar Sesión</button>
+
+        <p style="margin-top: 1rem;">No tiene cuenta? <a routerLink="/registro">Registrese aquí</a></p>
+    </div>
+
+    <div class="fab-pacientes">
+        <button mat-fab extended [matMenuTriggerFor]="pacientes" color="primary">
+            <img src="imgs/usuarios.png" height="32px">
+            Pacientes
+        </button>
+    </div>
+    
+    <mat-menu #pacientes="matMenu" class="pacientes-menu" xPosition="after" yPosition="above">
+        <button mat-menu-item (click)="this.LlenarCamposIngreso(this.Paciente1.correo, this.Paciente1.clave)">
+            <img src="{{this.Paciente1.imagen}}" height="32px">
+            {{this.Paciente1.nombre | acortarNombre }}
+        </button>
+
+        <button mat-menu-item (click)="this.LlenarCamposIngreso(this.Paciente2.correo, this.Paciente2.clave)">
+            <img src="{{this.Paciente2.imagen}}" height="32px">
+            {{this.Paciente2.nombre | acortarNombre}}
+        </button>
+    
+        <button mat-menu-item (click)="this.LlenarCamposIngreso(this.Paciente3.correo, this.Paciente3.clave)">
+            <img src="{{this.Paciente3.imagen}}" height="32px">
+            {{this.Paciente3.nombre | acortarNombre}}
+        </button>
+    </mat-menu>
+
+    <div class="fab-especialistas">
+        <button mat-fab extended [matMenuTriggerFor]="especialistas" color="primary">
+            <img src="imgs/especialistas.png" height="32px">
+            Especialistas
+        </button>
+    </div>
+
+    <mat-menu #especialistas="matMenu" class="pacientes-menu" xPosition="after" yPosition="above">
+        <button mat-menu-item (click)="this.LlenarCamposIngreso(this.Especialista1.correo, this.Especialista1.clave)">
+            <img src="{{this.Especialista1.imagen}}" height="32px">
+            {{this.Especialista1.nombre | acortarNombre}}
+        </button>
+        <button mat-menu-item (click)="this.LlenarCamposIngreso(this.Especialista2.correo, this.Especialista2.clave)">
+            <img src="{{this.Especialista2.imagen}}" height="32px">
+            {{this.Especialista2.nombre | acortarNombre}}
+        </button>
+    </mat-menu>
+
+    <div class="fab-admins">
+        <button mat-fab extended [matMenuTriggerFor]="admins" color="primary">
+            <img src="imgs/admins.png" height="32px">
+            Administradores
+        </button>
+    </div>
+
+    <mat-menu #admins="matMenu" class="pacientes-menu" xPosition="after" yPosition="above">
+        <button mat-menu-item (click)="this.LlenarCamposIngreso(this.Admin1.correo, this.Admin1.clave)">
+            <img src="{{this.Admin1.imagen}}" height="32px">
+            {{this.Admin1.nombre | acortarNombre}}
+        </button>
+    </mat-menu>
+</div>
+

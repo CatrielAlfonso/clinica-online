@@ -1,0 +1,37 @@
+#container-fluid-header
+{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: #eeefff85;
+    box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.492);
+    -webkit-box-shadow: 0px 0px 21px 0px rgba(0,0,0,0.492);
+    -moz-box-shadow: 0px 0px 21px 0px rgba(0,0,0,0.492);
+}
+#btn-inicio
+{
+    margin-left: 8rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+#btn-ayuda
+{
+    margin-left: 8rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.container
+{
+    border-radius: 8px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: #ededed;
+    height: 100%;
+    box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.492);
+    -webkit-box-shadow: 0px 0px 21px 0px rgba(0,0,0,0.492);
+    -moz-box-shadow: 0px 0px 21px 0px rgba(0,0,0,0.492);
+}
+.d-inline-block
+{
+    width: 100%;
+    text-align: right;
+}

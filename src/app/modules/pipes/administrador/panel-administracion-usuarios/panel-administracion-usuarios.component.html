@@ -1,0 +1,30 @@
+<div class="dashboard">
+    <nav class="sidebar mat-elevation-z8">        
+      <ul>
+        <li (click)="ActualizarComponente('altaUsuario')">Alta Usuario</li>
+        <li (click)="ActualizarComponente('informacionUsuarios')">Información Usuarios</li>
+        <li (click)="ActualizarComponente('administracionEspecialistas')">Administrar Especialistas</li>
+        <li (click)="ActualizarComponente('estadisticas')">Gráficos y estadisticas</li>
+      </ul>
+    </nav>
+  
+    <div class="content mat-elevation-z8" style="background-color: #b8dfff;">
+        <!-- <h3 style="text-align: center; background-color: #bde1ff; border: solid 2px rgb(172, 172, 172); border-radius: 2rem;" class="mat-elevation-z8">Panel de administración de usuarios</h3> -->
+
+      <div *ngIf="mostrarComponente === 'altaUsuario'">
+        <app-alta-usuarios></app-alta-usuarios>
+      </div>
+      
+      <ng-container *ngIf="mostrarComponente === 'informacionUsuarios'">
+        <app-informacion-usuarios></app-informacion-usuarios>
+      </ng-container>
+      
+      <ng-container *ngIf="mostrarComponente === 'administracionEspecialistas'">
+        <app-administracion-especialistas></app-administracion-especialistas>
+      </ng-container>
+
+      <ng-container *ngIf="mostrarComponente === 'estadisticas'">
+        <app-estadisticas></app-estadisticas>
+      </ng-container>
+    </div>
+</div>

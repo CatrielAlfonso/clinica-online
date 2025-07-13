@@ -1,0 +1,129 @@
+<div *ngIf="this.cargandoDatos" class="spinner-overlay">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">-</span>
+    </div>
+</div>
+
+<div class="row g-3 contenedor-mis-turnos" *ngIf="!this.cargandoDatos">
+    <h1>Turnos de la clínica</h1>
+
+    <div class="row">
+        <div class="col-3">
+            <input type="text" class="form-control" placeholder="Filtrar por especialista" [(ngModel)]="this.filtroEspecialista">
+        </div>
+
+        <div class="col-1">    
+            <button class="btn btn-success" (click)="this.FiltrarEspecialistas(filtroEspecialista)">
+                <img src="/imgs/lupa.png" height="28px">
+            </button>
+            
+            <button class="btn btn-primary" (click)="this.FiltrarEspecialistas('')">
+                <img src="/imgs/reload.png" height="28px">
+            </button>
+        </div>
+
+        <div class="col-4"></div>
+
+
+        <div class="col-3">
+            <input type="text" class="form-control" placeholder="Filtrar por especialidad" [(ngModel)]="this.filtroEspecialidad">
+        </div>
+
+        <div class="col-1">
+            <button class="btn btn-success" (click)="this.FiltrarEspecialidades(filtroEspecialidad)">
+                <img src="/imgs/lupa.png" height="28px">
+            </button>
+
+            <button class="btn btn-primary" (click)="this.FiltrarEspecialistas('')">
+                <img src="/imgs/reload.png" height="28px">
+            </button>
+        </div>
+    </div>
+
+    <div class="contenedor-tabla">
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Horario</th>
+                        <th>Especialista</th>
+                        <th>Especialidad</th>
+                        <th>Imagen Especialista</th>
+                        <th>Paciente</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    <tr *ngFor="let turno of this.turnosObtenidos">
+                        <td>{{turno.fecha}}</td>
+                        <td>{{turno.horario}}</td>
+                        <td>{{turno.nombreEspecialista | acortarNombre}} {{turno.apellidoEspecialista}}</td>
+                        <td>{{turno.especialidadEspecialista}}</td>
+                        <td><img src="{{turno.imagenPerfilEspecialista}}" height="64px"></td>
+                        <td>{{turno.nombrePaciente | acortarNombre}}</td>
+                        <td>{{turno.estado}}</td>
+                        <td>
+                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCancelarTurno" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.estado == 'Pendiente'">
+                                Cancelar turno
+                            </button>
+
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalVerReseña" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.mensajeEstado">
+                                Ver reseñas/comentarios
+                            </button>
+                            <!-- <p *ngIf="turno.cancelado">El turno ya fue cancelado</p> -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<!-- Modal cancelar turno  -->
+<div class="modal fade" id="modalCancelarTurno" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Cancelar turno de {{turnoSeleccionado.nombrePaciente | acortarNombre}} con {{turnoSeleccionado.nombreEspecialista | acortarNombre}}</h1>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" class="form-control" placeholder="Deje una reseña o comentario sobre la cancelación del turno" [(ngModel)]="this.mensajeEstado">
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" (click)="this.CancelarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
+                    Cancelar turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal reseñas turno (paciente) -->
+<div class="modal fade" id="modalVerReseña" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje del estado del turno</h1>
+            </div>
+
+            <div class="modal-body">
+                <p>Aclaraciones luego de declarar el turno cómo {{this.turnoSeleccionado.estado}}:</p>
+                <p><strong>"{{this.turnoSeleccionado.mensajeEstado}}"</strong></p>
+
+                <hr />
+
+                <p *ngIf="turnoSeleccionado.valoracionConsulta != 0">Valoracion de la consulta: <strong>{{turnoSeleccionado.valoracionConsulta}} puntos.</strong></p>
+                <p *ngIf="turnoSeleccionado.comentarioValoracion != ''">Comentario acerca de la consulta: <strong>{{turnoSeleccionado.comentarioValoracion}}</strong></p>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

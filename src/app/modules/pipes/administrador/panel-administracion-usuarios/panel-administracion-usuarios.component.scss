@@ -1,0 +1,45 @@
+/* app.component.css */
+.dashboard {
+    display: flex;
+    height: 84.8%;
+    max-height: 824px;
+    padding: 2rem;
+    // border-radius: 8rem;
+}
+  
+.sidebar {
+    width: 200px;
+    background-color: #f8f9fa;
+    padding: 2rem;
+    // padding-top: 5rem;
+}
+  
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+  
+@-webkit-keyframes shadow-drop-2-center{0%{-webkit-transform:translateZ(0);transform:translateZ(0);-webkit-box-shadow:0 0 0 0 transparent;box-shadow:0 0 0 0 transparent}100%{-webkit-transform:translateZ(50px);transform:translateZ(50px);-webkit-box-shadow:0 0 20px 0 rgba(0,0,0,.35);box-shadow:0 0 20px 0 rgba(0,0,0,.35)}}@keyframes shadow-drop-2-center{0%{-webkit-transform:translateZ(0);transform:translateZ(0);-webkit-box-shadow:0 0 0 0 transparent;box-shadow:0 0 0 0 transparent}100%{-webkit-transform:translateZ(50px);transform:translateZ(50px);-webkit-box-shadow:0 0 20px 0 rgba(0,0,0,.35);box-shadow:0 0 20px 0 rgba(0,0,0,.35)}}
+.sidebar li {
+    padding: 10px;
+    // gap: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    cursor: pointer;
+    // transition: background-color 0.3s;
+}
+  
+.sidebar li:hover {
+    background-color: #e2e6ea;
+    -webkit-animation:shadow-drop-2-center .4s cubic-bezier(.25,.46,.45,.94) both;animation:shadow-drop-2-center .4s cubic-bezier(.25,.46,.45,.94) both
+}
+  
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    border-left: 1px solid #dee2e6;
+    overflow-y: auto;
+}
+
+  

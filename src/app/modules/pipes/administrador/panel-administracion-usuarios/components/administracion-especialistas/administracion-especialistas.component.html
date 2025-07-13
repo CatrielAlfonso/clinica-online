@@ -1,0 +1,67 @@
+<div *ngIf="this.actualizandoDatos" class="spinner-overlay">
+  <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">-</span>
+  </div>
+</div>
+
+<div *ngIf="!this.actualizandoDatos">
+  <h2>Especialistas habilitados</h2>
+  <table class="table table-bordered mat-elevation-z8">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Edad</th>
+        <th>Dni</th>
+        <th>Especialidad</th>
+        <th>Correo</th>
+        <th>Estado</th>
+        <th>Imagen de perfil</th>
+        <th>Accion</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let especialistaHabilitado of especialistasHabilitados">
+        <td>{{ especialistaHabilitado.nombre | acortarNombre }}</td>
+        <td>{{ especialistaHabilitado.apellido }}</td>
+        <td>{{ especialistaHabilitado.edad }}</td>
+        <td>{{ especialistaHabilitado.dni | formatearDni }}</td>
+        <td>{{ especialistaHabilitado.especialidad }}</td>
+        <td>{{ especialistaHabilitado.email }}</td>
+        <td>{{ especialistaHabilitado.habilitado | asignarEstado }}</td>
+        <td><img src="{{ especialistaHabilitado.imagenPerfil}}" height="30px" width="30px"></td>
+        <td><button class="btn btn-danger" (click)="this.CambiarAutorizacionEspecialista(especialistaHabilitado, false)">Desautorizar</button></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h2>Especialistas esperando habilitación</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Edad</th>
+        <th>Dni</th>
+        <th>Especialidad</th>
+        <th>Correo</th>
+        <th>Estado</th>
+        <th>Imagen de perfil</th>
+        <th>Accion</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let especialistaNoHabilitado of especialistasNoHabilitados">
+        <td>{{ especialistaNoHabilitado.nombre | acortarNombre }}</td>
+        <td>{{ especialistaNoHabilitado.apellido }}</td>
+        <td>{{ especialistaNoHabilitado.edad }}</td>
+        <td>{{ especialistaNoHabilitado.dni | formatearDni }}</td>
+        <td>{{ especialistaNoHabilitado.especialidad }}</td>
+        <td>{{ especialistaNoHabilitado.email }}</td>
+        <td>{{ especialistaNoHabilitado.habilitado | asignarEstado }}</td>
+        <td><img src="{{ especialistaNoHabilitado.imagenPerfil }}" height="30px" width="30px"></td>
+        <td><button class="btn btn-success" (click)="this.CambiarAutorizacionEspecialista(especialistaNoHabilitado, true)">Autorizar</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
