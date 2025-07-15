@@ -233,8 +233,36 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
     this.subscripcionObtenerTurnos.add(turnosSubscription);
   }
 
+  private normalizar = (txt: string) =>
+  txt
+    .toLocaleLowerCase()
+    .normalize('NFD')                 // separa caracteres + acento
+    .replace(/[\u0300-\u036f]/g, '') // quita diacríticos
+    .trim();
+
+//   Filtrar(filtroIngresado: string): void {
+//   const q = this.normalizar(filtroIngresado);
+
+//   /*  Sin texto => volvemos a mostrar todo  */
+//   if (!q) {
+//     this.turnosPaciente     = this.turnosBackup.filter(this.esPaciente);
+//     this.turnosEspecialista = this.turnosBackup.filter(this.esEspecialista);
+//     return;
+//   }
+
+//   /* 1 sola pasada para encontrar coincidencias */
+//   const matches = this.turnosBackup.filter(t => t._search.includes(q));
+
+//   /* Separá las vistas según rol */
+//   this.turnosPaciente     = matches.filter(this.esPaciente);
+//   this.turnosEspecialista = matches.filter(this.esEspecialista);
+// }
+
+
   Filtrar(filtroIngresado: string): void
   {
+    
+
     let coincidenciaEncontrada: boolean = false;
     if(filtroIngresado)
     {
@@ -287,7 +315,14 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
 
   FiltrarEspecialistas(filtroIngresado: string): void
   {
-    if(filtroIngresado)
+    const normalizar = (txt: string) =>
+    txt.toLocaleLowerCase()
+       .normalize('NFD')
+       .replace(/[\u0300-\u036f]/g, '');
+
+    const texto = normalizar(filtroIngresado.trim());
+
+    if(texto)
     {
       let nuevosEspecialistas: any[] = [];
       for(const especialista of this.especialistasObtenidosBackup)

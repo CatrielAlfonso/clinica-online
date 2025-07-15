@@ -24,7 +24,7 @@
           <td>{{ especialista.apellido }}</td>
           <td>{{ especialista.edad }}</td>
           <td>{{ especialista.dni | formatearDni}}</td>
-          <td>{{ especialista.especialidad }}</td>
+          <td>{{ especialista.especialidad | capitalizador}}</td>
           <td>{{ especialista.email }}</td>
           <td><img src="{{ especialista.imagen1 }}" height="30px" width="30px"></td>
         </tr>
