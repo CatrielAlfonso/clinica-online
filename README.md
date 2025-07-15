@@ -20,17 +20,23 @@
 
 ---
 
-## 📑 Tabla de contenidos
-1. [Demo](#demo)
-2. [Características](#características)
-3. [Instalación rápida](#instalación-rápida)
-4. [Estructura de carpetas](#estructura-de-carpetas)
-5. [Comandos útiles](#comandos-útiles)
-6. [Integración Supabase](#integración-supabase)
-7. [Capturas](#capturas)
-8. [Contribuir](#contribuir)
-9. [Licencia](#licencia)
+## 🏥 Acerca de la Clínica
 
+**La Clínica OnLine**, especialista en salud, cuenta actualmente con **6 consultorios**, **2 laboratorios físicos** y una **sala de espera general**.
+
+🕒 **Horarios de atención**:
+- Lunes a viernes: 08:00 a 19:00
+- Sábados: 08:00 a 14:00
+
+👩‍⚕️ En ella trabajan profesionales de **diversas especialidades**, que:
+- Ocupan los consultorios según su **disponibilidad**.
+- Atienden a pacientes **con turno para consulta o tratamiento**.
+- Pueden tener **más de una especialidad**.
+- Pueden configurar la **duración mínima del turno** (desde 30 minutos).
+
+📅 Los **turnos se solicitan desde la web**, eligiendo un profesional o una especialidad.
+
+🏢 Además, contamos con un **sector administrativo** responsable de la organización y gestión de la clínica.
 ---
 
 ## 🎬 Bienvenida
@@ -56,7 +62,28 @@
 
 ---
 
+## 🎬 Turnos - Paciente
 
+<div align="center">
+  <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//turnos.jpg" alt="PacientesTurnos" width="720"/>
+</div>
+
+---
+
+## 🎬 Turnos - Especialistas
+
+<div align="center">
+  <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//turnosE.jpg" alt="EspecialistasTurnos" width="720"/>
+</div>
+
+---
+## 🎬 Graficos
+
+<div align="center">
+  <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//graficos.jpg" alt="EspecialistasTurnos" width="720"/>
+</div>
+
+---
 
 ## ✨ Características
 
