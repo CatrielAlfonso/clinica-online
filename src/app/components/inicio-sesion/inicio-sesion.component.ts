@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { AngularMaterialModule } from '../../modules/pipes/angular-material/angular-material.module';
 import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
+import { RouterLink } from '@angular/router';
 
 interface IUsuario {
   correo: string;
@@ -18,7 +19,7 @@ interface IUsuario {
 
 @Component({
   selector: 'app-inicio-sesion',
-  imports: [FormsModule, CommonModule, AngularMaterialModule, PipesModule],
+  imports: [FormsModule, CommonModule, AngularMaterialModule, PipesModule, RouterLink],
   templateUrl: './inicio-sesion.component.html',
   styleUrl: './inicio-sesion.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -69,12 +70,12 @@ export class InicioSesionComponent {
 
    async AsignarImagenes(): Promise<void>
   {
-    this.authService.obtenerContenidoAsObservable("Usuarios").subscribe(usuarios => {
+    this.authService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
       for(const usuario of usuarios)
       {
-        if(usuario.email == "adm.thonic@gmail.com") { this.Admin1 = { correo: usuario.email, clave: "Administrador", imagen: usuario.imagenPerfil, nombre: usuario.nombre }; }
-        else if(usuario.email == "esp.thonic@hotmail.com") { this.Especialista1 = { correo: usuario.email, clave: "Especialista", imagen: usuario.imagenPerfil, nombre: usuario.nombre }; }
-        else if(usuario.email == "hivawim430@aqqor.com") { this.Especialista2 = { correo: usuario.email, clave: "Probando", imagen: usuario.imagenPerfil, nombre: usuario.nombre }; }
+        if(usuario.email == "catrielalfonso77@gmail.com") { this.Admin1 = { correo: usuario.email, clave: "123456", imagen: usuario.imagen1, nombre: usuario.nombre }; }
+        else if(usuario.email == "esp.thonic@hotmail.com") { this.Especialista1 = { correo: usuario.email, clave: "Especialista", imagen: usuario.imagen1, nombre: usuario.nombre }; }
+        else if(usuario.email == "hivawim430@aqqor.com") { this.Especialista2 = { correo: usuario.email, clave: "Probando", imagen: usuario.imagen1, nombre: usuario.nombre }; }
         else if(usuario.email == "tanedis536@opposir.com") { this.Paciente1 = { correo: usuario.email, clave: "Paciente", imagen: usuario.imagen1, nombre: usuario.nombre }; }
         else if(usuario.email == "molese3101@lineacr.com") { this.Paciente2 = { correo: usuario.email, clave: "Paciente", imagen: usuario.imagen1, nombre: usuario.nombre }; }
         else if(usuario.email == "pac.thonic@outlook.com.ar") { this.Paciente3 = { correo: usuario.email, clave: "Paciente", imagen: usuario.imagen1, nombre: usuario.nombre }; }

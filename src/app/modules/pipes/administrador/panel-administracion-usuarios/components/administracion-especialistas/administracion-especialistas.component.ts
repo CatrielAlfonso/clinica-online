@@ -1,5 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { FirestoreService } from '../../../../../services/firebase/firestore.service';
+import { AuthService } from '../../../../../../services/auth.service';
+//import { FirestoreService } from '../../../../../services/firebase/firestore.service';
+
 
 @Component({
   selector: 'app-administracion-especialistas',
@@ -8,7 +10,7 @@ import { FirestoreService } from '../../../../../services/firebase/firestore.ser
   standalone: false,
 })
 export class AdministracionEspecialistasComponent {
-  firestoreService = inject(FirestoreService);
+  authService = inject(AuthService);
 
   usuarios: any[] = [];
   especialistasHabilitados: any[] = [];
@@ -22,7 +24,7 @@ export class AdministracionEspecialistasComponent {
 
   async ObtenerUsuarios()
   {
-    this.firestoreService.ObtenerContenido("Usuarios").subscribe((usuariosObtenidos: any[]) => { 
+    this.authService.obtenerContenidoAsObservable("usuarios").subscribe((usuariosObtenidos: any[]) => { 
       this.actualizandoDatos = true;
       this.usuarios = usuariosObtenidos;
       setTimeout(() => { this.actualizandoDatos = false }, 2000); 
@@ -42,7 +44,7 @@ export class AdministracionEspecialistasComponent {
   {
     let nuevosDatos = especialista;
     nuevosDatos.habilitado = autorizacion;
-    await this.firestoreService.ModificarContenido("Usuarios", especialista.id, nuevosDatos);
+    await this.authService.modificarContenido("usuarios", especialista.id, nuevosDatos);
     this.usuarios.length = 0;
     this.especialistasHabilitados.length = 0;
     this.especialistasNoHabilitados.length = 0;

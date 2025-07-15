@@ -1,0 +1,117 @@
+<div *ngIf="this.cargandoDatos" class="spinner-overlay">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">-</span>
+    </div>
+</div>
+
+<!-- <img src='/imgs/bg-log2.jpg' class="bg"> -->
+
+<div class="row g-3 contenedor-mis-turnos mat-elevation-z8" *ngIf="!this.cargandoDatos && this.userService.rolUsuarioLogueado == 'Especialista'">
+    <h1>Mis pacientes</h1>
+
+    <div class="col-6" *ngFor="let paciente of this.pacientesAtendidos">
+        <div class="book mat-elevation-z8">
+            <h5>Datos del paciente {{paciente.nombre | acortarNombre }} {{paciente.apellido}}</h5>
+            <div class="row" style="top: 0">
+                <div class="col-2"></div>
+
+                <div class="col-4">
+                    <img src="{{paciente.imagen1}}" height="64px">
+                </div>
+                
+                <div class="col-4">
+                    <img src="{{paciente.imagen2}}" height="64px">
+                </div>
+                
+                <div class="col-2"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-1"></div>
+
+                <div class="col-6">
+                    <p style="text-align: start;">DNI: {{paciente.dni | formatearDni}}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-1"></div>
+
+                <div class="col-6">
+                    <p style="text-align: start;">EDAD: {{paciente.edad}}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-1"></div>
+
+                <div class="col-6">
+                    <p style="text-align: start;">OBRA SOCIAL: {{paciente.obraSocial}}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-1"></div>
+
+                <div class="col-11">
+                    <p style="text-align: start;">ÚLTIMOS 3 TURNOS: {{this.ObtenerUltimosTurnos(paciente)}}</p>
+                </div>
+            </div>
+
+            <button mat-flat-button data-bs-toggle="modal" data-bs-target="#modalVerHistoria" (click)="this.RelacionarHistoriaClinica(paciente.dni)">
+                Ver historia clínica
+            </button>            
+            <div class="cover">
+                <h1>{{paciente.nombre | acortarNombre }} {{paciente.apellido}}</h1>                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal historia clínica -->
+<div class="modal fade" id="modalVerHistoria" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" *ngIf="this.historiaClinicaDetallada.dniPaciente">
+        <div class="modal-content" style="max-height: 700px; overflow-y: auto;">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Historia clinica de {{this.historiaClinicaDetallada.nombrePaciente | acortarNombre }}</h1>
+            </div>
+  
+            <div class="modal-body">
+                <p><strong>DNI:</strong> {{this.historiaClinicaDetallada.dniPaciente | formatearDni }}</p>
+                <p><strong>Edad:</strong> {{this.historiaClinicaDetallada.edadPaciente}}</p>
+  
+                <div class="visitas-realizadas" *ngFor="let visita of this.historiaClinicaDetallada.visitas; index as i">
+                  <hr />
+                  <p><strong>Fecha de visita: </strong>{{visita.fechaVisita}}</p>
+                  <p><strong>Horario de visita: </strong>{{visita.horarioVisita}}</p>
+                  <p><strong>Especialidad visitada: </strong>{{visita.especialidadVisitada}}</p>
+                  <p><strong>Especialista visitado: </strong>{{visita.nombreEspecialista | acortarNombre }}</p>
+                  <p><strong>DNI Especialista visitado: </strong>{{visita.dniEspecialista | formatearDni }}</p>
+                  <p><strong>Altura del paciente: </strong>{{visita.alturaPaciente}}</p>
+                  <p><strong>Peso del paciente: </strong>{{visita.pesoPaciente}}</p>
+                  <p><strong>Temperatura del paciente: </strong>{{visita.temperaturaPaciente}}</p>
+                  <p><strong>Presión del paciente: </strong>{{visita.presionPaciente}}</p>
+                  <p class="espaciado-t-x1"><strong>Diagnóstico: </strong>{{visita.diagnosticoPaciente}}</p>
+                  <p class="espaciado-t-x1"><strong>Detalle del diagnóstico: </strong>{{visita.detalleDiagnosticoPaciente}}</p>
+                  <hr />
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+  
+    <div class="modal-dialog modal-lg" *ngIf="!this.historiaClinicaDetallada.dniPaciente">
+      <div class="modal-content" style="max-height: 700px; overflow-y: auto;">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Aún no hay datos registrados en la historia clínica.</h1>
+          </div>
+
+          <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+    </div>
+</div>

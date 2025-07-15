@@ -42,7 +42,7 @@ export class InformacionUsuariosComponent implements OnInit, OnDestroy{
   async ObtenerHistoriasClinicas(): Promise<void> 
   {
     try {
-      const historias = await this.supaBaseDataService.obtenerContenido("HistoriasClinicas");
+      const historias = await this.supaBaseDataService.obtenerContenido("historiasclinicas");
 
       this.historiasClinicasObtenidas = historias.filter(historia =>
         this.usuarios.some(usuario => usuario.dni === historia.dniPaciente)

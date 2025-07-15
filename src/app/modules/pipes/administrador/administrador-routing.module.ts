@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { soloAdminGuard } from '../../guards/solo-admin.guard';
+import { soloAdminGuard } from '../../../guards/solo-admin.guard';
 import { PanelAdministracionUsuariosComponent } from './panel-administracion-usuarios/panel-administracion-usuarios.component';
-import { usuarioLogueadoGuard } from '../../guards/usuario-logueado.guard';
+import { usuarioLogueadoGuard } from '../../../guards/usuario-logueado.guard';
 import { TurnosComponent } from './turnos/turnos.component';
 
 const routes: Routes = [

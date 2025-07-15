@@ -1,22 +1,27 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { Turno } from '../../../interfaces/ITurno';
-import { UserService } from '../../../services/data/user.service';
-import { SwalService } from '../../../services/swal.service';
-import { FirestoreService } from '../../../services/firebase/firestore.service';
-import { StorageService } from '../../../services/firebase/storage.service';
+import { Turno } from '../../../../interfaces/ITurno';
+//import { UserService } from '../../../services/data/user.service';
+import { SweetAlertService } from '../../../../services/sweet-alert.service';
+//import { FirestoreService } from '../../../services/firebase/firestore.service';
+//import { StorageService } from '../../../services/firebase/storage.service';
+import { UserService } from '../../../../services/user.service';
+import { AuthService } from '../../../../services/auth.service';
+import { SupabaseStorageService } from '../../../../services/supabase-storage.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+//import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-turnos',
   templateUrl: './turnos.component.html',
-  styleUrl: './turnos.component.scss'
+  styleUrl: './turnos.component.scss',
+  standalone:false
 })
 export class TurnosComponent implements OnInit, OnDestroy {
   userService = inject(UserService);
-  swalService = inject(SwalService);
-  firestoreService = inject(FirestoreService);
-  storageService = inject(StorageService);
+  swalService = inject(SweetAlertService);
+  authSevice = inject(AuthService);
+  storageService = inject(SupabaseStorageService);
   router = inject(Router);
 
   cargandoDatos: boolean;
@@ -69,7 +74,7 @@ export class TurnosComponent implements OnInit, OnDestroy {
   ObtenerEspecialistas(): void
   {
     this.especialistasObtenidos.length = 0;
-    const especialistasSubscription = this.firestoreService.ObtenerContenido("Usuarios").subscribe(usuarios => {
+    const especialistasSubscription = this.authSevice.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
       for(const usuario of usuarios)
       {
         if(usuario.rol == "Especialista") { this.especialistasObtenidos.push(usuario); }
@@ -82,7 +87,7 @@ export class TurnosComponent implements OnInit, OnDestroy {
   ObtenerPacientes(): void
   {
     this.pacientesObtenidos.length = 0;
-    const pacientesSubscription = this.firestoreService.ObtenerContenido("Usuarios").subscribe(usuarios => {
+    const pacientesSubscription = this.authSevice.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
       for(const usuario of usuarios)
       {
         if(usuario.rol == "Paciente") { this.pacientesObtenidos.push(usuario); }
@@ -95,7 +100,7 @@ export class TurnosComponent implements OnInit, OnDestroy {
   ObtenerTurnos(): void
   {
     this.cargandoDatos = true; 
-    const turnosSubscription = this.firestoreService.ObtenerContenido("Turnos").subscribe(turnos => {
+    const turnosSubscription = this.authSevice.obtenerContenidoAsObservable("turnos").subscribe(turnos => {
       this.turnosObtenidos.length = 0;
       for(const turno of turnos)
       {
@@ -215,7 +220,7 @@ export class TurnosComponent implements OnInit, OnDestroy {
       valoracionConsulta: 0
     }
     console.log(turno.id);
-    this.firestoreService.ModificarContenido("Turnos", turno.id, objetoTurnoNuevo);
+    this.authSevice.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
   }
 
   AsignarTurnoSeleccionado(turno: any): void

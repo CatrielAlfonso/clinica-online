@@ -1,0 +1,191 @@
+@-webkit-keyframes bg-pan-right{0%{background-position:0 50%}100%{background-position:100% 50%}}@keyframes bg-pan-right{0%{background-position:0 50%}100%{background-position:100% 50%}}
+.contenedor-registro {
+    height: 84.8vh;
+    background-image: url('/imgs/bg-log2.jpg'); // Ruta de la imagen de fondo
+    padding-top: .5rem;
+    background-size: 150% auto;
+    padding-bottom: 1rem;
+    -webkit-animation:bg-pan-right 20s linear infinite alternate-reverse both;animation:bg-pan-right 20s linear infinite alternate-reverse both;
+    
+    .registro {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .registro, .form-registro{
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        text-align: center;
+        background-color: #f8f9fae1;
+        border-radius: 8px;
+
+        @-webkit-keyframes fade-in{0%{opacity:0}100%{opacity:1}}@keyframes fade-in{0%{opacity:0}100%{opacity:1}}
+        .form-paciente, .form-especialista, .especialidad-propia{
+            -webkit-animation:fade-in .8s linear both;animation:fade-in .8s linear both;
+            margin-top: 1.5rem;
+        }   
+
+        .g-3{margin-bottom: 1rem;}
+
+        label{ color: #0056b3; }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #0056b3;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #4a4a4a;
+            // margin: 1rem 0;
+        }
+
+        .info {
+            // margin-top: 2rem;
+            h2 {
+                color: #007bff;
+                font-size: 1.5rem;
+                // margin-bottom: 0.5rem;
+            }
+            p {
+                // margin-bottom: 1rem;
+                color: #555;
+            }
+        }
+
+        button {
+            // margin-top: 2rem;
+            font-size: 1.2rem;
+            padding: 0.5rem 2rem;
+        }
+    }
+}
+
+.mat-accent.mat-mdc-radio-button {
+    --mdc-radio-selected-focus-icon-color: #00ccff;
+    --mdc-radio-selected-hover-icon-color: #0011ff;
+    --mdc-radio-selected-icon-color: #00ccff;
+    --mdc-radio-selected-pressed-icon-color: #8987ff;
+    --mat-radio-checked-ripple-color: #b587ff;
+}
+
+label {
+    mdc-label { color: black !important; }
+}
+
+// https://uiverse.io/Yaya12085/tender-moose-95
+
+.custum-file-upload {
+    height: 200px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+    gap: 20px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #cacaca;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+}
+
+.custum-file-upload .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custum-file-upload .icon svg {
+    height: 80px;
+    fill: rgba(75, 85, 99, 1);
+}
+
+.custum-file-upload .text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custum-file-upload .text span {
+    font-weight: 400;
+    color: rgba(75, 85, 99, 1);
+}
+
+.custum-file-upload input {
+    display: none;
+}
+
+.imagen-paciente, .imagen-doctor {
+    border-radius: 10rem;
+    height: 120px;
+    width: 120px;
+    padding: 1rem;
+    margin: 0 auto;
+}
+
+.imagen-paciente:hover, .imagen-doctor:hover { transform: scale(1.5); }
+
+.fab-volver {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    button {
+        background: rgba(114, 199, 255, 0.301);
+        border-radius: 10rem;
+    }
+}
+
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* Asegúrate de que esté por encima de otros elementos */
+}
+
+.contenedor-recaptcha { 
+    margin-left: 25%; 
+    margin-bottom: 1rem;
+}
+
+.btn-especialistas {
+    height: 120px; 
+    width: 80%;
+    max-width: 350px;
+    margin-bottom: 1rem;
+    background-color: none;
+    background-color: rgb(0, 128, 122);
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.row-turnos {
+    max-height: 300px; 
+    overflow-y: auto;
+    .col-turnos{
+        .btn-turnos{
+            width: 100%; 
+            height: 100%; 
+            font-size: medium;
+            border: solid 2px rgb(151, 239, 255);
+            background-color: rgb(0, 128, 122);
+        }
+    }   
+}
+
+.btn-especialidades{
+    width: 80%;
+    max-width: 300px;
+    margin-bottom: .5rem;
+    border: solid 2px lightblue;
+    background-color: rgb(0, 128, 122);
+}

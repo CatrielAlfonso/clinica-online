@@ -7,7 +7,7 @@ import { AltaUsuariosComponent } from './components/alta-usuarios/alta-usuarios.
   selector: 'app-panel-administracion-usuarios',
   templateUrl: './panel-administracion-usuarios.component.html',
   styleUrl: './panel-administracion-usuarios.component.scss',
-  
+  standalone:false
 })
 export class PanelAdministracionUsuariosComponent {
   mostrarComponente: string = 'altaUsuario';

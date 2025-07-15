@@ -1,0 +1,362 @@
+<div *ngIf="this.cargandoDatos" class="spinner-overlay">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">-</span>
+    </div>
+</div>
+
+<div class="row g-3 contenedor-mis-turnos mat-elevation-z8" *ngIf="!this.cargandoDatos && this.userService.rolUsuarioLogueado == 'Paciente'">
+    <h1>Mis turnos</h1>
+
+    <div class="row">
+        <div class="col-4">
+            <input type="text" class="form-control" placeholder="Filtrar por especialista" (input)="FiltrarEspecialistas(this.filtroEspecialista)" [(ngModel)]="this.filtroEspecialista">
+        </div>
+
+        <div class="col-4">
+            <input type="text" class="form-control" placeholder="Filtrar por cualquier campo"  (input)="Filtrar(this.filtroGeneral)" [(ngModel)]="this.filtroGeneral">
+        </div>
+
+        <div class="col-4">
+            <input type="text" class="form-control" placeholder="Filtrar por especialidad"  (input)="FiltrarEspecialidades(this.filtroEspecialidad)" [(ngModel)]="this.filtroEspecialidad">
+        </div>
+    </div>
+
+    <div class="contenedor-tabla">
+
+            <table class="table">
+                <thead class="head">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Horario</th>
+                        <th>Especialista</th>
+                        <th>Especialidad</th>
+                        <th>Imagen Especialista</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                
+                <tbody class="body">
+                    <tr *ngFor="let turno of this.turnosPaciente">
+                        <td>{{turno.fecha}}</td>
+                        <td>{{turno.horario}}</td>
+                        <td>{{turno.nombreEspecialista | acortarNombre }} {{turno.apellidoEspecialista}}</td>
+                        <td>{{turno.especialidadEspecialista}}</td>
+                        <td><img src="{{turno.imagenPerfilEspecialista}}" height="64px"></td>
+                        <td>{{turno.estado}}</td>
+                        <!-- <td>{{turno.mensajeEstado}}</td> -->
+                        <td>
+                            <!-- <button class="btn btn-danger" (click)="this.CancelarTurno(turno)" *ngIf="!turno.cancelado">Cancelar turno</button> -->
+                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCancelarTurnoPaciente" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.estado != 'Finalizado' && turno.estado != 'Cancelado'">
+                                Cancelar turno
+                            </button>
+
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalVerReseña" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.mensajeEstado">
+                                Ver reseñas/comentarios
+                            </button>
+
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalCalificarAtencion" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.estado == 'Finalizado' && turno.valoracionConsulta == 0 && turno.comentarioValoracion == ''">
+                                Calificar atención
+                            </button>
+                            <!-- <p *ngIf="turno.cancelado">El turno ya fue cancelado</p> -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<!-- </div> -->
+
+<div class="row g-3 contenedor-mis-turnos mat-elevation-z8" *ngIf="!this.cargandoDatos && this.userService.rolUsuarioLogueado == 'Especialista'">
+    <h1>Mis turnos</h1>
+
+    <div class="row">
+        <div class="col-2"></div>
+        
+        <div class="col-3">
+            <input type="text" class="form-control" placeholder="Filtrar por paciente" (input)="FiltrarPacientes(this.filtroPaciente)" [(ngModel)]="this.filtroPaciente">
+        </div>
+
+        <div class="col-2"></div>
+
+        <div class="col-3">
+            <input type="text" class="form-control" placeholder="Filtrar por cualquier campo"  (input)="Filtrar(this.filtroGeneral)" [(ngModel)]="this.filtroGeneral">
+        </div>
+
+        <div class="col-2"></div>
+    </div>
+
+    <div class="contenedor-tabla">
+        <table class="table" id="tabla">
+            <thead class="head">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Horario</th>
+                    <th>Dni paciente</th>
+                    <th>Nombre paciente</th>
+                    <th>Imagen1 paciente</th>
+                    <th>Imagen2 paciente</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="body">
+                <tr *ngFor="let turno of this.turnosEspecialista" style="background-color: red !important;">
+                    <td>{{turno.fecha}}</td>
+                    <td>{{turno.horario}}</td>
+                    <td>{{turno.dniPaciente | formatearDni}}</td>
+                    <td>{{turno.nombrePaciente | acortarNombre }} {{turno.apellidoPaciente}}</td>
+                    <td><img src="{{turno.imagen1Paciente}}" height="64px"></td>
+                    <td><img src="{{turno.imagen2Paciente}}" height="64px"></td>
+                    <td>{{turno.estado}}</td>
+                    <td>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCancelarTurnoEspecialista" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.estado == 'Pendiente'">
+                            Cancelar turno
+                        </button>
+                        <!-- <button class="btn btn-danger" (click)="this.CancelarTurno(turno)" *ngIf="!turno.cancelado && !turno.aprobado">Cancelar turno</button> -->
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAceptarTurnoEspecialista" (click)="this.AsignarTurnoSeleccionado(turno)"*ngIf="turno.estado == 'Pendiente'">
+                            Aceptar turno
+                        </button>
+
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalFinalizarTurno" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.estado == 'Aceptado'">
+                            Finalizar turno
+                        </button>
+
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalVerReseña" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.mensajeEstado">
+                            Ver reseñas/comentarios
+                        </button>
+                        <p *ngIf="turno.cancelado">El turno ya fue cancelado</p>
+                        <p *ngIf="turno.finalizado">El turno ya fue finalizado</p>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal finalizar turno (especialista) -->
+<div class="modal fade" id="modalFinalizarTurno" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Finalizar turno de {{turnoSeleccionado.nombrePaciente | acortarNombre }}</h1>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" class="form-control" placeholder="Deje una reseña o comentario sobre el turno" [(ngModel)]="this.mensajeEstado">
+                <hr />
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Datos necesarios para armar la historia clínica:</h1>
+                <input type="number" class="form-control espaciado-b-x1" placeholder="Altura del paciente (en cm)" [(ngModel)]="this.alturaPaciente">
+                <input type="number" class="form-control espaciado-b-x1" placeholder="Peso del paciente (en kg)" [(ngModel)]="this.pesoPaciente">
+                <input type="number" class="form-control espaciado-b-x1" placeholder="Temperatura del paciente (en ºC)" [(ngModel)]="this.temperaturaPaciente">
+                <input type="number" class="form-control espaciado-b-x1" placeholder="Presión del paciente" [(ngModel)]="this.presionPaciente">
+                <input type="text" class="form-control espaciado-b-x1" placeholder="Ingrese una clave para el diagnostico (ej: caries)" [(ngModel)]="this.diagnosticoPaciente">
+                <input type="text" class="form-control" placeholder="Ingrese un valor para la clave especificada" [(ngModel)]="this.detalleDiagnosticoPaciente">
+            </div>
+
+
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" (click)="this.FinalizarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
+                    Finalizar turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cancelar turno (paciente) -->
+<div class="modal fade" id="modalCancelarTurnoPaciente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Cancelar turno con el especialista {{turnoSeleccionado.nombreEspecialista | acortarNombre}}</h1>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" class="form-control" placeholder="Deje una reseña o comentario sobre la cancelación del turno" [(ngModel)]="this.mensajeEstado">
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" (click)="this.CancelarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
+                    Cancelar turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal reseñas turno (paciente) -->
+<div class="modal fade" id="modalVerReseña" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje del estado del turno</h1>
+            </div>
+
+            <div class="modal-body">
+                <p>Aclaraciones luego de declarar el turno cómo {{this.turnoSeleccionado.estado}}:</p>
+                <p><strong>"{{this.turnoSeleccionado.mensajeEstado}}"</strong></p>
+
+                <hr />
+
+                <p *ngIf="turnoSeleccionado.valoracionConsulta != 0">Valoracion de la consulta: <strong>{{turnoSeleccionado.valoracionConsulta}} puntos.</strong></p>
+                <p *ngIf="turnoSeleccionado.comentarioValoracion != ''">Comentario acerca de la consulta: <strong>{{turnoSeleccionado.comentarioValoracion}}</strong></p>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cancelar turno (especialista) -->
+<div class="modal fade" id="modalCancelarTurnoEspecialista" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Cancelar turno de {{turnoSeleccionado.nombrePaciente | acortarNombre}}</h1>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" class="form-control" placeholder="Deje una reseña o comentario sobre la cancelación del turno" [(ngModel)]="this.mensajeEstado">
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" (click)="this.CancelarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
+                    Cancelar turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal rechazar turno (especialista) -->
+<div class="modal fade" id="modalRechazarTurnoEspecialista" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Rechazar turno de {{turnoSeleccionado.nombrePaciente | acortarNombre}}</h1>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" class="form-control" placeholder="Deje una reseña o comentario sobre el motivo del rechazo del turno" [(ngModel)]="this.mensajeEstado">
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" (click)="this.FinalizarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
+                    Rechazar turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal aceptar turno (especialista) -->
+<div class="modal fade" id="modalAceptarTurnoEspecialista" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Aceptar turno de {{turnoSeleccionado.nombrePaciente | acortarNombre}}</h1>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" class="form-control" placeholder="Deje una reseña o comentario sobre el motivo de la aceptación del turno" [(ngModel)]="this.mensajeEstado">
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" (click)="this.AceptarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
+                    Aceptar turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Calificar atención -->
+<div class="modal fade" id="modalCalificarAtencion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Calificar la atención de {{turnoSeleccionado.nombreEspecialista | acortarNombre}}</h1>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" class="form-control" placeholder="Deje un comentario acerca de su experencia con el especialista durante el turno" [(ngModel)]="this.mensajeResenia">
+                <hr />
+                <p>Del 1 al 10, ¿Cómo te trató {{turnoSeleccionado.nombreEspecialista | acortarNombre}} durante la consulta?</p>
+                
+                <!-- ★★★★★ – puedes poner 10 si quieres valores 1‑10 -->
+                <mat-slider min="1" max="10" step="1"
+                    thumbLabel tickInterval="1"
+                    [(ngModel)]="rating">
+                </mat-slider>       
+                
+                <pre>Me trató de: <b>{{ rating }}</b> puntos!</pre>
+                <hr />
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" (click)="this.GuardarValoracionUsuario(turnoSeleccionado, this.mensajeResenia)" data-bs-dismiss="modal">
+                    Valorar turno
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal historia clínica -->
+<div class="modal fade" id="modalVerHistoria" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" *ngIf="this.historiaClinicaDetallada.dniPaciente">
+        <div class="modal-content" style="max-height: 700px; overflow-y: auto;">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Historia clinica de {{this.historiaClinicaDetallada.nombrePaciente | acortarNombre}}</h1>
+            </div>
+  
+            <div class="modal-body">
+                <p><strong>DNI:</strong> {{this.historiaClinicaDetallada.dniPaciente | formatearDni}}</p>
+                <p><strong>Edad:</strong> {{this.historiaClinicaDetallada.edadPaciente}}</p>
+  
+                <div class="visitas-realizadas" *ngFor="let visita of this.historiaClinicaDetallada.visitas; index as i">
+                  <hr />
+                  <p><strong>Fecha de visita: </strong>{{visita.fechaVisita}}</p>
+                  <p><strong>Horario de visita: </strong>{{visita.horarioVisita}}</p>
+                  <p><strong>Especialidad visitada: </strong>{{visita.especialidadVisitada}}</p>
+                  <p><strong>Especialista visitado: </strong>{{visita.nombreEspecialista | acortarNombre}}</p>
+                  <p><strong>DNI Especialista visitado: </strong>{{visita.dniEspecialista | formatearDni}}</p>
+                  <p><strong>Altura del paciente: </strong>{{visita.alturaPaciente}}</p>
+                  <p><strong>Peso del paciente: </strong>{{visita.pesoPaciente}}</p>
+                  <p><strong>Temperatura del paciente: </strong>{{visita.temperaturaPaciente}}</p>
+                  <p><strong>Presión del paciente: </strong>{{visita.presionPaciente}}</p>
+                  <p class="espaciado-t-x1"><strong>Clave: </strong>{{visita.diagnosticoPaciente}}</p>
+                  <p class="espaciado-t-x1"><strong>Valor: </strong>{{visita.detalleDiagnosticoPaciente}}</p>
+                  <hr />
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+  
+    <div class="modal-dialog modal-lg" *ngIf="!this.historiaClinicaDetallada.dniPaciente">
+      <div class="modal-content" style="max-height: 700px; overflow-y: auto;">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Aún no hay datos registrados en la historia clínica.</h1>
+            </div>
+          
+          <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+    </div>
+</div>

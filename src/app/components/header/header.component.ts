@@ -1,16 +1,17 @@
 import { CommonModule  } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
-import { SweetAlertService } from '../services/sweet-alert.service';
-import { UserService } from '../services/user.service';
-import { SupabaseService } from '../services/supabase.service';
-import { PipesModule } from '../modules/pipes/pipes/pipes.module';
+import { AuthService } from '../../services/auth.service';
+import { Router ,RouterLink} from '@angular/router';
+import { SweetAlertService } from '../../services/sweet-alert.service';
+import { UserService } from '../../services/user.service';
+import { SupabaseService } from '../../services/supabase.service';
+import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
+import { NgModule } from '@angular/core';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, FormsModule, PipesModule],
+  imports: [CommonModule, FormsModule, PipesModule,RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })

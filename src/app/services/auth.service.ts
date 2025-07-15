@@ -72,6 +72,32 @@ export class AuthService {
     return data;
   }
 
+  async modificarContenido(
+    coleccion: string,
+    id: string | number,
+    nuevosDatos: Record<string, any>
+    ): Promise<void> 
+  {
+    const { error } = await supabase
+      .from(coleccion)
+      .update(nuevosDatos)      // ← campos a actualizar
+      .eq('id', id)             // ← columna para filtrar la fila
+      .single();                // ← esperamos una única fila
+
+    if (error) {
+      console.error(
+        `❌ Error al actualizar en ${coleccion} (id ${id}):`,
+        error.message
+      );
+      throw error;
+    }
+
+    console.log(
+      `✅ Datos modificados en la tabla ${coleccion} con id ${id}:`,
+      JSON.stringify(nuevosDatos)
+    );
+  }
+
   obtenerContenidoAsObservable(tabla: string): Observable<any[]> {
   return from(
     supabase
@@ -99,7 +125,7 @@ export class AuthService {
   // ✅ Obtener usuario por email (tabla: user-data)
   async obtenerUsuarioPorMail(email: string): Promise<any | null> {
     const { data, error } = await supabase
-      .from('user-data')
+      .from('usuarios')
       .select('*')
       .eq('email', email)
       .single();
@@ -113,15 +139,15 @@ export class AuthService {
   }
 
   // ✅ Modificar registro por ID
-  async modificarContenido(tabla: string, id: string, nuevosDatos: any): Promise<void> {
-    const { error } = await supabase.from(tabla).update(nuevosDatos).eq('id', id);
+  // async modificarContenido(tabla: string, id: string, nuevosDatos: any): Promise<void> {
+  //   const { error } = await supabase.from(tabla).update(nuevosDatos).eq('id', id);
 
-    if (error) {
-      console.error(`❌ Error actualizando registro en ${tabla}:`, error.message);
-    } else {
-      console.log(`✅ Registro actualizado en ${tabla} con ID ${id}`);
-    }
-  }
+  //   if (error) {
+  //     console.error(`❌ Error actualizando registro en ${tabla}:`, error.message);
+  //   } else {
+  //     console.log(`✅ Registro actualizado en ${tabla} con ID ${id}`);
+  //   }
+  // }
 
 
 
@@ -333,19 +359,37 @@ export class AuthService {
     });
   }
 
-  async cerrarSesion(): Promise<void> 
+  async obtenerSesion()
   {
-    const { error } = await supabase.auth.signOut();
+    const { data, error } = await supabase.auth.getSession();
 
     if (error) {
-      console.error('Error al cerrar sesión:', error.message);
-      this.sweetAlertService.showAlert('Error', 'No se pudo cerrar sesión', 'error');
-      return;
+      console.error('Error al obtener la sesión:', error.message);
+      return null;
     }
 
-    this.userLogueado = false;
-    this.sweetAlertService.showAlert('Sesión cerrada', 'Has cerrado sesión correctamente', 'success');
-    this.router.navigate(['/login']);
+    return data.session;
+  }
+
+  async cerrarSesion(): Promise<void> 
+  {
+  
+   if (await this.obtenerSesion())
+   {
+     const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error('Error al cerrar sesión:', error.message);
+        this.sweetAlertService.showAlert('Error', 'No se pudo cerrar sesión', 'error');
+        return;
+      }
+      
+      this.userLogueado = false;
+      localStorage.removeItem("usuarioLogueado");
+      //supabase.auth.signOut();
+      this.sweetAlertService.showAlert('Sesión cerrada', 'Has cerrado sesión correctamente', 'success');
+      
+   }
   }
 
   // metodo ppara verificar si el usurio es admin, mail:admin@admin.com

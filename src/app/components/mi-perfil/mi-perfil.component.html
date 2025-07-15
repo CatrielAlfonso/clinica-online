@@ -1,0 +1,319 @@
+<div class="contenedor-mi-perfil">
+    <div class="contenedor-info-mi-perfil mat-elevation-z8">
+        <h1>Mi perfil</h1>
+
+        <div *ngIf="this.obteniendoDatos" class="spinner-overlay">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">-</span>
+            </div>
+        </div>
+        
+        <div class="info" *ngIf="!this.obteniendoDatos && this.userService.rolUsuarioLogueado == 'Paciente'">
+            <div class="row">
+                <div class="col-3">
+                    <div class="campo-img mat-elevation-z8">
+                        <img src="{{this.miPerfil.imagen1}}" alt="" height="200px">
+                    </div>
+                    <div class="campo-img mat-elevation-z8 espaciado-t-x1">
+                        <img src="{{this.miPerfil.imagen2}}" alt="" height="200px">
+                    </div>
+                </div>
+
+                <div class="col-9 datos mat-elevation-z8">
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Nombre: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.nombre}} {{this.miPerfil.apellido}}</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Edad: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.edad}} años</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Documento: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.dni | formatearDni }}</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-5">
+                            <h3>Correo electrónico: </h3>
+                        </div>
+                        <div class="col-6">
+                            <h4>{{this.miPerfil.email}}</h4>
+                        </div>                   
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Rol: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.rol}}</h4>
+                        </div>                   
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Obra social: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.obraSocial}}</h4>
+                        </div>                    
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info" *ngIf="!this.obteniendoDatos && this.userService.rolUsuarioLogueado == 'Especialista'">
+            <div class="row">
+                <div class="col-3">
+                    <div class="campo-img-esp mat-elevation-z8 espaciado-t-x2">
+                        <img src="{{this.miPerfil.imagenPerfil}}" alt="" height="300px">
+                    </div>
+                </div>
+
+                <div class="col-9 datos">
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Nombre: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.nombre}} {{this.miPerfil.apellido}}</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Edad: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.edad}} años</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Documento: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.dni | formatearDni }}</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-5">
+                            <h3>Correo electrónico: </h3>
+                        </div>
+                        <div class="col-6">
+                            <h4>{{this.miPerfil.email}}</h4>
+                        </div>                   
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Rol: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.rol}}</h4>
+                        </div>                   
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Especialidad: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.especialidad}}</h4>
+                        </div>                    
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Mis horarios: </h3>
+                        </div>
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="col-4">    
+                                    <h4 style="text-align: start;">Lunes: </h4>
+                                </div>
+                                
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="desde (hh:mm)" [(ngModel)]="this.horarioInicioLunes">
+                                </div>
+
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="hasta (hh:mm)" [(ngModel)]="this.horarioFinLunes">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-4">    
+                                    <h4 style="text-align: start;">Martes: </h4>
+                                </div>
+                                
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="desde (hh:mm)" [(ngModel)]="this.horarioInicioMartes">
+                                </div>
+
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="hasta (hh:mm)" [(ngModel)]="this.horarioFinMartes">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-4">    
+                                    <h4 style="text-align: start;">Miércoles: </h4>
+                                </div>
+                                
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="desde (hh:mm)" [(ngModel)]="this.horarioInicioMiercoles">
+                                </div>
+
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="hasta (hh:mm)" [(ngModel)]="this.horarioFinMiercoles">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-4">    
+                                    <h4 style="text-align: start;">Jueves: </h4>
+                                </div>
+                                
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="desde (hh:mm)" [(ngModel)]="this.horarioInicioJueves">
+                                </div>
+
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="hasta (hh:mm)" [(ngModel)]="this.horarioFinJueves">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-4">    
+                                    <h4 style="text-align: start;">Viernes: </h4>
+                                </div>
+                                
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="desde (hh:mm)" [(ngModel)]="this.horarioInicioViernes">
+                                </div>
+
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="hasta (hh:mm)" [(ngModel)]="this.horarioFinViernes">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-4">    
+                                    <h4 style="text-align: start;">Sabado: </h4>
+                                </div>
+                                
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="desde (hh:mm)" [(ngModel)]="this.horarioInicioSabados">
+                                </div>
+
+                                <div class="col-3">    
+                                    <input type="text" class="form-control" placeholder="hasta (hh:mm)" [(ngModel)]="this.horarioFinSabados">
+                                </div>
+                            </div>
+                        </div>           
+                        
+                        <div class="col-5">
+
+                        </div>
+
+                        <div class="col-7">
+                            <button class="btn btn-primary" (click)="this.ActualizarHorarios()">Actualizar horarios</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info" *ngIf="!this.obteniendoDatos && this.userService.rolUsuarioLogueado == 'Administrador'">
+            <div class="row">
+                <div class="col-3">
+                    <div class="campo-img-adm mat-elevation-z8 espaciado-t-x2">
+                        <img src="{{this.miPerfil.imagen1}}" alt="" height="300px">
+                    </div>
+                </div>
+
+                <div class="col-9 datos">
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Nombre: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.nombre}} {{this.miPerfil.apellido}}</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Edad: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.edad}} años</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-4">
+                            <h3>Documento: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.dni | formatearDni }}</h4>
+                        </div>
+                    </div>
+
+                    <div class="row espaciado-x1">
+                        <div class="col-5">
+                            <h3>Correo electrónico: </h3>
+                        </div>
+                        <div class="col-6">
+                            <h4>{{this.miPerfil.email}}</h4>
+                        </div>                   
+                    </div>
+
+                    <div class="col-4">
+                            <div class="row espaciado-x1">
+                            <h3>Rol: </h3>
+                        </div>
+                        <div class="col-8">
+                            <h4>{{this.miPerfil.rol}}</h4>
+                        </div>                   
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contenedor-pdf espaciado-t-x1" *ngIf="this.userService.rolUsuarioLogueado == 'Paciente'">
+        <div class="btn-group me-3">
+            <button mat-flat-button (click)="this.ExportarHistoriaClinica(this.historiaClinicaPaciente)" type="button" class="btn btn-outline-success mat-elevation-z8">
+                <img src="/imgs/pdf.png" height="42px">
+                Descargar historia clínica.
+            </button>
+            
+            <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+                <button type="button" class="btn btn-primary" ngbDropdownToggle *ngIf="this.especialidadSeleccionada == ''">Especificar especialidad</button>
+                <button type="button" class="btn btn-primary" ngbDropdownToggle *ngIf="this.especialidadSeleccionada != ''">{{this.especialidadSeleccionada}}</button>
+                <div class="dropdown-menu" ngbDropdownMenu>
+                    <button ngbDropdownItem *ngFor="let especialidad of this.especialidadesObtenidas" (click)="this.especialidadSeleccionada = especialidad">{{especialidad}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

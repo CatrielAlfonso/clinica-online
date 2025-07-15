@@ -1,0 +1,98 @@
+<div class="contenedor-inicio">
+    <div class="contenedor-acciones mat-elevation-z8">
+        <!-- <h1>Bienvenido, {{this.nombreUsuario}}!</h1> -->
+        <div class="row">
+            <div class="col-md" *ngIf="this.userService.rolUsuarioLogueado == 'Paciente' || this.userService.rolUsuarioLogueado == 'Especialista'">
+                <div class="card mat-elevation-z8">
+                    <img src="/imgs/schedule.png">
+                    <div class="card__content">
+                        <p class="card__title">Mis turnos</p>
+
+                        <p class="card__description">
+                            Visualiza y administra tus turnos solicitados, teniendo la capacidad de cancelarlos, 
+                            realizar una encuesta y ver las reseñas de los turnos asistidos.
+                        </p>
+
+                        <button mat-button routerLink="/mis-turnos" style="width: 100%; margin-top: 1rem;">Ir allí.</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md" *ngIf="this.userService.rolUsuarioLogueado == 'Administrador'">
+                <div class="card mat-elevation-z8">
+                    <img src="/imgs/leader.png">
+                    <div class="card__content">
+                        <p class="card__title">Administración de usuarios.</p>
+
+                        <p class="card__description">
+                            Administra el acceso de los usuarios especialistas al sistema, muestra la 
+                            información acerca de los usuarios del sistema y genera nuevos usuarios.
+                        </p>
+
+                        <button mat-button routerLink="/administrador/panel-administracion-usuarios" style="width: 100%; margin-top: 1rem;">Ir allí.</button>
+                    </div>
+                </div>
+            </div>
+        <!-- </div> -->
+
+        <!-- <div class="row"> -->
+            <div class="col-md" *ngIf="this.userService.rolUsuarioLogueado == 'Paciente' || this.userService.rolUsuarioLogueado == 'Administrador'">
+                <div class="card mat-elevation-z8">
+                    <img src="/imgs/appointment.png">
+                    <div class="card__content">
+                        <p class="card__title">Solicitar turno</p>
+
+                        <p class="card__description">
+                            Solicita un turno para asistir a una consulta con nuestros especialistas!
+                        </p>
+                        
+                        <button mat-button routerLink="/solicitar-turno" style="width: 100%; margin-top: 1rem;">Ir allí.</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md" *ngIf="this.userService.rolUsuarioLogueado == 'Administrador'">
+                <div class="card mat-elevation-z8">
+                    <img src="/imgs/turnos-admin.png">
+                    <div class="card__content">
+                        <p class="card__title">Turnos.</p>
+                        <p class="card__description">
+                            Administra los turnos de los usuarios en el sistema.
+                        </p>
+                        <button mat-button routerLink="/administrador/turnos" style="width: 100%; margin-top: 1rem;">Ir allí.</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <div class="card mat-elevation-z8">
+                    <img src="/imgs/mi-cuenta.png">
+                    <div class="card__content">
+                        <p class="card__title">Mi perfil.</p>
+                        <p class="card__description" *ngIf="this.userService.rolUsuarioLogueado == 'Paciente'">
+                            Obten información acerca de tu perfil y tu historia clinica.
+                        </p>
+
+                        <p class="card__description" *ngIf="this.userService.rolUsuarioLogueado != 'Paciente'">
+                            Obten información acerca de tu perfil.
+                        </p>
+                        <button mat-button routerLink="/mi-perfil" style="width: 100%; margin-top: 1rem;">Ir allí.</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md" *ngIf="this.userService.rolUsuarioLogueado == 'Especialista'">
+                <div class="card mat-elevation-z8">
+                    <img src="/imgs/mis-pacientes.png">
+                    <div class="card__content">
+                        <p class="card__title">Mis pacientes.</p>
+                        <p class="card__description">
+                            Aquí puedes encontrar información acerca de tus pacientes, desde sus datos hasta su historia clínica!
+                        </p>
+                        <button mat-button routerLink="/mis-pacientes" style="width: 100%; margin-top: 1rem;">Ir allí.</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

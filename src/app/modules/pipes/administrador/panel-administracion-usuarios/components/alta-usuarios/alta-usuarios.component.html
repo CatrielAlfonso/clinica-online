@@ -17,7 +17,7 @@
                 <mat-radio-button value="Especialista">Especialista</mat-radio-button>
             </mat-radio-group>
 
-            <form [formGroup]="this.formPaciente" class="form-paciente" *ngIf="this.tipoUsuario == 'Paciente'" (ngSubmit)="this.RegistroPaciente()">
+            <form [formGroup]="this.formPaciente" class="form-paciente" *ngIf="this.tipoUsuario == 'Paciente'" (ngSubmit)="this.RegistroPacientes()">
                 <div class="row g-3">
                     <div class="col-sm-3">
                         <label for="nombre-paciente" class="form-label">Nombre</label>
