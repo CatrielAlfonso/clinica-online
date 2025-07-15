@@ -1,59 +1,71 @@
-# ClinicaOnline
+<!--  ──────────────────────────────────────────────────────────────────────────────
+     ClinicaOnline · README
+──────────────────────────────────────────────────────────────────────────────── -->
+<h1 align="center">
+  <img src="img/iconoClinica.png" height="80" alt="Logo de la clínica"/>
+  <br/>
+  ClíniCat&nbsp;Online
+</h1>
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.
+<p align="center">
+  <em>Turnos 100 % web · Pacientes · Especialistas · Administración</em>
+</p>
 
-## Development server
+<p align="center">
+  <a href="https://angular.dev"><img src="https://img.shields.io/badge/Angular-19.x‑20.x-c3002f?logo=angular&logoColor=white"/></a>
+  <a href="https://supabase.com"><img src="https://img.shields.io/badge/Supabase-Edge%20Functions‑Storage‑Realtime‑Auth-3ecf8e?logo=supabase&logoColor=white"/></a>
+  <img src="https://img.shields.io/github/license/tu‑usuario/ClinicaOnline"/>
+  <img src="https://img.shields.io/github/actions/workflow/status/tu‑usuario/ClinicaOnline/deploy.yml?label=CI/CD"/>
+</p>
 
-To start a local development server, run:
+---
+
+## 📑 Tabla de contenidos
+1. [Demo](#demo)
+2. [Características](#características)
+3. [Instalación rápida](#instalación-rápida)
+4. [Estructura de carpetas](#estructura-de-carpetas)
+5. [Comandos útiles](#comandos-útiles)
+6. [Integración Supabase](#integración-supabase)
+7. [Capturas](#capturas)
+8. [Contribuir](#contribuir)
+9. [Licencia](#licencia)
+
+---
+
+## 🎬 Demo
+
+<div align="center">
+  <img src="docs/img/demo‑light.gif" alt="Demo en funcionamiento" width="720"/>
+</div>
+
+---
+
+## ✨ Características
+
+| Módulo | Descripción |
+|--------|-------------|
+| **Pacientes** | Registro, verificación de e‑mail, carga de imágenes, turnos, encuestas, historia clínica PDF. |
+| **Especialistas** | Panel “Mis pacientes”, aprobación de turnos, ficha médica, valoración de consultas. |
+| **Administrador** | Habilitar/inhabilitar usuarios, ver dashboards de actividad y estadísticas diarias. |
+| **Auth** | Supabase Auth · Magic‑Link · Roles (`Paciente`, `Especialista`, `Admin`). |
+| **Storage** | Subida/descarga de imágenes a Buckets Supabase (drag & drop + progreso). |
+| **Rendimiento** | Lazy‑Loading de módulos, PWA Ready, build optimizado (< 400 kB transfer). |
+| **Accesibilidad** | i18n listo, temas claro/oscuro y fuente de alta legibilidad. |
+
+---
+
+## ⚡ Instalación rápida
 
 ```bash
-ng serve
-```
+git clone https://github.com/tu‑usuario/ClinicaOnline.git
+cd ClinicaOnline
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+# 1️⃣ Instalar dependencias
+npm ci        # o npm install --legacy-peer-deps
 
-## Code scaffolding
+# 2️⃣ Variables de entorno (API keys Supabase)
+cp .env.example .env             # completa url y anonKey
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+# 3️⃣ Servidor de desarrollo
+npm start    # abre http://localhost:4200
