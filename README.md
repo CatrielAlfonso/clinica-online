@@ -33,13 +33,30 @@
 
 ---
 
-## 🎬 Demo
+## 🎬 Bienvenida
 
 <div align="center">
-  <img src="docs/img/demo‑light.gif" alt="Demo en funcionamiento" width="720"/>
+  <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//bienvenida.jpg" alt="Bienvenida" width="720"/>
 </div>
 
 ---
+
+## 🎬 Registros
+
+<div align="center">
+  <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//registros.jpg" alt="Registros" width="720"/>
+</div>
+
+---
+## 🎬 Admin
+
+<div align="center">
+  <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//admin.jpg" alt="Admin" width="720"/>
+</div>
+
+---
+
+
 
 ## ✨ Características
 
