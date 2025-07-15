@@ -2,7 +2,7 @@
      ClinicaOnline · README
 ──────────────────────────────────────────────────────────────────────────────── -->
 <h1 align="center">
-  <img src="img/iconoClinica.png" height="80" alt="Logo de la clínica"/>
+  <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//gatito.png" height="80" alt="Logo de la clínica"/>
   <br/>
   ClíniCat&nbsp;Online
 </h1>
