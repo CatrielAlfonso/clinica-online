@@ -5,4 +5,7 @@ export const environment = {
     apiPreguntadosUrl:'https://api.quiz-contest.xyz/questions?limit=10&page=1&category=geography',
     preguntadosApiKey:'$2b$12$hzT0VzdvK4uCblJshlp9iu5pMhBOtPuw7RS0ROVf2Z0tJJJocBHzC',
     pexelsApiKey:'JJgMqAcP6WCuBqGLweZBTfplhfNLQNufJ98VAL0HTgtHmMGQSJxo4YKP',
+    
 };
+
+

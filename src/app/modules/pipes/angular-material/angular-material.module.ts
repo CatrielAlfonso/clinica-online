@@ -24,11 +24,13 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatHint } from '@angular/material/form-field';
 import { MatRadioModule } from '@angular/material/radio'
+import { NgModel } from '@angular/forms';
 
 @NgModule({
   declarations: [],
   imports: [
     // BrowserAnimationsModule,  // Importante para las animaciones
+    
     CommonModule,
     MatDialogModule,
     MatButtonModule,
@@ -54,6 +56,7 @@ import { MatRadioModule } from '@angular/material/radio'
     MatRadioModule
   ],
   exports: [
+    
     CommonModule,
     MatDialogModule,
     MatButtonModule,

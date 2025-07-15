@@ -123,6 +123,8 @@ export class AuthService {
     }
   }
 
+
+
   async GuardarContenido(tabla: string, datos: any): Promise<void> {
     try {
       const registros = Array.isArray(datos) ? datos : [datos];
@@ -257,6 +259,70 @@ export class AuthService {
     return { huboError: false, mensajeExito: 'Usuario registrado correctamente' };
   }
 
+  async registrarUser(
+    dto: {
+      email: string;
+      clave: string;
+      nombre:  string;
+      apellido?: string;
+      edad?:     number;
+      dni?:      number;
+      rol?:      'Paciente' | 'Especialista';
+      aprobado?: boolean;
+      obraSocial?: string;
+      especialidad?: string;
+      imagen1?: string;
+      imagen2?: string;
+    }
+  ): Promise<authResponse>
+  {
+    try {
+      /* 1️⃣ Alta en Supabase Auth */
+      const { data, error } = await supabase.auth.signUp({
+        email: dto.email,
+        password: dto.clave,
+        options: { data: { nombre: dto.nombre } }   // user_metadata opcional
+      });
+
+      if (error) {
+        return { huboError: true, mensajeError: error.message };
+      }
+
+      // /* 2️⃣ Alta en tu tabla “users” */
+      // const perfil = {
+      //   auth_id:        data.user?.id,       // FK ► tabla auth
+      //   nombre:         dto.nombre,
+      //   apellido:       dto.apellido ?? '',
+      //   edad:           dto.edad ?? null,
+      //   dni:            dto.dni ?? null,
+      //   rol:            dto.rol ?? 'Paciente',
+      //   obraSocial:    dto.obraSocial ?? null,
+      //   especialidad:   dto.especialidad ?? null,
+      //   aprobado:       dto.aprobado,
+      //   imagen1:        dto.imagen1 ?? null,
+      //   imagen2:        dto.imagen2 ?? null,
+      //   email:          dto.email
+      // };
+
+      // const { error: insertError } = await supabase
+      //   .from('usuarios')          // ← tu tabla de perfiles
+      //   .insert(perfil);
+
+      // if (insertError) {
+      //   // si acá falla, podría quedarte un usuario “huérfano” en auth
+      //   return { huboError: true, mensajeError: insertError.message };
+      // }
+
+      return {
+        huboError:     false,
+        mensajeExito: `Registro exitoso, revisá tu correo para confirmar la cuenta`
+      };
+
+    } catch (err: any) {
+      return { huboError: true, mensajeError: err.message };
+    }
+  }
+
   async LogOut() {
     supabase.auth.signOut().then(() => {
       this.userLogueado = false;
@@ -353,7 +419,11 @@ export class AuthService {
     return data;
   }
 
-   async saveUserData(user: any, name?: string) {
+   async saveUserData(user: any, name?: string, apellido?:string, edad?:number, dni?:number,
+                      rol?: string, obra_social?:string, email?:string,aprobado?:boolean,
+                      imagen1?:string, imagen2?:string, especialidad?:string
+
+   ) {
 
       const userData = {
         authId: user.id,
@@ -377,18 +447,5 @@ export class AuthService {
       console.log('✅ Datos del usuario guardados correctamente:', data);
       this.router.navigate(['/home']);
 
-
-      // supabase.from('user-data').insert([userData]).then(({ data, error }) => {
-      //   if (error) {
-      //     this.mensajeError = 'Error al guardar los datos del usuario: ' + error;
-      //     this.sweetAlertService.showAlert('Error', error.message, 'error');
-      //     //console.error('Error:', error.message);
-      //   } else {
-      //     // this.mensajeError = '';
-      //     this.sweetAlertService.showAlert('Éxito', 'Datos del usuario guardados correctamente', 'success');
-      //     console.log('✅ Datos del usuario guardados correctamente:', data);
-      //     this.router.navigate(['/home']);
-      //   }
-      // });
     }
 }
