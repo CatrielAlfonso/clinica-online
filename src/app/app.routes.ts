@@ -13,19 +13,16 @@ import { InicioSesionComponent } from './components/inicio-sesion/inicio-sesion.
 export const routes: Routes = [
 
     {path: '', redirectTo: 'bienvenida', pathMatch: 'full'},
-
-    //{path: 'bienvenida', loadComponent: () => import('./components/bienvenida/bienvenida.component').then(m => m.BienvenidaComponent)},    
     { path: 'bienvenida', component: BienvenidaComponent, data: {animation: 'LandingPage'} },
-    {path: 'home', loadComponent: () => import('./components/home/home.component').then(m => m.HomeComponent)},
     /**cuando implementar lazy loading */ 
     {path: 'inicio-sesion', component: InicioSesionComponent, data: { animation: 'IngresoPage'}},
     {path: 'registro', component: RegistroComponent, data: { animation: 'RegistroPage'} },
     { path: 'inicio',component: InicioComponent,canActivate: [usuarioLogueadoGuard] }, 
     { path: "mi-perfil", component: MiPerfilComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
-  { path: "solicitar-turno", component: AltaTurnoComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
-  { path: "mis-turnos", component: MisTurnosComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
-  { path: "mis-pacientes", component: MisPacientesComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
-  { path: "error", loadChildren: () => import('./modules/pipes/error/error.module').then(m => m.ErrorModule) },
-  { path: "administrador", loadChildren: () => import('./modules/pipes/administrador/administrador.module').then(m => m.AdministradorModule) },
+    { path: "solicitar-turno", component: AltaTurnoComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
+    { path: "mis-turnos", component: MisTurnosComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
+    { path: "mis-pacientes", component: MisPacientesComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
+    { path: "error", loadChildren: () => import('./modules/pipes/error/error.module').then(m => m.ErrorModule) },
+    { path: "administrador", loadChildren: () => import('./modules/pipes/administrador/administrador.module').then(m => m.AdministradorModule) },
 
 ];

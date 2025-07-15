@@ -2,6 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { SupabaseDataService } from '../../../../../../services/supabase-data.service';
 import { Subscription } from 'rxjs';
 import * as ExcelJS from 'exceljs';
+import { AuthService } from '../../../../../../services/auth.service';
 
 
 @Component({
@@ -11,7 +12,7 @@ import * as ExcelJS from 'exceljs';
   standalone: false,
 })
 export class InformacionUsuariosComponent implements OnInit, OnDestroy{
-  supaBaseDataService = inject(SupabaseDataService);
+  supaBaseDataService = inject(AuthService);
 
   usuarios: any[] = [];
   especialistas: any[] = [];
@@ -58,7 +59,7 @@ export class InformacionUsuariosComponent implements OnInit, OnDestroy{
       this.actualizandoDatos = true;
 
       try {
-        const usuariosObtenidos = await this.supaBaseDataService.obtenerContenido("Usuarios");
+        const usuariosObtenidos = await this.supaBaseDataService.obtenerContenido("usuarios");
         this.usuarios = usuariosObtenidos;
       } catch (error) {
         console.error("Error al obtener usuarios:", error);
@@ -109,11 +110,11 @@ export class InformacionUsuariosComponent implements OnInit, OnDestroy{
   ];
 
   // 🔍 Obtener turnos del paciente
-  const turnos = await this.supaBaseDataService.obtenerContenido("Turnos");
+  const turnos = await this.supaBaseDataService.obtenerContenido("turnos");
   const turnosPacienteObtenidos = turnos.filter(t => t.dniPaciente === paciente.dni);
 
   // 🔍 Obtener todos los usuarios (para buscar los especialistas)
-  const usuarios = await this.supaBaseDataService.obtenerContenido("Usuarios");
+  const usuarios = await this.supaBaseDataService.obtenerContenido("usuarios");
 
   // 🔁 Relacionar turnos con nombre del especialista
   for (const turno of turnosPacienteObtenidos) {

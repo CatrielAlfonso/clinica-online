@@ -322,7 +322,7 @@ export class AltaTurnoComponent implements OnInit, OnDestroy {
 
       console.log(objetoTurno);
 
-      this.firestoreService.GuardarContenido("Turnos", objetoTurno);
+      this.firestoreService.GuardarContenido("turnos", objetoTurno);
       this.swalService.LanzarAlert("Turno agendado exitosamente!", "success", "El turno fue agendado y queda a la espera de la aprobación por parte del especialista. Puedes ver tu turno en la sección 'Mis turnos'!");
       this.formPaciente.reset();
       this.formAdministrador.reset();

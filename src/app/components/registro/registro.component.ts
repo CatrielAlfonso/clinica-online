@@ -7,7 +7,7 @@ import { SweetAlertService } from '../../services/sweet-alert.service';
 import { SupabaseStorageService } from '../../services/supabase-storage.service';
 import { SupabaseService } from '../../services/supabase.service';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgModel } from '@angular/forms';
 import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
@@ -15,7 +15,7 @@ import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
 
 @Component({
   selector: 'app-registro',
-  imports: [FormsModule,CommonModule, AngularMaterialModule, ReactiveFormsModule, RecaptchaModule],
+  imports: [FormsModule,CommonModule, AngularMaterialModule, ReactiveFormsModule, RecaptchaModule, RouterLink],
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css'
 })
@@ -68,7 +68,7 @@ export class RegistroComponent {
       especialidad: ['', Validators.required],
       email: ['', [Validators.required,]], 
       clave: ['', [Validators.required,]], 
-      imagenPerfil: [null, [Validators.required,]] 
+      imagen1: [null, [Validators.required,]] 
     });
     this.especialidadSeleccionada = "";
     this.mensajeImagen1 = "Haga click para subir la imagen 1."
@@ -235,29 +235,30 @@ export class RegistroComponent {
     {
       this.subiendoDatos = true;
       const { nombre, apellido, edad, dni, especialidad, email, clave} = this.formEspecialista.value;
-      const estadoRegistro: authResponse = await this.authService.registrarUsuario(email, clave);
+      const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Especialista', especialidad:especialidad,imagen1:''});
     
       if(!estadoRegistro.huboError) 
       {
-        await this.storageService.guardarImagen('img',`especialistas/${email}/imagenPerfil.jpg`, this.archivoImagenPerfil);
+        await this.storageService.guardarImagen('especialistas',`${email}/imagen1.jpg`, this.archivoImagenPerfil);
         // ---- Promesa que se resuelve después de 2 segundos para aguardar a que se guarde el contenido en fireStorage.
         await new Promise(resolve => setTimeout(resolve, 2500));
 
-        const urlDescargaImgPerfil = await this.storageService.obtenerUrlDescarga('img',`Especialistas/${email}/imagenPerfil.jpg`);
-        
+        const urlDescargaImgPerfil = await this.storageService.obtenerUrlDescarga('especialistas',`${email}/imagen1.jpg`);        
+
         const objetoEspecialista = {
           nombre: nombre,
           apellido: apellido,
           edad: edad,
           dni: dni,
-          especialidades: especialidad,
+          especialidad: especialidad,
           email: email,
-          imagenPerfil: urlDescargaImgPerfil,
+          imagen1: urlDescargaImgPerfil,
           rol: "Especialista",
           habilitado: false
         };
 
-        this.authService.guardarContenido("users", objetoEspecialista);
+        this.authService.guardarContenido("usuarios", objetoEspecialista);
         await this.swalService.LanzarAlert("Registro del especialista exitoso!", "success", estadoRegistro.mensajeExito);
         this.router.navigateByUrl("/bienvenida");
       }

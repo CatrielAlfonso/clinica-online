@@ -245,7 +245,7 @@
                 <div class="row g-3">
                     <div class="col"></div>
                     <div class="col">
-                        <label class="custum-file-upload" for="imagenPerfil">
+                        <label class="custum-file-upload" for="imagen1">
                             <div class="icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24">
                                     <g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g>
@@ -258,9 +258,9 @@
                                <span>{{ this.mensajeImagenPerfil }}</span>
                             </div>
                             
-                            <input type="file" accept="image/*" class="form-control" id="imagenPerfil" placeholder="Ingrese una imagen" formControlName="imagenPerfil" (change)="this.onArchivoSeleccionado($event)">
+                            <input type="file" accept="image/*" class="form-control" id="imagen1" placeholder="Ingrese una imagen" formControlName="imagen1" (change)="this.onArchivoSeleccionado($event)">
                         </label>
-                        <div *ngIf="formEspecialista.get('imagenPerfil')?.invalid && formEspecialista.get('imagenPerfil')?.touched" class="text-danger">
+                        <div *ngIf="formEspecialista.get('imagen1')?.invalid && formEspecialista.get('imagen1')?.touched" class="text-danger">
                           El ingreso de la imagen es obligatorio.
                       </div>
                     </div>  

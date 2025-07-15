@@ -2,6 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { SupabaseDataService } from '../../../../../../services/supabase-data.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../../../../../services/auth.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -9,10 +10,12 @@ import html2canvas from 'html2canvas';
   selector: 'app-estadisticas',
   templateUrl: './estadisticas.component.html',
   styleUrl: './estadisticas.component.scss',
+  
   standalone: false,
 })
 export class EstadisticasComponent implements OnInit, OnDestroy {
   supabaseDataService = inject(SupabaseDataService);
+  authService = inject(AuthService);
 
   chartTurnosPorEspecialidad: any;
   chartTurnosPorDia: any;
@@ -50,9 +53,9 @@ export class EstadisticasComponent implements OnInit, OnDestroy {
  async RealizarLecturas(): Promise<void> {
   try {
     const [usuarios, turnos, ingresos] = await Promise.all([
-      this.supabaseDataService.obtenerContenido("Usuarios"),
-      this.supabaseDataService.obtenerContenido("Turnos"),
-      this.supabaseDataService.obtenerContenido("Ingresos")
+      this.authService.obtenerContenido("usuarios"),
+      this.authService.obtenerContenido("turnos"),
+      this.authService.obtenerContenido("ingresos")
     ]);
 
     this.usuariosObtenidos = usuarios;

@@ -29,7 +29,7 @@
         <td>{{ especialistaHabilitado.especialidad }}</td>
         <td>{{ especialistaHabilitado.email }}</td>
         <td>{{ especialistaHabilitado.habilitado | asignarEstado }}</td>
-        <td><img src="{{ especialistaHabilitado.imagenPerfil}}" height="30px" width="30px"></td>
+        <td><img src="{{ especialistaHabilitado.imagen1}}" height="30px" width="30px"></td>
         <td><button class="btn btn-danger" (click)="this.CambiarAutorizacionEspecialista(especialistaHabilitado, false)">Desautorizar</button></td>
       </tr>
     </tbody>
@@ -59,7 +59,7 @@
         <td>{{ especialistaNoHabilitado.especialidad }}</td>
         <td>{{ especialistaNoHabilitado.email }}</td>
         <td>{{ especialistaNoHabilitado.habilitado | asignarEstado }}</td>
-        <td><img src="{{ especialistaNoHabilitado.imagenPerfil }}" height="30px" width="30px"></td>
+        <td><img src="{{ especialistaNoHabilitado.imagen1 }}" height="30px" width="30px"></td>
         <td><button class="btn btn-success" (click)="this.CambiarAutorizacionEspecialista(especialistaNoHabilitado, true)">Autorizar</button></td>
       </tr>
     </tbody>

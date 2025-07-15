@@ -160,10 +160,12 @@ export class AuthService {
       if (error) {
         console.error(`❌ Error al guardar datos en la tabla ${tabla}:`, error.message);
       } else {
-        console.log(`✅ Datos guardados en la tabla '${tabla}':`, registros);
+        this.sweetAlertService.showAlert('✅ Datos guardados en la tabla ', tabla , 'success');
+        // console.log(`✅ Datos guardados en la tabla '${tabla}':`, registros);
       }
     } catch (error: any) {
-      console.error(`❌ Excepción al guardar en ${tabla}:`, error.message);
+      this.sweetAlertService.showAlert('Error',error.message,'error');
+      //console.error(`❌ Excepción al guardar en ${tabla}:`, error.message);
     } 
 }
 

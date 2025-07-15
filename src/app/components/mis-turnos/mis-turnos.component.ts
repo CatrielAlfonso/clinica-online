@@ -10,12 +10,15 @@ import { UserService } from '../../services/user.service';
 import { SupabaseStorageService } from '../../services/supabase-storage.service';
 import { CommonModule } from '@angular/common';
 import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
+import { AngularMaterialModule } from '../../modules/pipes/angular-material/angular-material.module';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatSliderModule } from '@angular/material/slider';
 
 @Component({
   selector: 'app-mis-turnos',
   templateUrl: './mis-turnos.component.html',
   styleUrl: './mis-turnos.component.scss',
-  imports:[CommonModule,FormsModule, PipesModule]
+  imports:[CommonModule,FormsModule, PipesModule, MatSliderModule]
 })
 export class MisTurnosComponent implements OnInit, OnDestroy {
   userService = inject(UserService);
@@ -30,9 +33,17 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   subscripciones: Subscription = new Subscription();
   subscripcionObtenerTurnos = new Subscription()
 
-  rating = 6;
+  rating = 0;
   hover =0;
   stars:number[]=Array(10);
+
+  formatLabel(value: number): string {
+    if (this.rating >= 10) {
+      return Math.round(this.rating / 1) + 'k';
+    }
+
+    return `${this.rating}`;
+  }
 
   setRating(value:number)
   {

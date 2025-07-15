@@ -34,6 +34,12 @@ export class HeaderComponent {
 
 	ngOnInit(): void 
 	{	}
+  
+  // ngOnChanges(): void
+  // {
+  //   this.ObtenerNombreUsuario();
+  //   this.userService.ObtenerDatosUsuarioLogueado();
+  // }
 
   async ObtenerNombreUsuario()
   {
@@ -48,7 +54,7 @@ export class HeaderComponent {
     if(respuesta)
     {
       this.authService.cerrarSesion();
-      this.router.navigateByUrl("ingreso");
+      this.router.navigateByUrl("inicio-sesion");
     }
   }
 

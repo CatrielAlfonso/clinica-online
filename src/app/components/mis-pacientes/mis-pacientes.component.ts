@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewCh
 //import { authResponse, AuthService } from '../../services/firebase/auth.service';
 import { Router } from '@angular/router';
 //import { FirestoreService } from '../../services/firebase/firestore.service';
-import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup,  Validators } from '@angular/forms';
 //import { StorageService } from '../../services/firebase/storage.service';
 //import { UserService } from '../../services/data/user.service';
 import { Turno } from '../../interfaces/ITurno';
@@ -19,7 +19,7 @@ import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
   selector: 'app-mis-pacientes',
   templateUrl: './mis-pacientes.component.html',
   styleUrl: './mis-pacientes.component.scss',
-  imports: [CommonModule, FormsModule, PipesModule],
+  imports: [CommonModule, PipesModule],
 })
 export class MisPacientesComponent implements OnInit, OnDestroy {
   userService = inject(UserService);

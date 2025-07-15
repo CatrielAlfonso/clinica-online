@@ -74,11 +74,11 @@ export class InicioSesionComponent {
       for(const usuario of usuarios)
       {
         if(usuario.email == "catrielalfonso77@gmail.com") { this.Admin1 = { correo: usuario.email, clave: "123456", imagen: usuario.imagen1, nombre: usuario.nombre }; }
-        else if(usuario.email == "esp.thonic@hotmail.com") { this.Especialista1 = { correo: usuario.email, clave: "Especialista", imagen: usuario.imagen1, nombre: usuario.nombre }; }
-        else if(usuario.email == "hivawim430@aqqor.com") { this.Especialista2 = { correo: usuario.email, clave: "Probando", imagen: usuario.imagen1, nombre: usuario.nombre }; }
-        else if(usuario.email == "tanedis536@opposir.com") { this.Paciente1 = { correo: usuario.email, clave: "Paciente", imagen: usuario.imagen1, nombre: usuario.nombre }; }
-        else if(usuario.email == "molese3101@lineacr.com") { this.Paciente2 = { correo: usuario.email, clave: "Paciente", imagen: usuario.imagen1, nombre: usuario.nombre }; }
-        else if(usuario.email == "pac.thonic@outlook.com.ar") { this.Paciente3 = { correo: usuario.email, clave: "Paciente", imagen: usuario.imagen1, nombre: usuario.nombre }; }
+        else if(usuario.email == "bondilentes.bl@gmail.com") { this.Especialista1 = { correo: usuario.email, clave: "123456", imagen: usuario.imagen1, nombre: usuario.nombre }; }
+        else if(usuario.email == "fomopo4864@lhory.com") { this.Especialista2 = { correo: usuario.email, clave: "123456", imagen: usuario.imagen1, nombre: usuario.nombre }; }
+        else if(usuario.email == "llnxs5cqif@qacmjeq.com") { this.Paciente1 = { correo: usuario.email, clave: "123456", imagen: usuario.imagen1, nombre: usuario.nombre }; }
+        else if(usuario.email == "courageous.stingray.cwdl@letterprotect.net") { this.Paciente2 = { correo: usuario.email, clave: "graciasTotales", imagen: usuario.imagen1, nombre: usuario.nombre }; }
+        else if(usuario.email == "enzofernandes@bltiwd.com") { this.Paciente3 = { correo: usuario.email, clave: "chelsea", imagen: usuario.imagen1, nombre: usuario.nombre }; }
       }
     })
   }

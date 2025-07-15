@@ -55,7 +55,7 @@ export class AppComponent {
 
 	EstoyEnIngreso(): boolean
 	{
-		if(this.router.url == "/ingreso") { return true; }
+		if(this.router.url == "/inicio-sesion") { return true; }
 		return false;
 	}
 
@@ -67,7 +67,7 @@ export class AppComponent {
 
   EstoyEnLandingPage(): boolean
 	{
-		if(this.router.url == "/landing") { return true; }
+		if(this.router.url == "/bienvenida") { return true; }
 		return false;
 	}
 

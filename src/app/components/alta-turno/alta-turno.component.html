@@ -99,7 +99,7 @@
                             <button type="button" class="btn-especialistas" id="{{especialista.dni | formatearDni }}" (click)="this.AsignarEspecialista(especialista)">
                                 {{especialista.nombre | acortarNombre }} {{especialista.apellido}}
                                 <br>
-                                <img src="{{especialista.imagenPerfil}}" alt="" height="64px">
+                                <img src="{{especialista.imagen1}}" alt="" height="64px">
                             </button>
                         </div>
                         <p *ngIf="this.especialistaSeleccionado">Especialista seleccionado: {{this.especialistaSeleccionado.nombre}}</p>

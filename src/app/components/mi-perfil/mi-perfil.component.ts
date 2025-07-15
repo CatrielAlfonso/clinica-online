@@ -66,7 +66,7 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
   async ngOnInit(): Promise<void> {
     this.miPerfil = await this.userService.ObtenerDatosUsuarioLogueado();   
 
-    const subHistorias = this.authService.obtenerContenidoAsObservable("historias").subscribe(historias => {
+    const subHistorias = this.authService.obtenerContenidoAsObservable("historiasclinicas").subscribe(historias => {
       console.log(this.miPerfil.dni);
       for(const historia of historias)
       {
@@ -322,7 +322,7 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
       especialidad: this.miPerfil.especialidad,
       rol: this.miPerfil.rol,
       horariosDisponibles: objetoHorarios,
-      imagenPerfil: this.miPerfil.imagenPerfil,
+      imagen1: this.miPerfil.imagen1,
       habilitado: true,
     }
 
@@ -337,7 +337,7 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
     const fecha = new Date();
 
     const logoClinica = new Image();
-    logoClinica.src = "/imgs/icono.png";
+    logoClinica.src = "/imgs/catclinic.png";
 
     const anchoPagina: number = doc.internal.pageSize.getWidth();
 

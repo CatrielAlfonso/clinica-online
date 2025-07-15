@@ -42,7 +42,7 @@
                         <td>{{turno.horario}}</td>
                         <td>{{turno.nombreEspecialista | acortarNombre }} {{turno.apellidoEspecialista}}</td>
                         <td>{{turno.especialidadEspecialista}}</td>
-                        <td><img src="{{turno.imagenPerfilEspecialista}}" height="64px"></td>
+                        <td><img src="{{turno.imagen1}}" height="64px"></td>
                         <td>{{turno.estado}}</td>
                         <!-- <td>{{turno.mensajeEstado}}</td> -->
                         <td>
@@ -294,12 +294,11 @@
                 <p>Del 1 al 10, ¿Cómo te trató {{turnoSeleccionado.nombreEspecialista | acortarNombre}} durante la consulta?</p>
                 
                 <!-- ★★★★★ – puedes poner 10 si quieres valores 1‑10 -->
-                <mat-slider min="1" max="10" step="1"
-                    thumbLabel tickInterval="1"
-                    [(ngModel)]="rating">
+                <mat-slider min="0" max="10" step="1" showTickMarks discrete [displayWith]="formatLabel">
+                    <input matSliderThumb>
                 </mat-slider>       
                 
-                <pre>Me trató de: <b>{{ rating }}</b> puntos!</pre>
+                <pre>Me trató de: <b>{{ this.rating }}</b> puntos!</pre>
                 <hr />
             </div>
             
