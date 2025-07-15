@@ -30,6 +30,16 @@
     -webkit-animation:bg-pan-right 20s linear infinite alternate-reverse both;animation:bg-pan-right 20s linear infinite alternate-reverse both;
 }
 
+.star {
+  font-size: 24px;
+  cursor: pointer;
+  color: #ccc;
+  transition: color .2s;
+  user-select: none;
+}
+.star.filled {
+  color: #ffc107;                /* dorado */
+}
 
 .contenedor-tabla {
     padding: 1rem;

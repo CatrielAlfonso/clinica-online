@@ -13,12 +13,17 @@ import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AgrandarOnHoverDirective } from '../../directives/agrandar-on-hover.directive';
+import { DeshabilitarOnClickDirective } from '../../directives/deshabilitar-on-click.directive';
+import { ResaltarOnHoverDirective } from '../../directives/resaltar-on-hover.directive';
 
 @Component({
   selector: 'app-alta-turno',
   templateUrl: './alta-turno.component.html',
   styleUrl: './alta-turno.component.scss',
-  imports: [FormsModule,CommonModule, PipesModule, ReactiveFormsModule],
+  imports: [FormsModule,CommonModule, PipesModule, ReactiveFormsModule, AgrandarOnHoverDirective, DeshabilitarOnClickDirective,
+    ResaltarOnHoverDirective
+  ],
   encapsulation: ViewEncapsulation.None, // Desactiva el encapsulamiento de estilos para modificar mat-radio-button
 })
 export class AltaTurnoComponent implements OnInit, OnDestroy {

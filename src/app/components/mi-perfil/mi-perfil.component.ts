@@ -335,25 +335,34 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
   {
     const doc = new jsPDF();
     const fecha = new Date();
-
+    const margenIzquierdo = 20;
+    const margenSuperior = 20;
+    const espacioEntreLineas = 10;
     const logoClinica = new Image();
-    logoClinica.src = "/imgs/catclinic.png";
+    logoClinica.src = "/imgs/iconoClinica.png";
+    let y = 50;
 
     const anchoPagina: number = doc.internal.pageSize.getWidth();
 
+    doc.addImage(logoClinica, "png", anchoPagina - 55, 7, 30, 20);
     doc.setFontSize(32);
-    doc.text("Historia clínica", (anchoPagina / 2) - 40, 20);
-    doc.addImage(logoClinica, "png", 5, 40, 200, 100);
+    doc.setFont("helvetica", "bold");
+    doc.text("Mi Historia clínica", anchoPagina / 2, 20, { align: "center" });
+    doc.setDrawColor(0); // negro
+    doc.line(20, 35, anchoPagina - 20, 35);
 
-    doc.setFontSize(24);
-    doc.text(`Paciente: ${historiaClinicaPaciente.nombrePaciente}`, 10, 160);
-    doc.text(`Edad: ${historiaClinicaPaciente.edadPaciente}`, 10, 180);
-    doc.text(`Documento: ${historiaClinicaPaciente.dniPaciente}`, 10, 200);
-    doc.text(`Visitas al ${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}: ${historiaClinicaPaciente.visitas.length} visitas`, 10, 220);
+    doc.setFontSize(14);
+    doc.text(`Paciente: ${historiaClinicaPaciente.nombrePaciente}`, 10, y);
+    y += espacioEntreLineas;
+    doc.text(`Edad: ${historiaClinicaPaciente.edadPaciente}`, margenIzquierdo, y);
+    y += espacioEntreLineas;
+    doc.text(`Documento: ${historiaClinicaPaciente.dniPaciente}`, margenIzquierdo, y);
+    y += espacioEntreLineas;
+    doc.text(`Visitas al ${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}: ${historiaClinicaPaciente.visitas.length} visitas`, margenIzquierdo, y);
 
     let pagina: number = 1;
 
-    doc.text(`${pagina}`, anchoPagina / 2, 290);
+    doc.text(`${pagina}`, anchoPagina / 2 , 290);
 
     for(const visita of historiaClinicaPaciente.visitas)
     {
@@ -361,18 +370,22 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
       {
         doc.addPage();
         pagina = pagina + 1;
-        doc.text(`Fecha de visita: ${visita.fechaVisita}`, 20, 20);
-        doc.text(`Horario de visita: ${visita.horarioVisita}`, 20, 40);
-        doc.text(`Especialidad visitada: ${visita.especialidadVisitada}`, 20, 60);
-        doc.text(`Especialista visitado: ${visita.nombreEspecialista}`, 20, 80);
-        doc.text(`Dni especialista: ${visita.dniEspecialista}`, 20, 100);
-        doc.text(`Altura del paciente: ${visita.alturaPaciente}`, 20, 120);
-        doc.text(`Peso del paciente: ${visita.pesoPaciente}`, 20, 140);
-        doc.text(`Temperatura del paciente: ${visita.temperaturaPaciente}`, 20, 160);
-        doc.text(`Presion del paciente: ${visita.presionPaciente}`, 20, 180);
-        doc.text(`Diagnóstico: ${visita.diagnosticoPaciente}`, 20, 200);
+        
+        doc.setFont('PTSans', 'bold')
+        doc.text("VISITAS",anchoPagina / 2 ,20,{ align: "center" });
+        doc.setFont("helvetica", "bold");
+        doc.text(`Fecha de visita: ${visita.fechaVisita}`, 20, 40);
+        doc.text(`Horario de visita: ${visita.horarioVisita}`, 20, 60);
+        doc.text(`Especialidad visitada: ${visita.especialidadVisitada}`, 20, 80);
+        doc.text(`Especialista visitado: ${visita.nombreEspecialista}`, 20, 100);
+        doc.text(`Dni especialista: ${visita.dniEspecialista}`, 20, 120);
+        doc.text(`Altura del paciente: ${visita.alturaPaciente}`, 20, 140);
+        doc.text(`Peso del paciente: ${visita.pesoPaciente}`, 20, 160);
+        doc.text(`Temperatura del paciente: ${visita.temperaturaPaciente}`, 20, 180);
+        doc.text(`Presion del paciente: ${visita.presionPaciente}`, 20, 200);
+        doc.text(`Diagnóstico: ${visita.diagnosticoPaciente}`, 20, 220);
         const textoSpliteado = doc.splitTextToSize(`Detalle del diagnóstico: ${visita.detalleDiagnosticoPaciente}`, anchoPagina - 20);
-        doc.text(textoSpliteado, 20, 220);
+        doc.text(textoSpliteado, 20, 240);
 
         doc.text(`${pagina}`, anchoPagina / 2, 290);
       }

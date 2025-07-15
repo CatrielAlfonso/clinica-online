@@ -11,6 +11,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgModel } from '@angular/forms';
 import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
+import { CaptchaDirective } from '../../directives/captcha.directive';
 
 
 @Component({
@@ -42,6 +43,8 @@ export class RegistroComponent {
   token: string|undefined;
   //--- ReCaptchaV2 (Traido de tesys) ---//
   captchaResponse:any = null;
+  captchaOK = false;
+
 
   constructor() 
   {

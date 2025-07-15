@@ -57,7 +57,7 @@ export class AltaUsuariosComponent {
       especialidad: ['', Validators.required],
       email: ['', [Validators.required,]], 
       clave: ['', [Validators.required,]], 
-      imagenPerfil: [null, [Validators.required,]] 
+      imagen1: [null, [Validators.required,]] 
     });
     this.especialidadSeleccionada = "";
     this.mensajeImagen1 = "Haga click para subir la imagen 1."
@@ -101,7 +101,7 @@ export class AltaUsuariosComponent {
     if(!estadoRegistro.huboError) 
     {
       await this.swalService.LanzarAlert("Registro exitoso!", "success", estadoRegistro.mensajeExito);
-      this.router.navigateByUrl("/landing");
+      this.router.navigateByUrl("/bienvenida");
     }
     else { this.swalService.LanzarAlert("Error en el registro!", "error", estadoRegistro.mensajeError); }
   }
@@ -146,76 +146,47 @@ export class AltaUsuariosComponent {
   //   }
   // }
 
-  async RegistroPacientes() 
+  async RegistroPaciente()
   {
-
     this.subiendoDatos = true;
 
-    /* ‑‑ Validaciones básicas */
-    if (!this.formPaciente.valid || !this.archivoImagen1 || !this.archivoImagen2) {
-      this.swalService.LanzarAlert('Faltan datos', 'error',
-        'Completá el formulario y subí las dos imágenes');
+    if(this.formPaciente.valid && this.archivoImagen1 && this.archivoImagen2)
+    {
+      const { nombre, apellido, edad, dni, obraSocial, email, clave} = this.formPaciente.value;
+      const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidad:'',imagen1:'',imagen2:''});
+        //const resp = await this.authService.registrarUser({ email:email, clave: clave, nombre:nombre });                                                                         
+      if(!estadoRegistro.huboError) 
+      {
+        await this.storageService.guardarImagen('pacientes',`${email}/imagen1.jpg`, this.archivoImagen1);
+        await this.storageService.guardarImagen('pacientes',`${email}/imagen2.jpg`, this.archivoImagen2);
+        
+        // ---- Promesa que se resuelve después de 2 segundos para aguardar a que se guarde el contenido en fireStorage.
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const urlDescargaImg1 = await this.storageService.obtenerUrlDescarga('pacientes',`${email}/imagen1.jpg`);
+        const urlDescargaImg2 = await this.storageService.obtenerUrlDescarga('pacientes',`${email}/imagen2.jpg`);
+        
+        const objetoPaciente = {
+         
+          nombre: nombre,
+          apellido: apellido,
+          edad: edad,
+          dni: dni,
+          obraSocial: obraSocial,
+          email: email,
+          imagen1: urlDescargaImg1,
+          imagen2: urlDescargaImg2,
+          rol: "Paciente"
+        };
+    
+        this.authService.guardarContenido("usuarios", objetoPaciente);
+        await this.swalService.LanzarAlert("Registro del paciente exitoso!", "success", estadoRegistro.mensajeExito);
+        this.router.navigateByUrl("/bienvenida");
+      }
+      else { this.swalService.LanzarAlert("Error en el registro del paciente!", "error", estadoRegistro.mensajeError); }    
+
       this.subiendoDatos = false;
-      return;
-    }
-
-    /* Datos del form */
-    const { nombre, apellido, edad, dni, obraSocial, email, clave } =
-      this.formPaciente.value;
-
-    /* 1) Subir imágenes al bucket “usuarios” */
-    const img1 = await this.storageService.subirArchivo(
-      'usuarios',
-      `Pacientes/${email}/imagen1.jpg`,
-      this.archivoImagen1
-    );
-
-    if (img1.error) { this.mostrarError(img1.error); return; }
-
-    const img2 = await this.storageService.subirArchivo(
-      'usuarios',
-      `Pacientes/${email}/imagen2.jpg`,
-      this.archivoImagen2
-    );
-
-    if (img2.error) { this.mostrarError(img2.error); return; }
-
-    /* 2) Crear objeto Paciente */
-    const paciente = {
-      nombre,
-      apellido,
-      edad,
-      dni,
-      obraSocial,
-      email,
-      imagen1: img1.publicUrl,
-      imagen2: img2.publicUrl,
-      rol: 'Paciente'
-    };
-
-    /* 3) Guardar en tabla “Usuarios” */
-    await this.supabaseDataService.guardarContenido('Usuarios', paciente);
-
-    /* 4) Crear usuario de Auth */
-    const estado: authResponse =
-      await this.authService.registrarUsuario(email, clave);
-
-    this.subiendoDatos = false;
-
-    if (!estado.huboError) {
-      await this.swalService.LanzarAlert(
-        'Registro exitoso',
-        'success',
-        estado.mensajeExito
-      );
-      this.formPaciente.reset();
-      /* … navegar / limpiar … */
-    } else {
-      this.swalService.LanzarAlert(
-        'Error en el registro',
-        'error',
-        estado.mensajeError
-      );
     }
   }
 
@@ -266,63 +237,44 @@ private mostrarError(msg: string) {
   //   }
   // }
 
-  async RegistroEspecialista() {
-  this.subiendoDatos = true;
+ async RegistroEspecialista()
+  {
+    if(this.formEspecialista.valid && this.archivoImagenPerfil)
+    {
+      this.subiendoDatos = true;
+      const { nombre, apellido, edad, dni, especialidad, email, clave} = this.formEspecialista.value;
+      const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Especialista', especialidad:especialidad});
+    
+      if(!estadoRegistro.huboError) 
+      {
+        await this.storageService.guardarImagen('especialistas',`${email}/imagen1.jpg`, this.archivoImagenPerfil);
+        // ---- Promesa que se resuelve después de 2 segundos para aguardar a que se guarde el contenido en fireStorage.
+        await new Promise(resolve => setTimeout(resolve, 2500));
 
-  if (!this.formEspecialista.valid || !this.archivoImagenPerfil) {
-    this.swalService.LanzarAlert('Datos inválidos', 'error', 'Completá todos los campos requeridos.');
-    this.subiendoDatos = false;
-    return;
+        const imagen1 = await this.storageService.obtenerUrlDescarga('especialistas',`${email}/imagen1.jpg`);        
+
+        const objetoEspecialista = {
+          nombre: nombre,
+          apellido: apellido,
+          edad: edad,
+          dni: dni,
+          especialidad: especialidad,
+          email: email,
+          imagen1: imagen1,
+          rol: "Especialista",
+          habilitado: false
+        };
+
+        this.authService.guardarContenido("usuarios", objetoEspecialista);
+        await this.swalService.LanzarAlert("Registro del especialista exitoso!", "success", estadoRegistro.mensajeExito);
+        //this.router.navigateByUrl("/bienvenida");
+      }
+      else { this.swalService.LanzarAlert("Error en el registro del especialista!", "error", estadoRegistro.mensajeError); }    
+
+      this.subiendoDatos = false;
+    }
   }
-
-  const { nombre, apellido, edad, dni, especialidad, email, clave } = this.formEspecialista.value;
-
-  // 1. Subir imagen al bucket de supabase
-  const { publicUrl, error } = await this.storageService.subirArchivo(
-    'usuarios', // nombre del bucket en Supabase
-    `Especialistas/${email}/imagenPerfil.jpg`,
-    this.archivoImagenPerfil
-  );
-
-  if (error) {
-    this.swalService.LanzarAlert('Error al subir imagen', 'error', error);
-    this.subiendoDatos = false;
-    return;
-  }
-
-  // 2. Crear objeto del especialista
-  const objetoEspecialista = {
-    nombre,
-    apellido,
-    edad,
-    dni,
-    especialidad,
-    email,
-    imagenPerfil: publicUrl,
-    rol: "Especialista",
-    habilitado: true
-  };
-
-  // 3. Guardar en tabla 'Usuarios'
-  try {
-    await this.supabaseDataService.guardarContenido('Usuarios', objetoEspecialista);
-  } catch (e: any) {
-    this.swalService.LanzarAlert('Error al guardar en la base de datos', 'error', e.message || e);
-    this.subiendoDatos = false;
-    return;
-  }
-
-  // 4. Crear cuenta de usuario (auth)
-  const estadoRegistro: authResponse = await this.authService.registrarUsuario(email, clave);
-  this.subiendoDatos = false;
-
-  if (!estadoRegistro.huboError) {
-    await this.swalService.LanzarAlert("Registro del especialista exitoso!", "success", estadoRegistro.mensajeExito);
-    this.formEspecialista.reset();
-  } else {
-    this.swalService.LanzarAlert("Error en el registro del especialista!", "error", estadoRegistro.mensajeError);
-  }
-}
 
 
 }

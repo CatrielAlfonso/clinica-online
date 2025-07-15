@@ -33,7 +33,7 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   subscripciones: Subscription = new Subscription();
   subscripcionObtenerTurnos = new Subscription()
 
-  rating = 0;
+  rating = 5;
   hover =0;
   stars:number[]=Array(10);
 
@@ -143,14 +143,12 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
     this.pacientesBackup.length = 0;
     
     const pacientesSubscription: Subscription = this.authService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
-      for(const usuario of usuarios)
-      {
-        if(usuario.rol == "Paciente") 
-        { 
-          this.pacientesObtenidos.push(usuario); 
-          this.pacientesBackup.push(usuario);
-        }
-      }
+     const pacientes = usuarios.filter(usuario => usuario.rol === "Paciente");
+
+      this.pacientesObtenidos = [...pacientes];
+      this.pacientesBackup = [...pacientes];
+
+      this.cargandoDatos = false;
     });
 
     this.subscripciones.add(pacientesSubscription);
@@ -344,34 +342,49 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   FiltrarPacientes(filtroIngresado: string): void
   {
     this.cargandoDatos = true;
-    this.ObtenerPacientes()
+    //this.ObtenerPacientes()
+    const normalizar = (txt: string) =>
+    txt.toLocaleLowerCase()
+       .normalize('NFD')
+       .replace(/[\u0300-\u036f]/g, '');
 
-    setTimeout(() => {
-      if(filtroIngresado != "")
-      {
-        let nuevosPacientes: any[] = [];
-        for(const paciente of this.pacientesObtenidos)
-        {
-          const nombrePaciente: string = `${paciente.nombre} ${paciente.apellido}`;
-          if(nombrePaciente.includes(filtroIngresado)) { nuevosPacientes.push(paciente); }
-        }
-        this.pacientesObtenidos.length = 0;
-        this.pacientesObtenidos = nuevosPacientes;
+    const texto = normalizar(filtroIngresado.trim());
+     if (texto) {
+          this.pacientesObtenidos = this.pacientesBackup.filter(p => {
+          const nombreCompleto = normalizar(`${p.nombre} ${p.apellido}`);
+          return nombreCompleto.includes(texto);
+        });
+      } else {
+        this.pacientesObtenidos = [...this.pacientesBackup];
       }
-      else 
-      { 
-        this.ObtenerEspecialistas();
-        this.ObtenerPacientes()
-        this.ObtenerTurnos(); 
-      }
-    }, 2000);
 
-
-    setTimeout(() => { 
       this.ObtenerTurnos(); 
-      this.cargandoDatos = false;
-    }, 2000);
-    this.filtroPaciente = "";
+    // setTimeout(() => {
+    //   if(filtroIngresado != "")
+    //   {
+    //     let nuevosPacientes: any[] = [];
+    //     for(const paciente of this.pacientesObtenidos)
+    //     {
+    //       const nombrePaciente: string = `${paciente.nombre} ${paciente.apellido}`;
+    //       if(nombrePaciente.includes(filtroIngresado)) { nuevosPacientes.push(paciente); }
+    //     }
+    //     this.pacientesObtenidos.length = 0;
+    //     this.pacientesObtenidos = nuevosPacientes;
+    //   }
+    //   else 
+    //   { 
+    //     this.ObtenerEspecialistas();
+    //     this.ObtenerPacientes()
+    //     this.ObtenerTurnos(); 
+    //   }
+    // }, 2000);
+
+
+    // setTimeout(() => { 
+    //   this.ObtenerTurnos(); 
+    //   this.cargandoDatos = false;
+    // }, 2000);
+    // this.filtroPaciente = "";
   }
 
   CancelarTurno(turno: any, mensajeEstadoIngresado: string): void //Añadir mensaje de cancelacion

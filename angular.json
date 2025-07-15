@@ -16,6 +16,16 @@
             "outputPath": "dist/clinica-online",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "sweetalert2",
+              "exceljs",
+              "html2canvas",
+              "canvg",
+              "raf",
+              "rgbcolor",
+              "core-js",
+              "ws"
+            ],
             "polyfills": [
               "zone.js"
             ],
@@ -37,8 +47,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "2MB",
+                  "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",
