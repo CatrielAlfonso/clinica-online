@@ -35,12 +35,7 @@ export class HeaderComponent {
 	ngOnInit(): void 
 	{	}
   
-  // ngOnChanges(): void
-  // {
-  //   this.ObtenerNombreUsuario();
-  //   this.userService.ObtenerDatosUsuarioLogueado();
-  // }
-
+  // 
   async ObtenerNombreUsuario()
   {
     const objetoUsuario: any = await this.authService.obtenerUsuarioPorMail(await this.authService.getMailUsuario());

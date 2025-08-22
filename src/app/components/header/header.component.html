@@ -3,6 +3,7 @@
         <header>
             <ul class="nav nav-pills" >
                 <li class="nav-item"><a routerLink="inicio" class="nav-link" id="btn-inicio">Inicio</a></li>
+                
 
                 <!-- Administrador logueado -->
                 <li class="nav-item" *ngIf="this.userService.rolUsuarioLogueado == 'Administrador'">

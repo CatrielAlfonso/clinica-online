@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 //import { authResponse, AuthService } from '../../services/firebase/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 //import { FirestoreService } from '../../services/firebase/firestore.service';
-import { FormBuilder, FormGroup,  Validators } from '@angular/forms';
+import { FormBuilder, FormGroup,  Validators, FormsModule } from '@angular/forms';
 //import { StorageService } from '../../services/firebase/storage.service';
 //import { UserService } from '../../services/data/user.service';
 import { Turno } from '../../interfaces/ITurno';
@@ -19,7 +19,7 @@ import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
   selector: 'app-mis-pacientes',
   templateUrl: './mis-pacientes.component.html',
   styleUrl: './mis-pacientes.component.scss',
-  imports: [CommonModule, PipesModule],
+  imports: [CommonModule, PipesModule, RouterModule, FormsModule],
 })
 export class MisPacientesComponent implements OnInit, OnDestroy {
   userService = inject(UserService);
@@ -30,7 +30,7 @@ export class MisPacientesComponent implements OnInit, OnDestroy {
   router = inject(Router);
 
   cargandoDatos: boolean;
-
+  // modalAbierto: boolean = true;
   subscripciones: Subscription = new Subscription();
 
   turnosObtenidos: any[];
@@ -67,6 +67,9 @@ export class MisPacientesComponent implements OnInit, OnDestroy {
   {
     setTimeout(() => { 
       this.ObtenerTurnos();
+      // this.ObtenerHistoriasClinicas();
+      // this.ObtenerEspecialistas();
+      // this.ObtenerPacientes();
     }, 2000);
   }
 
@@ -166,7 +169,9 @@ export class MisPacientesComponent implements OnInit, OnDestroy {
                 imagen1Paciente: paciente.imagen1,
                 imagen2Paciente: paciente.imagen2
               }
-
+              // console.log("Objeto turno tabla:", objetoTurnoTabla);
+              // console.log("DNI Especialista:", objetoTurnoTabla.dniEspecialista);
+              // console.log("DNI Paciente:", objetoTurnoTabla.dniPaciente);
               this.turnosObtenidos.push(objetoTurnoTabla);
               if(objetoTurnoTabla.dniEspecialista == this.userService.dniUsuarioLogueado && this.userService.rolUsuarioLogueado == "Especialista")
               {

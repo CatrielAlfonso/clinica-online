@@ -289,17 +289,31 @@
             </div>
 
             <div class="modal-body">
-                <input type="text" class="form-control" placeholder="Deje un comentario acerca de su experencia con el especialista durante el turno" [(ngModel)]="this.mensajeResenia">
+                <input  type="text"
+                    class="form-control"
+                    placeholder="Deje un comentario…"
+                    [(ngModel)]="mensajeResenia">
+
                 <hr />
-                <p>Del 1 al 10, ¿Cómo te trató {{turnoSeleccionado.nombreEspecialista | acortarNombre}} durante la consulta?</p>
-                
-                <!-- ★★★★★ – puedes poner 10 si quieres valores 1‑10 -->
-                <mat-slider min="0" max="10" step="1" showTickMarks discrete [displayWith]="formatLabel">
-                    <input matSliderThumb>
-                </mat-slider>       
-                
-                <p>Me trató de: <b>{{ this.rating }}</b> puntos!</p>
+
+                <p>
+                Del 1 al 10, ¿cómo te trató
+                {{ turnoSeleccionado.nombreEspecialista | acortarNombre }}?
+                </p>
+
+                <!-- Slider Material – 10 pasos (input)="onSlider($event.value) -->
+                <mat-slider  min="1" max="10" step="1" 
+                            tickInterval="1"        
+                            thumbLabel             
+                            [(ngModel)]="rating"   
+                            [displayWith]="formatLabel" 
+                           
+                            >
+                </mat-slider>
+
+                <p>Me trató de: <b>{{ rating }}</b> puntos!</p>
                 <hr />
+                
             </div>
             
             <div class="modal-footer">

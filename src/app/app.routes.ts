@@ -17,7 +17,7 @@ export const routes: Routes = [
     /**cuando implementar lazy loading */ 
     {path: 'inicio-sesion', component: InicioSesionComponent, data: { animation: 'IngresoPage'}},
     {path: 'registro', component: RegistroComponent, data: { animation: 'RegistroPage'} },
-    { path: 'inicio',component: InicioComponent,canActivate: [usuarioLogueadoGuard] }, 
+    { path: 'inicio',component: InicioComponent,canActivate: [usuarioLogueadoGuard], data: { animation:'HomePage'}}, 
     { path: "mi-perfil", component: MiPerfilComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
     { path: "solicitar-turno", component: AltaTurnoComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
     { path: "mis-turnos", component: MisTurnosComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },

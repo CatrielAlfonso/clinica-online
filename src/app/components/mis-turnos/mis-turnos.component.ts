@@ -38,11 +38,13 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   stars:number[]=Array(10);
 
   formatLabel(value: number): string {
-    if (this.rating >= 10) {
-      return Math.round(this.rating / 1) + 'k';
-    }
+    return `${value}`;        // «1», «2», …, «10»
+  }
 
-    return `${this.rating}`;
+  onSlider(valor: number) {
+  this.rating = valor;     // ya no es necesario si usás [(ngModel)]
+  // lógica extra…
+  console.log("Valor del slider:", this.rating);
   }
 
   setRating(value:number)
@@ -79,6 +81,8 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   diagnosticoPaciente: string;
   detalleDiagnosticoPaciente: string;
 
+
+
   constructor() 
   {
     this.userService.ObtenerDatosUsuarioLogueado();
@@ -111,12 +115,21 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void 
   {
-    setTimeout(() => { this.ObtenerTurnos(); }, 2000);
+    setTimeout(() => { this.ObtenerTurnos();
+      // this.ObtenerHistoriasClinicas();
+      // this.ObtenerEspecialistas();
+      // this.ObtenerPacientes();
+     }, 2000);
   }
 
   ngOnDestroy(): void 
   {
     this.subscripciones.unsubscribe();
+  }
+
+  ActualizarEstadosTurnos(): void
+  {
+    this.ObtenerTurnos();
   }
 
   ObtenerEspecialistas(): void
@@ -475,7 +488,8 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   AsignarTurnoSeleccionado(turno: any): void
   {
     this.turnoSeleccionado = turno;
-    console.log(this.turnoSeleccionado)
+    //console.log(this.turnoSeleccionado)
+    this.ObtenerTurnos();
   }
 
   FinalizarTurno(turno: any, mensaje: string): void
