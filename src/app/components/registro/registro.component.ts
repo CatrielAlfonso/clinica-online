@@ -101,6 +101,7 @@ export class RegistroComponent {
     }
 
     // actualizar en el form si lo usás con FormGroup
+    this.formEspecialista.get('especialidad')?.setValue(this.especialidadesSeleccionadas);
     this.formEspecialista.patchValue({ especialidad: this.especialidadesSeleccionadas });
   }
 
@@ -111,6 +112,8 @@ export class RegistroComponent {
       this.especialidadesSeleccionadas.push(nueva);
       this.especialidadesPersonalizadas.push(nueva);
       this.nuevaEspecialidad = '';
+      // Sincronizamos con el form
+    this.formEspecialista.get('especialidad')?.setValue(this.especialidadesSeleccionadas);
     }
   }
 
@@ -236,7 +239,7 @@ export class RegistroComponent {
     {
       const { nombre, apellido, edad, dni, obraSocial, email, clave} = this.formPaciente.value;
       const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
-        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidades:"",imagen1:'',imagen2:''});
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidades:[""],imagen1:'',imagen2:''});
         //const resp = await this.authService.registrarUser({ email:email, clave: clave, nombre:nombre });                                                                         
       if(!estadoRegistro.huboError) 
       {
@@ -277,7 +280,7 @@ export class RegistroComponent {
     if(this.formEspecialista.valid && this.archivoImagenPerfil)
     {
       this.subiendoDatos = true;
-      const { nombre, apellido, edad, dni, especialidades, email, clave} = this.formEspecialista.value;
+      const { nombre, apellido, edad, dni, email, clave} = this.formEspecialista.value;
       const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
         , apellido:apellido,  edad:edad, dni:dni, rol:'Especialista', especialidades:this.especialidadesSeleccionadas,imagen1:''});
     
@@ -294,13 +297,14 @@ export class RegistroComponent {
           apellido: apellido,
           edad: edad,
           dni: dni,
-          especialidad: this.especialidadesSeleccionadas,
+          rol: "Especialista",
+          especialidades: this.especialidadesSeleccionadas,          
           email: email,
           imagen1: urlDescargaImgPerfil,
-          habilitado: false
+          habilitado: false,
         };
 
-        this.authService.guardarContenido("usuarios", objetoEspecialista);
+        await this.authService.guardarContenido("usuarios", objetoEspecialista);
         await this.swalService.LanzarAlert("Registro del especialista exitoso!", "success", estadoRegistro.mensajeExito);
         this.router.navigateByUrl("/bienvenida");
       }

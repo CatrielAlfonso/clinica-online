@@ -154,7 +154,7 @@ export class AltaUsuariosComponent {
     {
       const { nombre, apellido, edad, dni, obraSocial, email, clave} = this.formPaciente.value;
       const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
-        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidades:'',imagen1:'',imagen2:''});
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidades:[""],imagen1:'',imagen2:''});
         //const resp = await this.authService.registrarUser({ email:email, clave: clave, nombre:nombre });                                                                         
       if(!estadoRegistro.huboError) 
       {

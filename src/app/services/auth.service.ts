@@ -298,7 +298,7 @@ export class AuthService {
       rol?:      'Paciente' | 'Especialista';
       aprobado?: boolean;
       obraSocial?: string;
-      especialidades?: string | string[];
+      especialidades?:  string[];
       imagen1?: string;
       imagen2?: string;
     }
