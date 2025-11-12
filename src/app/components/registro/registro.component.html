@@ -200,27 +200,68 @@
     
                 <div class="row g-3">
                     <div class="col">
-                        <label>¿Cual es su especialidad?</label>
+                        <label>¿Cuáles son sus especialidades?</label>
                         <br/>
-                        <mat-radio-group class="test" aria-label="Selecciona una especialidad" [(ngModel)]="this.especialidadSeleccionada" formControlName="especialidad">
-                            <mat-radio-button value="Dermatologia">Dermatología</mat-radio-button>
-                            <mat-radio-button value="Traumatologia">Traumatología</mat-radio-button>
-                            <mat-radio-button value="Odontologia">Odontología</mat-radio-button>
-                            <mat-radio-button value="Kinesiologia">Kinesiología</mat-radio-button>
-                            <mat-radio-button value="otra">Otra...</mat-radio-button>
-                        </mat-radio-group>
-                        <div *ngIf="formEspecialista.get('especialidad')?.invalid && formEspecialista.get('especialidad')?.touched" class="text-danger">
-                            Debe ingresar este campo.
+                        <div class="especialidades-container">
+                            <mat-checkbox
+                            *ngFor="let especialidad of especialidadesDisponibles"
+                            [value]="especialidad"
+                            (change)="toggleEspecialidad(especialidad, $event.checked)"
+                            [checked]="especialidadesSeleccionadas.includes(especialidad)"
+                            >
+                            {{ especialidad }}
+                            </mat-checkbox>
+                        </div>
+
+                        <!-- Opción de especialidad personalizada -->
+                        <div class="otra-especialidad">
+                            <mat-form-field appearance="outline" class="mt-3 w-100">
+                            <mat-label>Otra especialidad</mat-label>
+                            <input
+                                matInput
+                                placeholder="Ejemplo: Cardiología"
+                                [(ngModel)]="nuevaEspecialidad"
+                                (keyup.enter)="agregarNuevaEspecialidad()"
+                            />
+                            <button
+                                mat-icon-button
+                                matSuffix
+                                (click)="agregarNuevaEspecialidad()"
+                                [disabled]="!nuevaEspecialidad?.trim()"
+                                aria-label="Agregar especialidad"
+                            >
+                                <mat-icon>add</mat-icon>
+                            </button>
+                            </mat-form-field>
+
+                            <div class="especialidades-personales">
+                            <span
+                                *ngFor="let esp of especialidadesPersonalizadas"
+                                class="chip"
+                                (click)="quitarEspecialidadPersonalizada(esp)"
+                            >
+                                {{ esp }} ✖
+                            </span>
+                            </div>
+                        </div>
+                        <div
+                            *ngIf="
+                            especialidadesSeleccionadas.length === 0 &&
+                            formEspecialista.get('especialidad')?.touched
+                            "
+                            class="text-danger"
+                        >
+                            Debe seleccionar al menos una especialidad.
                         </div>
                     </div>
                 </div>
                 
-                <div class="row especialidad-propia g-3" *ngIf="this.especialidadSeleccionada == 'otra'">
+                <!-- <div class="row especialidad-propia g-3" *ngIf="especialidadesSeleccionadas == 'otra'">
                     <div class="col">
                         <label for="especialidad" class="form-label">Especialidad personalizada</label>
                         <input type="email" class="form-control" id="especialidad" placeholder="Ingrese su especialidad" formControlName="especialidad">
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row g-3">
                     <div class="col">

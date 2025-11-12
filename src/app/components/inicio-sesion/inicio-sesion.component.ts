@@ -126,8 +126,8 @@ export class InicioSesionComponent {
       {
         if(objetoUsuarioObtenido.habilitado)
         {
-          await this.swalService.LanzarAlert("Inicio de sesión exitoso!", "success", estadoInicioSesion.mensajeExito);
-          
+          //await this.swalService.LanzarAlert("Inicio de sesión exitoso!", "success", estadoInicioSesion.mensajeExito);
+          await this.swalService.temporallyShowLoadingAlert("Inicio de sesión exitoso!", "Redirigiendo...", 1000);
           this.router.navigateByUrl("/inicio");
         }
         else

@@ -1,17 +1,17 @@
 .contenedor-mis-turnos { 
-    height: 76.6%; 
-    max-width: 1500px;
-    margin: 0 auto;
-    background-color: #f8f9fae1;
-    border-radius: 8px;
-    // padding-top: 5rem;
-    margin-bottom: 2rem;
-    text-align: center;
-    // overflow-y: auto;
-    h1 { 
-        margin-top: 2rem;
-        color: rgb(0, 119, 255); 
-    }
+     height: 76.6%; 
+  max-width: 1500px;
+  margin: 0 auto 2rem auto;
+  background-color: #f8f9fae1;
+  border-radius: 8px;
+  text-align: center;
+  overflow-y: auto; /* ✅ permite hacer scroll si se pasa del alto */
+  padding: 2rem 1rem;
+
+  h1 { 
+    margin-top: 2rem;
+    color: rgb(0, 119, 255); 
+  }
 }
 
 @-webkit-keyframes bg-pan-right{0%{background-position:0 50%}100%{background-position:100% 50%}}@keyframes bg-pan-right{0%{background-position:0 50%}100%{background-position:100% 50%}}
@@ -157,4 +157,12 @@ i {
 p {
     font-size: 18px;
     font-weight: bolder;
+}
+
+input + span {
+  position: absolute;
+  font-size: 0.8rem;
+  color: red;
+  margin-top: 2px;
+  left: 0;
 }

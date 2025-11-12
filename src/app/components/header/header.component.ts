@@ -48,7 +48,7 @@ export class HeaderComponent {
 
     if(respuesta)
     {
-      this.authService.cerrarSesion();
+      await this.authService.cerrarSesion();
       this.router.navigateByUrl("inicio-sesion");
     }
   }

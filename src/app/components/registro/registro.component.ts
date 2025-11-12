@@ -33,7 +33,6 @@ export class RegistroComponent {
   subiendoDatos: boolean;
   formPaciente!: FormGroup;
   formEspecialista!: FormGroup;
-  especialidadSeleccionada: string;
   archivoImagen1?: File;
   archivoImagen2?: File;
   archivoImagenPerfil?: File;
@@ -41,6 +40,19 @@ export class RegistroComponent {
   mensajeImagen2: string;
   mensajeImagenPerfil: string;
   token: string|undefined;
+
+  especialidadesDisponibles: string[] = [
+  'Dermatología',
+  'Traumatología',
+  'Odontología',
+  'Kinesiología',
+  'Otra...'
+  ];
+  especialidadesSeleccionadas: string[] = [];
+  
+  especialidadesPersonalizadas: string[] = [];
+  nuevaEspecialidad: string = '';
+
   //--- ReCaptchaV2 (Traido de tesys) ---//
   captchaResponse:any = null;
   captchaOK = false;
@@ -68,15 +80,43 @@ export class RegistroComponent {
       apellido: ['', [Validators.required, Validators.maxLength(30)]],
       edad: ['', [Validators.required, Validators.min(18), Validators.max(65), Validators.pattern(/^[0-9]\d*$/)]],
       dni: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(8), Validators.pattern(/^[0-9]\d*$/)]],
-      especialidad: ['', Validators.required],
+      especialidad: [[], Validators.required],
       email: ['', [Validators.required,]], 
       clave: ['', [Validators.required,]], 
       imagen1: [null, [Validators.required,]] 
     });
-    this.especialidadSeleccionada = "";
+    this.especialidadesSeleccionadas = [];
     this.mensajeImagen1 = "Haga click para subir la imagen 1."
     this.mensajeImagen2 = "Haga click para subir la imagen 2."
     this.mensajeImagenPerfil = "Haga click para subir su imagen de perfil."
+  }
+
+  toggleEspecialidad(especialidad: string, checked: boolean) {
+    if (checked) {
+      this.especialidadesSeleccionadas.push(especialidad);
+    } else {
+      this.especialidadesSeleccionadas = this.especialidadesSeleccionadas.filter(
+        (esp) => esp !== especialidad
+      );
+    }
+
+    // actualizar en el form si lo usás con FormGroup
+    this.formEspecialista.patchValue({ especialidad: this.especialidadesSeleccionadas });
+  }
+
+  agregarNuevaEspecialidad() {
+    const nueva = this.nuevaEspecialidad.trim();
+
+    if (nueva && !this.especialidadesSeleccionadas.includes(nueva)) {
+      this.especialidadesSeleccionadas.push(nueva);
+      this.especialidadesPersonalizadas.push(nueva);
+      this.nuevaEspecialidad = '';
+    }
+  }
+
+  quitarEspecialidadPersonalizada(esp: string) {
+    this.especialidadesPersonalizadas = this.especialidadesPersonalizadas.filter(e => e !== esp);
+    this.especialidadesSeleccionadas = this.especialidadesSeleccionadas.filter(e => e !== esp);
   }
 
   onArchivoSeleccionado(event: Event, imagen1: boolean = false): void 
@@ -196,7 +236,7 @@ export class RegistroComponent {
     {
       const { nombre, apellido, edad, dni, obraSocial, email, clave} = this.formPaciente.value;
       const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
-        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidad:'',imagen1:'',imagen2:''});
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidades:"",imagen1:'',imagen2:''});
         //const resp = await this.authService.registrarUser({ email:email, clave: clave, nombre:nombre });                                                                         
       if(!estadoRegistro.huboError) 
       {
@@ -237,9 +277,9 @@ export class RegistroComponent {
     if(this.formEspecialista.valid && this.archivoImagenPerfil)
     {
       this.subiendoDatos = true;
-      const { nombre, apellido, edad, dni, especialidad, email, clave} = this.formEspecialista.value;
+      const { nombre, apellido, edad, dni, especialidades, email, clave} = this.formEspecialista.value;
       const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
-        , apellido:apellido,  edad:edad, dni:dni, rol:'Especialista', especialidad:especialidad,imagen1:''});
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Especialista', especialidades:this.especialidadesSeleccionadas,imagen1:''});
     
       if(!estadoRegistro.huboError) 
       {
@@ -254,10 +294,9 @@ export class RegistroComponent {
           apellido: apellido,
           edad: edad,
           dni: dni,
-          especialidad: especialidad,
+          especialidad: this.especialidadesSeleccionadas,
           email: email,
           imagen1: urlDescargaImgPerfil,
-          rol: "Especialista",
           habilitado: false
         };
 

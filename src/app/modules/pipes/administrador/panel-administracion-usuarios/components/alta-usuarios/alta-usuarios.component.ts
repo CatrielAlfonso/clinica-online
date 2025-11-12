@@ -154,7 +154,7 @@ export class AltaUsuariosComponent {
     {
       const { nombre, apellido, edad, dni, obraSocial, email, clave} = this.formPaciente.value;
       const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
-        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidad:'',imagen1:'',imagen2:''});
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidades:'',imagen1:'',imagen2:''});
         //const resp = await this.authService.registrarUser({ email:email, clave: clave, nombre:nombre });                                                                         
       if(!estadoRegistro.huboError) 
       {
@@ -244,7 +244,7 @@ private mostrarError(msg: string) {
       this.subiendoDatos = true;
       const { nombre, apellido, edad, dni, especialidad, email, clave} = this.formEspecialista.value;
       const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
-        , apellido:apellido,  edad:edad, dni:dni, rol:'Especialista', especialidad:especialidad});
+        , apellido:apellido,  edad:edad, dni:dni, rol:'Especialista', especialidades:especialidad});
     
       if(!estadoRegistro.huboError) 
       {

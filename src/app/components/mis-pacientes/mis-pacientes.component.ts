@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 //import { authResponse, AuthService } from '../../services/firebase/auth.service';
 import { Router, RouterModule } from '@angular/router';
-//import { FirestoreService } from '../../services/firebase/firestore.service';
+//import { authService } from '../../services/firebase/firestore.service';
 import { FormBuilder, FormGroup,  Validators, FormsModule } from '@angular/forms';
 //import { StorageService } from '../../services/firebase/storage.service';
 //import { UserService } from '../../services/data/user.service';
@@ -13,6 +13,9 @@ import { AuthService, authResponse } from '../../services/auth.service';
 import { SweetAlertService } from '../../services/sweet-alert.service';
 import { CommonModule } from '@angular/common';
 import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
+import { ChangeDetectorRef } from '@angular/core';
+
+
 
 
 @Component({
@@ -22,9 +25,12 @@ import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
   imports: [CommonModule, PipesModule, RouterModule, FormsModule],
 })
 export class MisPacientesComponent implements OnInit, OnDestroy {
+
+
+  cdr = inject(ChangeDetectorRef);
   userService = inject(UserService);
   swalService = inject(SweetAlertService);
-  firestoreService = inject(AuthService);
+  authService = inject(AuthService);
   storageService = inject(SupabaseStorageService);
   formBuilder = inject(FormBuilder);
   router = inject(Router);
@@ -58,19 +64,52 @@ export class MisPacientesComponent implements OnInit, OnDestroy {
     this.turnoSeleccionado = null;
     this.pacientesAtendidos = [];
 
-    this.ObtenerEspecialistas();
+     this.ObtenerEspecialistas();
     this.ObtenerPacientes();
     this.ObtenerHistoriasClinicas();
+
   }
 
-  ngOnInit(): void 
+   ngOnInit():  void 
   {
-    setTimeout(() => { 
-      this.ObtenerTurnos();
+
+     setTimeout(() => { this.ObtenerTurnos();
       // this.ObtenerHistoriasClinicas();
       // this.ObtenerEspecialistas();
       // this.ObtenerPacientes();
-    }, 2000);
+     }, 2000);
+   
+  }
+
+    CargarUsuarios(): Promise<void> {
+    return new Promise((resolve) => {
+      const sub = this.authService.obtenerContenidoAsObservable('usuarios').subscribe(usuarios => {
+        this.especialistasObtenidos = usuarios.filter(u => u.rol === 'Especialista');
+        this.pacientesObtenidos = usuarios.filter(u => u.rol === 'Paciente');
+        this.subscripciones.add(sub);
+        resolve();
+      });
+    });
+  }
+
+  CargarHistoriasClinicas(): Promise<void> {
+    return new Promise((resolve) => {
+      const sub = this.authService.obtenerContenidoAsObservable('historiasclinicas').subscribe(historias => {
+        this.historiasClinicasObtenidas = historias;
+        resolve();
+      });
+      this.subscripciones.add(sub);
+    });
+  }
+
+  CargarTurnos(): Promise<void> {
+    return new Promise((resolve) => {
+      const sub = this.authService.obtenerContenidoAsObservable('turnos').subscribe(turnos => {
+        this.turnosObtenidos = turnos;
+        resolve();
+      });
+      this.subscripciones.add(sub);
+    });
   }
 
   ngOnDestroy(): void {
@@ -80,32 +119,38 @@ export class MisPacientesComponent implements OnInit, OnDestroy {
   ObtenerEspecialistas(): void
   {
     this.especialistasObtenidos.length = 0;
-    const especialistasSubscription = this.firestoreService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
+    const especialistasSubscription = this.authService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
       for(const usuario of usuarios)
       {
         if(usuario.rol == "Especialista") { this.especialistasObtenidos.push(usuario); }
       }
     });
-
+    console.log("Especialistas: ",this.especialistasObtenidos);
     this.subscripciones.add(especialistasSubscription);
   }
 
   ObtenerPacientes(): void
   {
     this.pacientesObtenidos.length = 0;
-    const pacientesSubscription: Subscription = this.firestoreService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
+    const pacientesSubscription: Subscription = this.authService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
       for(const usuario of usuarios)
       {
         if(usuario.rol == "Paciente") { this.pacientesObtenidos.push(usuario); }
       }
+
+      this.ObtenerHistoriasClinicas();
     });
 
+    console.log("Pacientes: ",this.pacientesObtenidos);
     this.subscripciones.add(pacientesSubscription);
   }
   
   ObtenerHistoriasClinicas(): void
   {
-    const HistoriasClinicasSubscription: Subscription = this.firestoreService.obtenerContenidoAsObservable("historiasclinicas").subscribe(historias => {
+    this.historiasClinicasObtenidas = [];
+    this.pacientesAtendidos = [];
+
+    const HistoriasClinicasSubscription: Subscription = this.authService.obtenerContenidoAsObservable("historiasclinicas").subscribe(historias => {
       this.historiasClinicasObtenidas.length = 0;
       
       let dniPacientesEncontrados: string[] = [];
@@ -132,13 +177,17 @@ export class MisPacientesComponent implements OnInit, OnDestroy {
       }
     });
 
+    // setTimeout(() => {
+    //   this.cdr.detectChanges();
+    // }, 0);
+    console.log("Historias Clinicas: ",this.historiasClinicasObtenidas);
     this.subscripciones.add(HistoriasClinicasSubscription);
   }
 
   ObtenerTurnos(): void
   {
     this.cargandoDatos = true; 
-    const turnosSubscription = this.firestoreService.obtenerContenidoAsObservable("turnos").subscribe(turnos => {
+    const turnosSubscription = this.authService.obtenerContenidoAsObservable("turnos").subscribe(turnos => {
       this.turnosObtenidos.length = 0;
       this.turnosPaciente.length = 0;
       this.turnosEspecialista.length = 0;
@@ -186,7 +235,7 @@ export class MisPacientesComponent implements OnInit, OnDestroy {
         }
       }
       this.cargandoDatos = false; 
-      console.log(this.turnosObtenidos);
+      console.log("Turnos: ",this.turnosObtenidos);
     });
 
     this.subscripciones.add(turnosSubscription);

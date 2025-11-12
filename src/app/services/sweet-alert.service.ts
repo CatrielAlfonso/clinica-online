@@ -153,5 +153,22 @@ export class SweetAlertService {
 
   }
 
+  async temporallyShowLoadingAlert(title: string, text: string, duration: number) {
+    Swal.fire({
+      title: title,
+      text: text,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        Swal.close();
+        resolve();
+      }, duration);
+    });
+  }
+
 
 }

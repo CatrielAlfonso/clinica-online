@@ -298,7 +298,7 @@ export class AuthService {
       rol?:      'Paciente' | 'Especialista';
       aprobado?: boolean;
       obraSocial?: string;
-      especialidad?: string;
+      especialidades?: string | string[];
       imagen1?: string;
       imagen2?: string;
     }
@@ -316,30 +316,6 @@ export class AuthService {
         return { huboError: true, mensajeError: error.message };
       }
 
-      // /* 2️⃣ Alta en tu tabla “users” */
-      // const perfil = {
-      //   auth_id:        data.user?.id,       // FK ► tabla auth
-      //   nombre:         dto.nombre,
-      //   apellido:       dto.apellido ?? '',
-      //   edad:           dto.edad ?? null,
-      //   dni:            dto.dni ?? null,
-      //   rol:            dto.rol ?? 'Paciente',
-      //   obraSocial:    dto.obraSocial ?? null,
-      //   especialidad:   dto.especialidad ?? null,
-      //   aprobado:       dto.aprobado,
-      //   imagen1:        dto.imagen1 ?? null,
-      //   imagen2:        dto.imagen2 ?? null,
-      //   email:          dto.email
-      // };
-
-      // const { error: insertError } = await supabase
-      //   .from('usuarios')          // ← tu tabla de perfiles
-      //   .insert(perfil);
-
-      // if (insertError) {
-      //   // si acá falla, podría quedarte un usuario “huérfano” en auth
-      //   return { huboError: true, mensajeError: insertError.message };
-      // }
 
       return {
         huboError:     false,
@@ -357,7 +333,8 @@ export class AuthService {
       //this.avatarUrl = '';
       // Redireccionar o mostrar un mensaje
       //console.log('Usuario deslogueado');
-      this.sweetAlertService.showTemporaryAlert('Bye bye!', 'Has cerrado sesión correctamente :)', 'success');
+      //this.sweetAlertService.showTemporaryAlert('Bye bye!', 'Has cerrado sesión correctamente :)', 'success');
+      this.sweetAlertService.temporallyShowLoadingAlert('Cerrando sesión', 'Redirigiendo...',1000);
     });
   }
 
@@ -389,7 +366,9 @@ export class AuthService {
       this.userLogueado = false;
       localStorage.removeItem("usuarioLogueado");
       //supabase.auth.signOut();
-      this.sweetAlertService.showAlert('Sesión cerrada', 'Has cerrado sesión correctamente', 'success');
+      //
+      await this.sweetAlertService.temporallyShowLoadingAlert('Cerrando sesión', 'Redirigiendo...',1000);
+
       
    }
   }

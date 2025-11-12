@@ -25,6 +25,7 @@
         text-align: center;
         background-color: #f8f9fae1;
         border-radius: 8px;
+         flex-wrap: wrap;
 
         @-webkit-keyframes fade-in{0%{opacity:0}100%{opacity:1}}@keyframes fade-in{0%{opacity:0}100%{opacity:1}}
         .form-paciente, .form-especialista, .especialidad-propia{
@@ -144,15 +145,18 @@ label {
 }
 
 .imagen-paciente, .imagen-doctor {
-    border-radius: 10rem;
-    height: 120px;
-    width: 120px;
-    padding: 1rem;
-    margin: 0 auto;
-    transition: transform 0.2s;
+    width: 20vw;              /* cada imagen ocupa el 60% del ancho de la pantalla */
+  max-width: 200px;         /* límite máximo en pantallas grandes */
+  height: auto;             /* mantiene proporción */
+  border-radius: 2rem;
+  padding: 1rem;
+  margin: 2rem auto;
+  display: block;
+  transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
-.imagen-paciente:hover, .imagen-doctor:hover { transform: scale(1.5); }
+.imagen-paciente:hover, .imagen-doctor:hover { transform: scale(1.05); }
 
 .fab-volver {
     position: fixed;
