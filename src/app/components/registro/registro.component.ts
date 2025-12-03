@@ -12,11 +12,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgModel } from '@angular/forms';
 import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
 import { CaptchaDirective } from '../../directives/captcha.directive';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 @Component({
   selector: 'app-registro',
-  imports: [FormsModule,CommonModule, AngularMaterialModule, ReactiveFormsModule, RecaptchaModule, RouterLink],
+  imports: [FormsModule,CommonModule, AngularMaterialModule, ReactiveFormsModule, RecaptchaModule, RouterLink, MatCheckboxModule],
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css'
 })
@@ -39,16 +41,19 @@ export class RegistroComponent {
   mensajeImagen1: string;
   mensajeImagen2: string;
   mensajeImagenPerfil: string;
+  
+  // URLs para vista previa
+  vistaPrevia1?: string;
+  vistaPrevia2?: string;
+  vistaPreviaEspecialista?: string;
   token: string|undefined;
 
   especialidadesDisponibles: string[] = [
-  'Dermatología',
-  'Traumatología',
-  'Odontología',
-  'Kinesiología',
-  'Otra...'
+    'Dermatología',
+    'Traumatología',
+    'Odontología',
+    'Kinesiología',
   ];
-  especialidadesSeleccionadas: string[] = [];
   
   especialidadesPersonalizadas: string[] = [];
   nuevaEspecialidad: string = '';
@@ -85,41 +90,72 @@ export class RegistroComponent {
       clave: ['', [Validators.required,]], 
       imagen1: [null, [Validators.required,]] 
     });
-    this.especialidadesSeleccionadas = [];
+    
     this.mensajeImagen1 = "Haga click para subir la imagen 1."
     this.mensajeImagen2 = "Haga click para subir la imagen 2."
     this.mensajeImagenPerfil = "Haga click para subir su imagen de perfil."
   }
 
-  toggleEspecialidad(especialidad: string, checked: boolean) {
-    if (checked) {
-      this.especialidadesSeleccionadas.push(especialidad);
-    } else {
-      this.especialidadesSeleccionadas = this.especialidadesSeleccionadas.filter(
-        (esp) => esp !== especialidad
-      );
-    }
+  toggleEspecialidad(nombre: string, checked: boolean) {
+    // Obtenemos el array actual
+    const especialidades = [...(this.formEspecialista.get('especialidad')!.value as string[])];
 
-    // actualizar en el form si lo usás con FormGroup
-    this.formEspecialista.get('especialidad')?.setValue(this.especialidadesSeleccionadas);
-    this.formEspecialista.patchValue({ especialidad: this.especialidadesSeleccionadas });
+    if (checked) {
+      // Agregar si no existe
+      if (!especialidades.includes(nombre)) {
+        especialidades.push(nombre);
+      }
+    } else {
+      // Quitar si existe
+      const index = especialidades.indexOf(nombre);
+      if (index !== -1) {
+        especialidades.splice(index, 1);
+      }
+    }
+    
+    // Actualizar el FormControl
+    this.formEspecialista.get('especialidad')!.setValue(especialidades);
+    console.log('Especialidades actuales:', especialidades);
   }
 
   agregarNuevaEspecialidad() {
     const nueva = this.nuevaEspecialidad.trim();
 
-    if (nueva && !this.especialidadesSeleccionadas.includes(nueva)) {
-      this.especialidadesSeleccionadas.push(nueva);
+    if (!nueva) return;
+
+    // Obtenemos el array actual
+    const especialidades = [...(this.formEspecialista.get('especialidad')!.value as string[])];
+
+    // Verificamos que no exista ya
+    if (!especialidades.includes(nueva)) {
+      especialidades.push(nueva);
+      
+      // Actualizar el FormControl
+      this.formEspecialista.get('especialidad')!.setValue(especialidades);
+      
+      // Agregar a las personalizadas para mostrar como chip
       this.especialidadesPersonalizadas.push(nueva);
-      this.nuevaEspecialidad = '';
-      // Sincronizamos con el form
-    this.formEspecialista.get('especialidad')?.setValue(this.especialidadesSeleccionadas);
+      
+      console.log('Especialidad agregada:', nueva);
+      console.log('Especialidades totales:', especialidades);
     }
+
+    // Limpiar el input
+    this.nuevaEspecialidad = '';
   }
 
   quitarEspecialidadPersonalizada(esp: string) {
+    // Quitar de las personalizadas
     this.especialidadesPersonalizadas = this.especialidadesPersonalizadas.filter(e => e !== esp);
-    this.especialidadesSeleccionadas = this.especialidadesSeleccionadas.filter(e => e !== esp);
+
+    // Quitar del FormControl
+    const especialidades = (this.formEspecialista.get('especialidad')!.value as string[])
+      .filter(e => e !== esp);
+
+    this.formEspecialista.get('especialidad')!.setValue(especialidades);
+    
+    console.log('Especialidad eliminada:', esp);
+    console.log('Especialidades restantes:', especialidades);
   }
 
   onArchivoSeleccionado(event: Event, imagen1: boolean = false): void 
@@ -129,6 +165,27 @@ export class RegistroComponent {
     if (input.files && input.files.length == 1) 
     {
       const archivoSeleccionado = input.files[0];
+      
+      // Crear vista previa usando FileReader
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        if (this.tipoUsuario == "Especialista") 
+        { 
+          this.vistaPreviaEspecialista = e.target.result;
+        } 
+        else if (this.tipoUsuario == "Paciente") 
+        {
+          if (imagen1) 
+          { 
+            this.vistaPrevia1 = e.target.result;
+          } 
+          else 
+          { 
+            this.vistaPrevia2 = e.target.result;
+          }
+        }
+      };
+      reader.readAsDataURL(archivoSeleccionado);
       
       if (this.tipoUsuario == "Especialista") 
       { 
@@ -163,74 +220,6 @@ export class RegistroComponent {
     else { this.swalService.LanzarAlert("Error en el registro!", "error", estadoRegistro.mensajeError); }
   }
 
-// async registrarPaciente(): Promise<void> {
-//   this.subiendoDatos = true;
-
-//   if (this.formPaciente.invalid || !this.archivoImagen1 || !this.archivoImagen2) {
-//     this.swalService.LanzarAlert('Error', 'Formulario incompleto', 'error');
-//     this.subiendoDatos = false;
-//     return;
-//   }
-
-//   // 1· Registramos en Supabase Auth
-//   const { email, clave } = this.formPaciente.value;
-//   const { data, error } = await supabase.auth.signUp({
-//     email,
-//     password: clave,
-//   });
-
-//   if (error || !data.user) {
-//     this.swalService.LanzarAlert('Error', error?.message ?? 'Falló el registro', 'error');
-//     this.subiendoDatos = false;
-//     return;
-//   }
-
-//   /* ─────────── DEFENDEMOS EL ID ─────────── */
-//   const authId = data.user.id;           // ← UUID generado por Auth
-
-//   /* ─────────── 2· Subimos las imágenes ─────────── */
-//   // bucket “clinica-files” público (o genera URL firmada si es privado)
-//   const carpeta = `pacientes/${authId}`;  // usamos el uuid para no repetir mails
-//   await this.storageService.guardarImagen('clinica-files', `${carpeta}/img1.jpg`, this.archivoImagen1);
-//   await this.storageService.guardarImagen('clinica-files', `${carpeta}/img2.jpg`, this.archivoImagen2);
-
-//   const urlImg1 = this.storageService.obtenerUrlDescarga('pacientes', `${carpeta}/img1.jpg`);
-//   const urlImg2 = this.storageService.obtenerUrlDescarga('pacientes', `${carpeta}/img2.jpg`);
-
-//   /* ─────────── 3· Insertamos en nuestra tabla ─────────── */
-//   const { nombre, apellido, edad, dni, obraSocial } = this.formPaciente.value;
-
-//   const pacienteRow = {
-//     auth_id:       authId,       // La columna uuid que creaste
-//     nombre,
-//     apellido,
-//     edad:           Number(edad),
-//     dni:            Number(dni),
-//     rol:            'Paciente',
-//     obra_social:    obraSocial,
-//     email,
-//     imagen1:        urlImg1,
-//     imagen2:        urlImg2,
-//   };
-
-//   const { error: insertError } = await supabase.from('users').insert(pacienteRow);
-
-//   if (insertError) {
-//     // Si falla la inserción, quizá quieras borrar el usuario auth y las imágenes
-//     this.swalService.LanzarAlert('Error', insertError.message, 'error');
-//     this.subiendoDatos = false;
-//     return;
-//   }
-
-//   /* ─────────── 4· Feedback al usuario ─────────── */
-//   await this.swalService.LanzarAlert(
-//     'Registro exitoso, ¡Revisá tu correo para confirmar tu cuenta!',
-//     'success'
-//   );
-//   this.router.navigate(['/inicio']);
-//   this.subiendoDatos = false;
-// }
-
   async RegistroPaciente()
   {
     this.subiendoDatos = true;
@@ -238,22 +227,32 @@ export class RegistroComponent {
     if(this.formPaciente.valid && this.archivoImagen1 && this.archivoImagen2)
     {
       const { nombre, apellido, edad, dni, obraSocial, email, clave} = this.formPaciente.value;
-      const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
-        , apellido:apellido,  edad:edad, dni:dni, rol:'Paciente', obraSocial:obraSocial, especialidades:[""],imagen1:'',imagen2:''});
-        //const resp = await this.authService.registrarUser({ email:email, clave: clave, nombre:nombre });                                                                         
+      const estadoRegistro: authResponse = await this.authService.registrarUser({
+        email: email, 
+        clave:clave, 
+        nombre: nombre, 
+        apellido:apellido,  
+        edad:edad, 
+        dni:dni, 
+        rol:'Paciente', 
+        obraSocial:obraSocial, 
+        especialidades:[""],
+        imagen1:'',
+        imagen2:''
+      });
+                                                                             
       if(!estadoRegistro.huboError) 
       {
         await this.storageService.guardarImagen('pacientes',`${email}/imagen1.jpg`, this.archivoImagen1);
         await this.storageService.guardarImagen('pacientes',`${email}/imagen2.jpg`, this.archivoImagen2);
         
-        // ---- Promesa que se resuelve después de 2 segundos para aguardar a que se guarde el contenido en fireStorage.
+        // Esperar a que se guarden las imágenes
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         const urlDescargaImg1 = await this.storageService.obtenerUrlDescarga('pacientes',`${email}/imagen1.jpg`);
         const urlDescargaImg2 = await this.storageService.obtenerUrlDescarga('pacientes',`${email}/imagen2.jpg`);
         
         const objetoPaciente = {
-         
           nombre: nombre,
           apellido: apellido,
           edad: edad,
@@ -269,7 +268,9 @@ export class RegistroComponent {
         await this.swalService.LanzarAlert("Registro del paciente exitoso!", "success", estadoRegistro.mensajeExito);
         this.router.navigateByUrl("/bienvenida");
       }
-      else { this.swalService.LanzarAlert("Error en el registro del paciente!", "error", estadoRegistro.mensajeError); }    
+      else { 
+        this.swalService.LanzarAlert("Error en el registro del paciente!", "error", estadoRegistro.mensajeError); 
+      }    
 
       this.subiendoDatos = false;
     }
@@ -280,14 +281,31 @@ export class RegistroComponent {
     if(this.formEspecialista.valid && this.archivoImagenPerfil)
     {
       this.subiendoDatos = true;
-      const { nombre, apellido, edad, dni, email, clave} = this.formEspecialista.value;
-      const estadoRegistro: authResponse = await this.authService.registrarUser({email: email, clave:clave, nombre: nombre
-        , apellido:apellido,  edad:edad, dni:dni, rol:'Especialista', especialidades:this.especialidadesSeleccionadas,imagen1:''});
+      
+      const { nombre, apellido, edad, dni, email, clave, especialidad } = this.formEspecialista.value;
+      
+      // IMPORTANTE: Usamos el array del FormControl, no la variable especialidadesSeleccionadas
+      const especialidadesFinales = especialidad as string[];
+      
+      console.log('Registrando especialista con especialidades:', especialidadesFinales);
+      
+      const estadoRegistro: authResponse = await this.authService.registrarUser({
+        email: email, 
+        clave:clave, 
+        nombre: nombre, 
+        apellido:apellido,  
+        edad:edad, 
+        dni:dni, 
+        rol:'Especialista', 
+        especialidades: especialidadesFinales,
+        imagen1:''
+      });
     
       if(!estadoRegistro.huboError) 
       {
         await this.storageService.guardarImagen('especialistas',`${email}/imagen1.jpg`, this.archivoImagenPerfil);
-        // ---- Promesa que se resuelve después de 2 segundos para aguardar a que se guarde el contenido en fireStorage.
+        
+        // Esperar a que se guarde la imagen
         await new Promise(resolve => setTimeout(resolve, 2500));
 
         const urlDescargaImgPerfil = await this.storageService.obtenerUrlDescarga('especialistas',`${email}/imagen1.jpg`);        
@@ -298,25 +316,32 @@ export class RegistroComponent {
           edad: edad,
           dni: dni,
           rol: "Especialista",
-          especialidades: this.especialidadesSeleccionadas,          
+          especialidades: especialidadesFinales,          
           email: email,
           imagen1: urlDescargaImgPerfil,
           habilitado: false,
         };
 
+        console.log('Guardando especialista:', objetoEspecialista);
+
         await this.authService.guardarContenido("usuarios", objetoEspecialista);
         await this.swalService.LanzarAlert("Registro del especialista exitoso!", "success", estadoRegistro.mensajeExito);
         this.router.navigateByUrl("/bienvenida");
       }
-      else { this.swalService.LanzarAlert("Error en el registro del especialista!", "error", estadoRegistro.mensajeError); }    
+      else { 
+        this.swalService.LanzarAlert("Error en el registro del especialista!", "error", estadoRegistro.mensajeError); 
+      }    
 
       this.subiendoDatos = false;
+    } else {
+      console.log('Formulario inválido o falta imagen');
+      console.log('Especialidades actuales:', this.formEspecialista.get('especialidad')?.value);
     }
   }
 
   ObtenerRespuestaCaptcha(captchaResponseRecibida: any): void 
   {
-    this.captchaResponse = captchaResponseRecibida; console.log(this.captchaResponse)
+    this.captchaResponse = captchaResponseRecibida; 
+    console.log(this.captchaResponse);
   }
-
 }

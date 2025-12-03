@@ -13,10 +13,6 @@
         overflow-y: auto;
     }
 
-    /* .form-registro {
-        
-    } */
-
     .registro, .form-registro{
         max-width: 800px;
         height: 90.8vh;
@@ -25,7 +21,7 @@
         text-align: center;
         background-color: #f8f9fae1;
         border-radius: 8px;
-         flex-wrap: wrap;
+        flex-wrap: wrap;
 
         @-webkit-keyframes fade-in{0%{opacity:0}100%{opacity:1}}@keyframes fade-in{0%{opacity:0}100%{opacity:1}}
         .form-paciente, .form-especialista, .especialidad-propia{
@@ -45,24 +41,19 @@
         p {
             font-size: 1.1rem;
             color: #4a4a4a;
-            /* // margin: 1rem 0; */
         }
 
         .info {
-            /* // margin-top: 2rem; */
             h2 {
                 color: #007bff;
                 font-size: 1.5rem;
-                /* // margin-bottom: 0.5rem; */
             }
             p {
-                /* // margin-bottom: 1rem; */
                 color: #555;
             }
         }
 
         button {
-            /* // margin-top: 2rem; */
             font-size: 1.2rem;
             padding: 0.5rem 2rem;
         }
@@ -70,19 +61,18 @@
 }
 
 .mat-accent.mat-mdc-radio-button {
-    --mdc-radio-selected-focus-icon-color: #00ccff;
-    --mdc-radio-selected-hover-icon-color: #0011ff;
-    --mdc-radio-selected-icon-color: #00ccff;
-    --mdc-radio-selected-pressed-icon-color: #8987ff;
-    --mat-radio-checked-ripple-color: #b587ff;
+    --mdc-radio-selected-focus-icon-color: #007bff;
+    --mdc-radio-selected-hover-icon-color: #0056b3;
+    --mdc-radio-selected-icon-color: #007bff;
+    --mdc-radio-selected-pressed-icon-color: #0056b3;
+    --mat-radio-checked-ripple-color: #007bff;
 }
 
-label {
-    mdc-label { color: black !important; }
+.contenedor-registro label {
+    color: #0056b3;
 }
 
- /* https://uiverse.io/Yaya12085/tender-moose-95 */
-
+/* https://uiverse.io/Yaya12085/tender-moose-95 */
 .custum-file-upload {
     height: 200px;
     width: 300px;
@@ -98,6 +88,33 @@ label {
     padding: 1.5rem;
     border-radius: 10px;
     box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.custum-file-upload:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0px 52px 40px -48px rgba(0,0,0,0.15);
+}
+
+.custum-file-upload.has-preview {
+    border: 2px solid #28a745;
+    padding: 0;
+}
+
+.custum-file-upload .upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    transition: opacity 0.3s ease;
+}
+
+.custum-file-upload .upload-content.hidden {
+    display: none;
 }
 
 .custum-file-upload .icon {
@@ -115,6 +132,7 @@ label {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
 .custum-file-upload .text span {
@@ -124,6 +142,53 @@ label {
 
 .custum-file-upload input {
     display: none;
+}
+
+/* Vista previa de la imagen */
+.preview-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.custum-file-upload:hover .image-preview {
+    opacity: 0.85;
+}
+
+/* Indicador de cambio de imagen */
+.custum-file-upload.has-preview::after {
+    content: '✎ Cambiar imagen';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 123, 255, 0.9);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.custum-file-upload.has-preview:hover::after {
+    opacity: 1;
 }
 
 .captcha-box {
@@ -145,18 +210,20 @@ label {
 }
 
 .imagen-paciente, .imagen-doctor {
-    width: 20vw;              /* cada imagen ocupa el 60% del ancho de la pantalla */
-  max-width: 200px;         /* límite máximo en pantallas grandes */
-  height: auto;             /* mantiene proporción */
-  border-radius: 2rem;
-  padding: 1rem;
-  margin: 2rem auto;
-  display: block;
-  transition: transform 0.3s ease;
-  cursor: pointer;
+    width: 20vw;
+    max-width: 200px;
+    height: auto;
+    border-radius: 2rem;
+    padding: 1rem;
+    margin: 2rem auto;
+    display: block;
+    transition: transform 0.3s ease;
+    cursor: pointer;
 }
 
-.imagen-paciente:hover, .imagen-doctor:hover { transform: scale(1.05); }
+.imagen-paciente:hover, .imagen-doctor:hover { 
+    transform: scale(1.05); 
+}
 
 .fab-volver {
     position: fixed;
@@ -179,14 +246,218 @@ label {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+    background-color: rgba(255, 255, 255, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1050; /* Asegúrate de que esté por encima de otros elementos */
+    z-index: 1050;
 }
 
 .contenedor-recaptcha { 
     margin-left: 25%; 
     margin-bottom: 1rem;
+}
+
+/* ===== MAT-CHECKBOX - MEJORAR VISIBILIDAD CON MÁXIMA ESPECIFICIDAD ===== */
+.contenedor-registro .form-especialista .especialidades-container .mat-mdc-checkbox .mdc-label,
+.contenedor-registro .mat-mdc-checkbox .mdc-label,
+.mat-mdc-checkbox .mdc-label {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem !important;
+    opacity: 1 !important;
+}
+
+.contenedor-registro .mat-mdc-checkbox label,
+.mat-mdc-checkbox label {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+}
+
+.mat-mdc-checkbox .mdc-checkbox__checkmark {
+    color: #fff !important;
+}
+
+.contenedor-registro .mat-mdc-checkbox .mdc-checkbox__background,
+.mat-mdc-checkbox .mdc-checkbox__background {
+    border-color: #000000 !important;
+    border-width: 2.5px !important;
+}
+
+.contenedor-registro .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background,
+.mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+.mat-mdc-checkbox:hover .mdc-checkbox__background {
+    border-color: #007bff !important;
+}
+
+/* ===== MAT-RADIO-BUTTON - MEJORAR VISIBILIDAD CON MÁXIMA ESPECIFICIDAD ===== */
+.contenedor-registro .form-paciente .mat-mdc-radio-button .mdc-label,
+.contenedor-registro .mat-mdc-radio-button .mdc-label,
+.contenedor-registro .mat-mdc-radio-button label,
+.mat-mdc-radio-button .mdc-label,
+.mat-mdc-radio-button label {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem !important;
+    opacity: 1 !important;
+}
+
+.contenedor-registro .mat-mdc-radio-button .mdc-radio__outer-circle,
+.mat-mdc-radio-button .mdc-radio__outer-circle {
+    border-color: #000000 !important;
+    border-width: 2.5px !important;
+}
+
+.contenedor-registro .mat-mdc-radio-button.mat-mdc-radio-checked .mdc-radio__outer-circle,
+.mat-mdc-radio-button.mat-mdc-radio-checked .mdc-radio__outer-circle {
+    border-color: #007bff !important;
+}
+
+.contenedor-registro .mat-mdc-radio-button.mat-mdc-radio-checked .mdc-radio__inner-circle,
+.mat-mdc-radio-button.mat-mdc-radio-checked .mdc-radio__inner-circle {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+.mat-mdc-radio-button:hover .mdc-radio__outer-circle {
+    border-color: #007bff !important;
+}
+
+/* ===== MAT-RADIO-GROUP LAYOUT ===== */
+.mat-mdc-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.mat-mdc-radio-button {
+    margin: 0.25rem 0;
+}
+
+/* ===== ESTILOS PARA ESPECIALIDADES ===== */
+.especialidades-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    text-align: left;
+}
+
+.especialidades-container mat-checkbox {
+    display: block;
+    margin: 0.5rem 0;
+}
+
+.especialidades-help-text {
+    font-size: 0.9rem;
+    color: #333 !important;
+    font-weight: 500 !important;
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+}
+
+.otra-especialidad {
+    margin-top: 1rem;
+}
+
+/* ===== CHIPS DE ESPECIALIDADES PERSONALIZADAS ===== */
+.especialidades-personales {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    min-height: 50px;
+}
+
+.chips-label {
+    width: 100%;
+    font-size: 0.9rem;
+    color: #0056b3 !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white !important;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    gap: 0.5rem;
+}
+
+.chip:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.chip:active {
+    transform: scale(0.95);
+}
+
+/* ===== MEJORAR CONTRASTE GENERAL DE FORMULARIOS ===== */
+.form-paciente label,
+.form-especialista label,
+.form-paciente .form-label,
+.form-especialista .form-label {
+    color: #0056b3 !important;
+    font-weight: 600 !important;
+}
+
+.form-paciente input,
+.form-especialista input,
+.form-paciente select,
+.form-especialista select {
+    color: #1a1a1a !important;
+    font-weight: 400 !important;
+}
+
+.form-control {
+    color: #1a1a1a !important;
+}
+
+.form-control::placeholder {
+    color: #6c757d !important;
+    opacity: 0.7;
+}
+
+/* ===== MAT-FORM-FIELD - MEJORAR VISIBILIDAD ===== */
+.mat-mdc-form-field {
+    width: 100%;
+}
+
+.mat-mdc-form-field .mat-mdc-input-element {
+    color: #1a1a1a !important;
+    font-weight: 400 !important;
+}
+
+.mat-mdc-form-field .mat-mdc-floating-label {
+    color: #495057 !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+    color: #007bff !important;
+}
+
+/* ===== TEXTOS DE VALIDACIÓN ===== */
+.text-danger {
+    color: #dc3545 !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    margin-top: 0.25rem !important;
 }

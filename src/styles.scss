@@ -70,3 +70,92 @@ body { margin: 0; }
     margin-bottom: 3rem;
 }
 
+/* ===== SOBRESCRIBIR ESTILOS DE MATERIAL ANGULAR - REGISTRO ===== */
+
+/* Checkboxes más oscuros y visibles */
+.mat-mdc-checkbox {
+  .mdc-form-field {
+    color: #000000 !important;
+    font-weight: 600 !important;
+  }
+  
+  .mdc-label {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem !important;
+    opacity: 1 !important;
+  }
+  
+  label {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+  }
+
+  .mdc-checkbox__background {
+    border-color: #000000 !important;
+    border-width: 2.5px !important;
+  }
+
+  &.mat-mdc-checkbox-checked .mdc-checkbox__background {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+  }
+}
+
+/* Radio buttons más oscuros y visibles */
+.mat-mdc-radio-button {
+  .mdc-form-field {
+    color: #000000 !important;
+    font-weight: 600 !important;
+  }
+
+  .mdc-label {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem !important;
+    opacity: 1 !important;
+  }
+
+  label {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+  }
+
+  .mdc-radio__outer-circle {
+    border-color: #000000 !important;
+    border-width: 2.5px !important;
+  }
+
+  &.mat-mdc-radio-checked {
+    .mdc-radio__outer-circle {
+      border-color: #007bff !important;
+    }
+
+    .mdc-radio__inner-circle {
+      background-color: #007bff !important;
+      border-color: #007bff !important;
+    }
+  }
+}
+
+/* Radio group layout */
+.mat-mdc-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+
+  .mat-mdc-radio-button {
+    margin: 0.25rem 0;
+  }
+}
+
+/* Contenedor de especialidades */
+.especialidades-container {
+  .mat-mdc-checkbox {
+    display: block;
+    margin: 0.75rem 0;
+  }
+}
