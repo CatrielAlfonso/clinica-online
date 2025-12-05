@@ -1,5 +1,4 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-//import { FirestoreService } from '../../services/firebase/firestore.service';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { SweetAlertService } from '../../services/sweet-alert.service';
@@ -8,7 +7,6 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { PipesModule } from '../../modules/pipes/pipes/pipes.module';
 import { FormsModule } from '@angular/forms';
-
 
 @Component({
   selector: 'app-mi-perfil',
@@ -78,7 +76,6 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
 
     if(this.miPerfil.horariosDisponibles)
     {
-
       if(this.miPerfil.horariosDisponibles[0].split("-").length == 2) 
       {
         this.horarioInicioLunes = this.miPerfil.horariosDisponibles[0].split("-")[0]; 
@@ -186,15 +183,10 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
       }
 
       if(contador == 0) { horarioInicioLunesValidado = true; }
-      
       if(contador == 1) { horarioInicioMartesValidado = true; }
-      
       if(contador == 2) { horarioInicioMiercolesValidado = true; }
-      
       if(contador == 3) { horarioInicioJuevesValidado = true; }
-      
       if(contador == 4) { horarioInicioViernesValidado = true; }
-      
       if(contador == 5) { horarioInicioSabadoValidado = true; }
       
       contador++;
@@ -263,15 +255,10 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
       }
 
       if(contador == 0) { horarioFinLunesValidado = true; }
-      
       if(contador == 1) { horarioFinMartesValidado = true; }
-      
       if(contador == 2) { horarioFinMiercolesValidado = true; }
-      
       if(contador == 3) { horarioFinJuevesValidado = true; }
-      
       if(contador == 4) { horarioFinViernesValidado = true; }
-      
       if(contador == 5) { horarioFinSabadoValidado = true; }
       
       contador++;
@@ -336,61 +323,193 @@ export class MiPerfilComponent implements OnInit, OnDestroy{
     const doc = new jsPDF();
     const fecha = new Date();
     const margenIzquierdo = 20;
-    const margenSuperior = 20;
-    const espacioEntreLineas = 10;
+    const margenDerecho = 190;
+    const espacioEntreLineas = 8;
     const logoClinica = new Image();
     logoClinica.src = "/imgs/iconoClinica.png";
-    let y = 50;
 
     const anchoPagina: number = doc.internal.pageSize.getWidth();
+    const altoPagina: number = doc.internal.pageSize.getHeight();
 
+    // Primera página - Portada
     doc.addImage(logoClinica, "png", anchoPagina - 55, 7, 30, 20);
     doc.setFontSize(32);
     doc.setFont("helvetica", "bold");
-    doc.text("Mi Historia clínica", anchoPagina / 2, 20, { align: "center" });
-    doc.setDrawColor(0); // negro
+    doc.text("Mi Historia Clínica", anchoPagina / 2, 20, { align: "center" });
+    doc.setDrawColor(0);
     doc.line(20, 35, anchoPagina - 20, 35);
 
+    let y = 50;
     doc.setFontSize(14);
-    doc.text(`Paciente: ${historiaClinicaPaciente.nombrePaciente}`, 10, y);
+    doc.text(`Paciente: ${historiaClinicaPaciente.nombrePaciente}`, margenIzquierdo, y);
     y += espacioEntreLineas;
-    doc.text(`Edad: ${historiaClinicaPaciente.edadPaciente}`, margenIzquierdo, y);
+    doc.text(`Edad: ${historiaClinicaPaciente.edadPaciente} años`, margenIzquierdo, y);
     y += espacioEntreLineas;
-    doc.text(`Documento: ${historiaClinicaPaciente.dniPaciente}`, margenIzquierdo, y);
+    doc.text(`Documento: ${this.formatearDni(historiaClinicaPaciente.dniPaciente)}`, margenIzquierdo, y);
     y += espacioEntreLineas;
-    doc.text(`Visitas al ${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}: ${historiaClinicaPaciente.visitas.length} visitas`, margenIzquierdo, y);
+    doc.text(`Total de Visitas: ${historiaClinicaPaciente.visitas.length}`, margenIzquierdo, y);
+    y += espacioEntreLineas;
+    doc.text(`Fecha de emisión: ${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`, margenIzquierdo, y);
 
-    let pagina: number = 1;
+    // Agregar número de página
+    doc.setFontSize(10);
+    doc.text(`Página 1`, anchoPagina / 2, altoPagina - 10, { align: "center" });
 
-    doc.text(`${pagina}`, anchoPagina / 2 , 290);
+    let numeroPagina = 1;
 
-    for(const visita of historiaClinicaPaciente.visitas)
+    // Filtrar visitas según especialidad seleccionada
+    const visitasFiltradas = historiaClinicaPaciente.visitas.filter((visita: any) => 
+      visita.especialidadVisitada === this.especialidadSeleccionada || 
+      this.especialidadSeleccionada === "Todas" || 
+      this.especialidadSeleccionada === ""
+    );
+
+    // Una página por cada visita
+    for(let i = 0; i < visitasFiltradas.length; i++)
     {
-      if(visita.especialidadVisitada == this.especialidadSeleccionada || this.especialidadSeleccionada == "Todas" || this.especialidadSeleccionada == "")
-      {
-        doc.addPage();
-        pagina = pagina + 1;
-        
-        doc.setFont('PTSans', 'bold')
-        doc.text("VISITAS",anchoPagina / 2 ,20,{ align: "center" });
-        doc.setFont("helvetica", "bold");
-        doc.text(`Fecha de visita: ${visita.fechaVisita}`, 20, 40);
-        doc.text(`Horario de visita: ${visita.horarioVisita}`, 20, 60);
-        doc.text(`Especialidad visitada: ${visita.especialidadVisitada}`, 20, 80);
-        doc.text(`Especialista visitado: ${visita.nombreEspecialista}`, 20, 100);
-        doc.text(`Dni especialista: ${visita.dniEspecialista}`, 20, 120);
-        doc.text(`Altura del paciente: ${visita.alturaPaciente}`, 20, 140);
-        doc.text(`Peso del paciente: ${visita.pesoPaciente}`, 20, 160);
-        doc.text(`Temperatura del paciente: ${visita.temperaturaPaciente}`, 20, 180);
-        doc.text(`Presion del paciente: ${visita.presionPaciente}`, 20, 200);
-        doc.text(`Diagnóstico: ${visita.diagnosticoPaciente}`, 20, 220);
-        const textoSpliteado = doc.splitTextToSize(`Detalle del diagnóstico: ${visita.detalleDiagnosticoPaciente}`, anchoPagina - 20);
-        doc.text(textoSpliteado, 20, 240);
+      const visita = visitasFiltradas[i];
+      
+      doc.addPage();
+      numeroPagina++;
+      
+      y = 20;
+      
+      // Encabezado de la página
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Visita #${i + 1}`, anchoPagina / 2, y, { align: "center" });
+      y += 15;
+      
+      doc.setDrawColor(0, 102, 204);
+      doc.setLineWidth(0.5);
+      doc.line(20, y, anchoPagina - 20, y);
+      y += 10;
 
-        doc.text(`${pagina}`, anchoPagina / 2, 290);
+      // Información de la consulta
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 102, 204);
+      doc.text("📋 INFORMACIÓN DE LA CONSULTA", margenIzquierdo, y);
+      y += 8;
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      
+      doc.text(`Fecha: ${visita.fechaVisita}`, margenIzquierdo, y);
+      doc.text(`Horario: ${visita.horarioVisita}`, margenIzquierdo + 90, y);
+      y += 6;
+      
+      doc.text(`Especialidad: ${visita.especialidadVisitada}`, margenIzquierdo, y);
+      y += 6;
+      
+      doc.text(`Especialista: ${visita.nombreEspecialista} ${visita.apellidoEspecialista}`, margenIzquierdo, y);
+      y += 6;
+      
+      doc.text(`DNI Especialista: ${this.formatearDni(visita.dniEspecialista)}`, margenIzquierdo, y);
+      y += 10;
+
+      // Signos Vitales
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.setTextColor(0, 153, 51);
+      doc.text("💓 SIGNOS VITALES", margenIzquierdo, y);
+      y += 8;
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      
+      const col1X = margenIzquierdo;
+      const col2X = margenIzquierdo + 90;
+      
+      doc.text(`Altura: ${visita.alturaPaciente} cm`, col1X, y);
+      doc.text(`Peso: ${visita.pesoPaciente} kg`, col2X, y);
+      y += 6;
+      
+      doc.text(`Temperatura: ${visita.temperaturaPaciente} °C`, col1X, y);
+      doc.text(`Presión: ${visita.presionPaciente}`, col2X, y);
+      y += 10;
+
+      // Diagnóstico
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.setTextColor(204, 153, 0);
+      doc.text("🔍 DIAGNÓSTICO", margenIzquierdo, y);
+      y += 8;
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      
+      doc.text(`Clave: ${visita.diagnosticoPaciente}`, margenIzquierdo, y);
+      y += 6;
+      
+      const textoSpliteado = doc.splitTextToSize(
+        `Detalle: ${visita.detalleDiagnosticoPaciente}`, 
+        margenDerecho - margenIzquierdo
+      );
+      doc.text(textoSpliteado, margenIzquierdo, y);
+      y += textoSpliteado.length * 5 + 5;
+
+      // Datos Dinámicos (NUEVO)
+      if (visita.datosDinamicos && Object.keys(visita.datosDinamicos).length > 0) {
+        // Verificar si hay espacio suficiente, si no, agregar nueva página
+        if (y > altoPagina - 60) {
+          doc.addPage();
+          numeroPagina++;
+          y = 20;
+          
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "italic");
+          doc.text(`Continuación Visita #${i + 1}`, anchoPagina / 2, y, { align: "center" });
+          y += 10;
+        }
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.setTextColor(153, 51, 204);
+        doc.text("📊 DATOS ADICIONALES", margenIzquierdo, y);
+        y += 8;
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+
+        for (const clave in visita.datosDinamicos) {
+          const dato = visita.datosDinamicos[clave];
+          
+          // Verificar espacio
+          if (y > altoPagina - 20) {
+            doc.addPage();
+            numeroPagina++;
+            y = 20;
+          }
+          
+          let valorTexto = `${dato.valor}`;
+          if (dato.unidad) {
+            valorTexto += ` ${dato.unidad}`;
+          }
+          
+          doc.setFont("helvetica", "bold");
+          doc.text(`• ${clave}:`, margenIzquierdo, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(valorTexto, margenIzquierdo + 60, y);
+          y += 6;
+        }
       }
+
+      // Número de página
+      doc.setFontSize(10);
+      doc.setTextColor(128, 128, 128);
+      doc.text(`Página ${numeroPagina}`, anchoPagina / 2, altoPagina - 10, { align: "center" });
     }
 
-    doc.save(`HistoriaClinica-${historiaClinicaPaciente.nombrePaciente}-${fecha.getDate()}${fecha.getMonth() + 1}.pdf`);
+    doc.save(`HistoriaClinica-${historiaClinicaPaciente.nombrePaciente}-${fecha.getDate()}-${fecha.getMonth() + 1}-${fecha.getFullYear()}.pdf`);
+  }
+
+  private formatearDni(dni: number | string): string {
+    const dniStr = dni.toString();
+    return dniStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
 }

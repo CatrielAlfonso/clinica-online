@@ -472,3 +472,27 @@ button.agregarEspecialidad mat-icon {
     font-size: 0.875rem !important;
     margin-top: 0.25rem !important;
 }
+
+.btn-usuario {
+    background-color: #28a745;           /* Fondo verde */
+    padding: 1rem;
+    border-radius: 2rem;
+    display: inline-block;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    margin: 2rem auto;
+}
+
+.btn-usuario:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 18px rgba(0, 128, 0, 0.4);
+}
+
+/* La imagen mantiene su tamaño original tal como la usabas antes */
+.imagen-usuario {
+    width: 20vw;
+    max-width: 200px;
+    height: auto;
+    border-radius: 1.5rem;
+    display: block;
+}

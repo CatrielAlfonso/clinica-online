@@ -4,43 +4,202 @@
     text-align: center;
     margin: 0 auto;
     background-color: #f8f9fae1;
-    // overflow-y: auto;
+    
     h1 { 
         margin-top: 2rem;
         color: rgb(0, 119, 255); 
     }
+    
     button { 
         margin-left: .5rem;
-        transform: 0.2s; 
+        transition: 0.2s; 
     }
-    button:hover { transform: scale(1.2); }
+    
+    button:hover { 
+        transform: scale(1.2); 
+    }
 }
 
-@-webkit-keyframes bg-pan-right{0%{background-position:0 50%}100%{background-position:100% 50%}}@keyframes bg-pan-right{0%{background-position:0 50%}100%{background-position:100% 50%}}
+@-webkit-keyframes bg-pan-right {
+    0% { background-position: 0 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+@keyframes bg-pan-right {
+    0% { background-position: 0 50%; }
+    100% { background-position: 100% 50%; }
+}
+
 :host {
     background-image: url('/imgs/bg-log2.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    display: block; /* Para asegurarte de que ocupa toda la ventana */
-    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    display: block;
+    height: 100vh;
     width: 100%;
     padding-top: 5rem;
     background-size: 120% auto;
-    -webkit-animation:bg-pan-right 20s linear infinite alternate-reverse both;animation:bg-pan-right 20s linear infinite alternate-reverse both;
+    -webkit-animation: bg-pan-right 20s linear infinite alternate-reverse both;
+    animation: bg-pan-right 20s linear infinite alternate-reverse both;
 }
 
-.star {
-  font-size: 24px;
-  cursor: pointer;
-  color: #ccc;
-  transition: color .2s;
-  user-select: none;
-}
-.star.filled {
-  color: #ffc107;                /* dorado */
+// ===============================================
+// ESTILOS PARA EL SLIDER DE CALIFICACIÓN
+// ===============================================
+.slider-container {
+    padding: 20px 10px;
+    margin: 15px 0;
+    
+    ::ng-deep {
+        .mdc-slider {
+            width: 100% !important;
+            
+            .mdc-slider__track {
+                height: 8px !important;
+            }
+            
+            .mdc-slider__track--active_fill {
+                border-color: #0d6efd !important;
+            }
+            
+            .mdc-slider__track--inactive {
+                background-color: #e9ecef !important;
+                opacity: 1 !important;
+            }
+            
+            .mdc-slider__thumb-knob {
+                width: 24px !important;
+                height: 24px !important;
+                background-color: #0d6efd !important;
+                border: 4px solid white !important;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+            }
+            
+            .mdc-slider__value-indicator {
+                background-color: #0d6efd !important;
+                font-weight: bold !important;
+            }
+        }
+        
+        .mat-mdc-slider {
+            width: 100%;
+            
+            .mdc-slider__thumb {
+                cursor: pointer !important;
+            }
+        }
+    }
 }
 
+// ===============================================
+// ESTILOS PARA LOS CONTROLES DINÁMICOS
+// ===============================================
+.espaciado-b-x1 {
+    margin-bottom: 1rem;
+}
+
+.espaciado-t-x1 {
+    margin-top: 1rem;
+}
+
+// Estilo para el input de rango (Control 1)
+.form-range {
+    width: 100%;
+    height: 8px;
+    margin: 10px 0;
+    cursor: pointer;
+    
+    &::-webkit-slider-thumb {
+        width: 20px;
+        height: 20px;
+        background: #0d6efd;
+        border: 2px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+        
+        &:hover {
+            transform: scale(1.2);
+        }
+    }
+    
+    &::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #0d6efd;
+        border: 2px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+        
+        &:hover {
+            transform: scale(1.2);
+        }
+    }
+    
+    &::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 8px;
+        background: linear-gradient(to right, #0d6efd 0%, #0d6efd var(--value), #e9ecef var(--value), #e9ecef 100%);
+        border-radius: 4px;
+    }
+    
+    &::-moz-range-track {
+        width: 100%;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+    }
+    
+    &::-moz-range-progress {
+        background: #0d6efd;
+        border-radius: 4px;
+        height: 8px;
+    }
+}
+
+// Estilo para el switch (Control 3)
+::ng-deep {
+    .mat-mdc-slide-toggle {
+        .mdc-switch {
+            .mdc-switch__track {
+                height: 24px !important;
+                border-radius: 12px !important;
+            }
+            
+            .mdc-switch__handle-track {
+                height: 100% !important;
+            }
+            
+            .mdc-switch__handle {
+                width: 20px !important;
+                height: 20px !important;
+                
+                &::after {
+                    width: 20px !important;
+                    height: 20px !important;
+                }
+            }
+        }
+        
+        &.mat-mdc-slide-toggle-checked {
+            .mdc-switch__track::after {
+                background: #0d6efd !important;
+            }
+            
+            .mdc-switch__handle::after {
+                background: white !important;
+            }
+        }
+    }
+}
+
+// ===============================================
+// ESTILOS PARA LA TABLA
+// ===============================================
 .contenedor-tabla {
     padding: 1rem;
     overflow-y: auto;
@@ -48,16 +207,16 @@
     
     table {
         border-collapse: separate;
-        border-spacing: 0 10px; /* Espacio de 10px entre filas */
+        border-spacing: 0 10px;
     }
 
     table .body tr td {
         padding: 15px;
-        background-color: #fff ;
+        background-color: #fff;
     }
 
     table .body tr {
-        box-shadow: 0px 0px 15px 5px rgba(0,0,0,0.1);
+        box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.1);
     }
 
     table .head tr th {
@@ -72,18 +231,155 @@
     }
 }
 
+// ===============================================
+// ESTILOS ANTIGUOS (ESTRELLAS)
+// ===============================================
+.star {
+    font-size: 24px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.2s;
+    user-select: none;
+    
+    &.filled {
+        color: #ffc107;
+    }
+}
+
 i {
     font-size: 1.5rem;
     padding-right: 0.1rem;
     color: #b0c4de;
-}
-.filled {
-    color: #1e90ff;
-}
-.low {
-    color: #deb0b0;
-}
-.filled.low {
-    color: #ff1e1e;
+    
+    &.filled {
+        color: #1e90ff;
+    }
+    
+    &.low {
+        color: #deb0b0;
+    }
+    
+    &.filled.low {
+        color: #ff1e1e;
+    }
 }
 
+// ===============================================
+// SPINNER DE CARGA
+// ===============================================
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+// ===============================================
+// ESTILOS PARA HISTORIA CLÍNICA MEJORADA
+// ===============================================
+
+// Color púrpura para datos adicionales
+.border-purple {
+    border-color: #9b59b6 !important;
+}
+
+.bg-purple {
+    background-color: #9b59b6;
+}
+
+// Mejoras para las tarjetas de información
+.card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+}
+
+// Estilos para el acordeón de visitas
+.accordion-button {
+    font-weight: 500;
+    
+    &:not(.collapsed) {
+        background-color: #e7f3ff;
+        color: #0d6efd;
+    }
+    
+    &:focus {
+        box-shadow: none;
+        border-color: rgba(13, 110, 253, 0.25);
+    }
+}
+
+.accordion-item {
+    border-radius: 8px !important;
+    overflow: hidden;
+    
+    &:not(:last-child) {
+        margin-bottom: 1rem;
+    }
+}
+
+// Estilos para los badges de información
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+}
+
+// Mejoras para las tarjetas de signos vitales
+.bg-light {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e9ecef;
+    
+    &:hover {
+        background-color: #e9ecef !important;
+    }
+}
+
+// Animación para el progreso de severidad
+.progress-bar {
+    transition: width 0.6s ease;
+    font-weight: bold;
+}
+
+// Modal más ancho para historia clínica
+.modal-xl {
+    max-width: 1200px;
+}
+
+// Mejoras visuales para headers de cards
+.card-header {
+    h5, h6 {
+        margin: 0;
+        font-weight: 600;
+    }
+}
+
+// Responsive para dispositivos móviles
+@media (max-width: 768px) {
+    .modal-xl {
+        max-width: 95%;
+    }
+    
+    .accordion-button {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
+    
+    .card-body .row > div {
+        margin-bottom: 0.5rem;
+    }
+}

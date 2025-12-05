@@ -22,7 +22,6 @@
     </div>
 
     <div class="contenedor-tabla">
-
             <table class="table">
                 <thead class="head">
                     <tr>
@@ -44,9 +43,7 @@
                         <td>{{turno.especialidadEspecialista}}</td>
                         <td><img src="{{turno.imagen1}}" height="64px"></td>
                         <td>{{turno.estado}}</td>
-                        <!-- <td>{{turno.mensajeEstado}}</td> -->
                         <td>
-                            <!-- <button class="btn btn-danger" (click)="this.CancelarTurno(turno)" *ngIf="!turno.cancelado">Cancelar turno</button> -->
                             <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCancelarTurnoPaciente" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.estado != 'Finalizado' && turno.estado != 'Cancelado'">
                                 Cancelar turno
                             </button>
@@ -58,14 +55,12 @@
                             <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalCalificarAtencion" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.estado == 'Finalizado' && turno.valoracionConsulta == 0 && turno.comentarioValoracion == ''">
                                 Calificar atención
                             </button>
-                            <!-- <p *ngIf="turno.cancelado">El turno ya fue cancelado</p> -->
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-<!-- </div> -->
 
 <div class="row g-3 contenedor-mis-turnos mat-elevation-z8" *ngIf="!this.cargandoDatos && this.userService.rolUsuarioLogueado == 'Especialista'">
     <h1>Mis turnos</h1>
@@ -113,7 +108,6 @@
                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCancelarTurnoEspecialista" (click)="this.AsignarTurnoSeleccionado(turno)" *ngIf="turno.estado == 'Pendiente'">
                             Cancelar turno
                         </button>
-                        <!-- <button class="btn btn-danger" (click)="this.CancelarTurno(turno)" *ngIf="!turno.cancelado && !turno.aprobado">Cancelar turno</button> -->
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAceptarTurnoEspecialista" (click)="this.AsignarTurnoSeleccionado(turno)"*ngIf="turno.estado == 'Pendiente'">
                             Aceptar turno
                         </button>
@@ -129,38 +123,85 @@
                         <p *ngIf="turno.finalizado">El turno ya fue finalizado</p>
                     </td>
                 </tr>
-
             </tbody>
         </table>
     </div>
 </div>
-
-<!-- Modal finalizar turno (especialista) -->
+<!-- Modal finalizar turno (especialista) - CORREGIDO -->
 <div class="modal fade" id="modalFinalizarTurno" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Finalizar turno de {{turnoSeleccionado.nombrePaciente | acortarNombre }}</h1>
+                <button type="button" class="btn-close" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">
+                <!-- Mostrar especialidad del turno -->
+                <div class="alert alert-info" *ngIf="turnoSeleccionado.especialidadEspecialista">
+                    <strong>Especialidad:</strong> {{turnoSeleccionado.especialidadEspecialista}}
+                </div>
+
                 <input type="text" class="form-control" placeholder="Deje una reseña o comentario sobre el turno" [(ngModel)]="this.mensajeEstado">
                 <hr />
+                
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Datos necesarios para armar la historia clínica:</h1>
+                
+                <!-- Datos estándar -->
                 <input type="number" class="form-control espaciado-b-x1" placeholder="Altura del paciente (en cm)" [(ngModel)]="this.alturaPaciente">
                 <input type="number" class="form-control espaciado-b-x1" placeholder="Peso del paciente (en kg)" [(ngModel)]="this.pesoPaciente">
                 <input type="number" class="form-control espaciado-b-x1" placeholder="Temperatura del paciente (en ºC)" [(ngModel)]="this.temperaturaPaciente">
                 <input type="number" class="form-control espaciado-b-x1" placeholder="Presión del paciente" [(ngModel)]="this.presionPaciente">
                 <input type="text" class="form-control espaciado-b-x1" placeholder="Ingrese una clave para el diagnostico (ej: caries)" [(ngModel)]="this.diagnosticoPaciente">
-                <input type="text" class="form-control" placeholder="Ingrese un valor para la clave especificada" [(ngModel)]="this.detalleDiagnosticoPaciente">
+                <input type="text" class="form-control espaciado-b-x1" placeholder="Ingrese un valor para la clave especificada" [(ngModel)]="this.detalleDiagnosticoPaciente">
+
+                <hr />
+
+                <h1 class="modal-title fs-6" id="exampleModalLabel">Datos dinámicos adicionales:</h1>
+                
+                <!-- 1. CONTROL DE RANGO (0-100) -->
+                <div class="espaciado-b-x1">
+                    <label class="form-label">Nivel de severidad (0-100): {{this.rangoDinamico}}</label>
+                    <input type="range" 
+                           class="form-range" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           [(ngModel)]="this.rangoDinamico">
+                </div>
+
+                <!-- 2. CUADRO DE TEXTO NUMÉRICO -->
+                <div class="espaciado-b-x1">
+                    <input type="number" 
+                           class="form-control" 
+                           placeholder="Frecuencia cardíaca (ppm)" 
+                           [(ngModel)]="this.numeroDinamico">
+                </div>
+
+                <!-- 3. SWITCH SI/NO -->
+                <div class="espaciado-b-x1 d-flex align-items-center">
+                    <label class="form-label me-3 mb-0">¿Requiere seguimiento?</label>
+                    <mat-slide-toggle 
+                        [(ngModel)]="this.switchDinamico"
+                        color="primary">
+                        {{this.switchDinamico ? 'Sí' : 'No'}}
+                    </mat-slide-toggle>
+                </div>
             </div>
-
-
             
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning" (click)="this.FinalizarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
-                    Finalizar turno
+                <button type="button" class="btn btn-secondary" >Cerrar</button>
+                <!-- FIX: Deshabilitar botón mientras procesa -->
+                <button type="button" 
+                        class="btn btn-warning" 
+                        (click)="this.FinalizarTurno(turnoSeleccionado, this.mensajeEstado)" 
+                     
+                        [disabled]="this.procesandoFinalizacion">
+                    <span *ngIf="!this.procesandoFinalizacion">Finalizar turno</span>
+                    <span *ngIf="this.procesandoFinalizacion">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Procesando...
+                    </span>
                 </button>
             </div>
         </div>
@@ -180,7 +221,7 @@
             </div>
             
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" >Cerrar</button>
                 <button type="button" class="btn btn-danger" (click)="this.CancelarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
                     Cancelar turno
                 </button>
@@ -189,7 +230,7 @@
     </div>
 </div>
 
-<!-- Modal reseñas turno (paciente) -->
+<!-- Modal reseñas turno -->
 <div class="modal fade" id="modalVerReseña" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -227,31 +268,9 @@
             </div>
             
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-danger" (click)="this.CancelarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
                     Cancelar turno
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal rechazar turno (especialista) -->
-<div class="modal fade" id="modalRechazarTurnoEspecialista" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Rechazar turno de {{turnoSeleccionado.nombrePaciente | acortarNombre}}</h1>
-            </div>
-
-            <div class="modal-body">
-                <input type="text" class="form-control" placeholder="Deje una reseña o comentario sobre el motivo del rechazo del turno" [(ngModel)]="this.mensajeEstado">
-            </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger" (click)="this.FinalizarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
-                    Rechazar turno
                 </button>
             </div>
         </div>
@@ -271,7 +290,7 @@
             </div>
             
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-success" (click)="this.AceptarTurno(turnoSeleccionado, this.mensajeEstado)" data-bs-dismiss="modal">
                     Aceptar turno
                 </button>
@@ -280,7 +299,7 @@
     </div>
 </div>
 
-<!-- Modal Calificar atención -->
+<!-- Modal Calificar atención (CORREGIDO) -->
 <div class="modal fade" id="modalCalificarAtencion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="this.turnoSeleccionado">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -290,34 +309,38 @@
 
             <div class="modal-body">
                 <input  type="text"
-                    class="form-control"
+                    class="form-control mb-3"
                     placeholder="Deje un comentario…"
                     [(ngModel)]="mensajeResenia">
 
                 <hr />
 
-                <p>
-                Del 1 al 10, ¿cómo te trató
-                {{ turnoSeleccionado.nombreEspecialista | acortarNombre }}?
+                <p class="mb-3">
+                    Del 1 al 10, ¿cómo te trató {{ turnoSeleccionado.nombreEspecialista | acortarNombre }}?
                 </p>
 
-                <!-- Slider Material – 10 pasos (input)="onSlider($event.value) -->
-                <mat-slider  min="1" max="10" step="1" 
-                            tickInterval="1"        
-                            thumbLabel             
-                            [(ngModel)]="rating"   
-                            [displayWith]="formatLabel" 
-                           
-                            >
-                </mat-slider>
+                <!-- FIX: Slider Material corregido -->
+                <div class="slider-container">
+                    <mat-slider 
+                        min="1" 
+                        max="10" 
+                        step="1" 
+                        discrete
+                        [displayWith]="formatLabel"
+                        class="w-100">
+                        <input matSliderThumb 
+                               [(ngModel)]="rating">
+                    </mat-slider>
+                </div>
 
-                <p>Me trató de: <b>{{ rating }}</b> puntos!</p>
+                <p class="text-center mt-3">
+                    <strong>Calificación: {{ rating }} puntos</strong>
+                </p>
                 <hr />
-                
             </div>
             
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-success" (click)="this.GuardarValoracionUsuario(turnoSeleccionado, this.mensajeResenia)" data-bs-dismiss="modal">
                     Valorar turno
                 </button>
@@ -326,49 +349,206 @@
     </div>
 </div>
 
-<!-- Modal historia clínica -->
+<!-- Modal historia clínica MEJORADO -->
 <div class="modal fade" id="modalVerHistoria" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" *ngIf="this.historiaClinicaDetallada.dniPaciente">
+    <div class="modal-dialog modal-xl" *ngIf="this.historiaClinicaDetallada.dniPaciente">
         <div class="modal-content" style="max-height: 700px; overflow-y: auto;">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Historia clinica de {{this.historiaClinicaDetallada.nombrePaciente | acortarNombre}}</h1>
+            <div class="modal-header bg-primary text-white">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                    📋 Historia Clínica de {{this.historiaClinicaDetallada.nombrePaciente | acortarNombre}}
+                </h1>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
   
             <div class="modal-body">
-                <p><strong>DNI:</strong> {{this.historiaClinicaDetallada.dniPaciente | formatearDni}}</p>
-                <p><strong>Edad:</strong> {{this.historiaClinicaDetallada.edadPaciente}}</p>
-  
-                <div class="visitas-realizadas" *ngFor="let visita of this.historiaClinicaDetallada.visitas; index as i">
-                  <hr />
-                  <p><strong>Fecha de visita: </strong>{{visita.fechaVisita}}</p>
-                  <p><strong>Horario de visita: </strong>{{visita.horarioVisita}}</p>
-                  <p><strong>Especialidad visitada: </strong>{{visita.especialidadVisitada}}</p>
-                  <p><strong>Especialista visitado: </strong>{{visita.nombreEspecialista | acortarNombre}}</p>
-                  <p><strong>DNI Especialista visitado: </strong>{{visita.dniEspecialista | formatearDni}}</p>
-                  <p><strong>Altura del paciente: </strong>{{visita.alturaPaciente}}</p>
-                  <p><strong>Peso del paciente: </strong>{{visita.pesoPaciente}}</p>
-                  <p><strong>Temperatura del paciente: </strong>{{visita.temperaturaPaciente}}</p>
-                  <p><strong>Presión del paciente: </strong>{{visita.presionPaciente}}</p>
-                  <p class="espaciado-t-x1"><strong>Clave: </strong>{{visita.diagnosticoPaciente}}</p>
-                  <p class="espaciado-t-x1"><strong>Valor: </strong>{{visita.detalleDiagnosticoPaciente}}</p>
-                  <hr />
+                <!-- Información General del Paciente -->
+                <div class="card mb-3 border-primary">
+                    <div class="card-header bg-primary bg-opacity-10">
+                        <h5 class="mb-0">👤 Información del Paciente</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p><strong>DNI:</strong> {{this.historiaClinicaDetallada.dniPaciente | formatearDni}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Edad:</strong> {{this.historiaClinicaDetallada.edadPaciente}} años</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Total de Visitas:</strong> {{this.historiaClinicaDetallada.visitas?.length || 0}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial de Visitas -->
+                <h5 class="mb-3">📅 Historial de Visitas</h5>
+                
+                <div class="accordion" id="accordionVisitas">
+                    <div class="accordion-item mb-3 border border-2" *ngFor="let visita of this.historiaClinicaDetallada.visitas; index as i">
+                        <h2 class="accordion-header" [id]="'heading' + i">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" 
+                                    [attr.data-bs-target]="'#collapse' + i" 
+                                    aria-expanded="false" 
+                                    [attr.aria-controls]="'collapse' + i">
+                                <div class="w-100 d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <strong>Visita #{{i + 1}}</strong> - {{visita.fechaVisita}} {{visita.horarioVisita}}
+                                    </span>
+                                    <span class="badge bg-info text-dark ms-2">
+                                        {{visita.especialidadVisitada}}
+                                    </span>
+                                </div>
+                            </button>
+                        </h2>
+                        <div [id]="'collapse' + i" 
+                             class="accordion-collapse collapse" 
+                             [attr.aria-labelledby]="'heading' + i" 
+                             data-bs-parent="#accordionVisitas">
+                            <div class="accordion-body">
+                                <!-- Información de la Consulta -->
+                                <div class="card mb-3 border-info">
+                                    <div class="card-header bg-info bg-opacity-10">
+                                        <h6 class="mb-0">🏥 Información de la Consulta</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>📆 Fecha:</strong> {{visita.fechaVisita}}</p>
+                                                <p><strong>🕐 Horario:</strong> {{visita.horarioVisita}}</p>
+                                                <p><strong>🏥 Especialidad:</strong> {{visita.especialidadVisitada}}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>👨‍⚕️ Especialista:</strong> {{visita.nombreEspecialista | acortarNombre}} {{visita.apellidoEspecialista}}</p>
+                                                <p><strong>🆔 DNI Especialista:</strong> {{visita.dniEspecialista | formatearDni}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Signos Vitales -->
+                                <div class="card mb-3 border-success">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <h6 class="mb-0">💓 Signos Vitales</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="text-center p-2 bg-light rounded">
+                                                    <p class="mb-1"><strong>📏 Altura</strong></p>
+                                                    <p class="mb-0 fs-5 text-primary">{{visita.alturaPaciente}} cm</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center p-2 bg-light rounded">
+                                                    <p class="mb-1"><strong>⚖️ Peso</strong></p>
+                                                    <p class="mb-0 fs-5 text-primary">{{visita.pesoPaciente}} kg</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center p-2 bg-light rounded">
+                                                    <p class="mb-1"><strong>🌡️ Temperatura</strong></p>
+                                                    <p class="mb-0 fs-5 text-primary">{{visita.temperaturaPaciente}} °C</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center p-2 bg-light rounded">
+                                                    <p class="mb-1"><strong>💉 Presión</strong></p>
+                                                    <p class="mb-0 fs-5 text-primary">{{visita.presionPaciente}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Diagnóstico -->
+                                <div class="card mb-3 border-warning">
+                                    <div class="card-header bg-warning bg-opacity-10">
+                                        <h6 class="mb-0">🔍 Diagnóstico</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>🔑 Clave:</strong> 
+                                                    <span class="badge bg-secondary">{{visita.diagnosticoPaciente}}</span>
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>📝 Valor:</strong> {{visita.detalleDiagnosticoPaciente}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- DATOS DINÁMICOS ADICIONALES - ACTUALIZADO -->
+                                <div *ngIf="visita.datosDinamicos && Object.keys(visita.datosDinamicos).length > 0" 
+                                    class="card border-purple">
+                                    <div class="card-header bg-purple bg-opacity-10">
+                                        <h6 class="mb-0">📊 Datos Adicionales</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4" *ngFor="let campo of obtenerCamposDinamicos(visita.datosDinamicos)">
+                                                <div class="text-center p-2 bg-light rounded mb-2">
+                                                    <p class="mb-1"><strong>{{ campo.clave }}</strong></p>
+                                                    
+                                                    <!-- Para tipo rango -->
+                                                    <div *ngIf="campo.tipo === 'rango'" class="progress" style="height: 25px;">
+                                                        <div class="progress-bar" 
+                                                            role="progressbar" 
+                                                            [style.width.%]="campo.valor"
+                                                            [ngClass]="{
+                                                                'bg-success': campo.valor < 33,
+                                                                'bg-warning': campo.valor >= 33 && campo.valor < 66,
+                                                                'bg-danger': campo.valor >= 66
+                                                            }">
+                                                            {{campo.valor}}{{campo.unidad}}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Para tipo número -->
+                                                    <p *ngIf="campo.tipo === 'numero'" class="mb-0 fs-5 text-danger">
+                                                        {{campo.valor}} {{campo.unidad}}
+                                                    </p>
+                                                    
+                                                    <!-- Para tipo booleano -->
+                                                    <span *ngIf="campo.tipo === 'booleano'" 
+                                                        class="badge fs-6" 
+                                                        [ngClass]="campo.valor === 'Sí' ? 'bg-warning' : 'bg-success'">
+                                                        {{campo.valor}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
   
     <div class="modal-dialog modal-lg" *ngIf="!this.historiaClinicaDetallada.dniPaciente">
-      <div class="modal-content" style="max-height: 700px; overflow-y: auto;">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Aún no hay datos registrados en la historia clínica.</h1>
+      <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">⚠️ Sin Historia Clínica</h1>
+            </div>
+            
+            <div class="modal-body text-center py-5">
+                <i class="bi bi-clipboard-x" style="font-size: 4rem; color: #ffc107;"></i>
+                <p class="mt-3 fs-5">Aún no hay datos registrados en la historia clínica.</p>
             </div>
           
           <div class="modal-footer">
-              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
       </div>
     </div>

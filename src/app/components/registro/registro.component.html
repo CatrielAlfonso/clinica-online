@@ -18,11 +18,15 @@
             <h4>¿Qué clase de usuario desea registrar?</h4>
 
             <div class="row">
-                <img src="/imgs/paciente.png" (click)="this.tipoUsuario = 'Paciente'" alt="img paciente" class="imagen-paciente">
+                <div class="btn-usuario" (click)="this.tipoUsuario = 'Paciente'">
+                    <img src="/imgs/paciente.png" alt="img paciente" class="imagen-usuario">
+                </div>
             </div>
 
             <div class="row">
-                <img src="/imgs/doctor.png" (click)="this.tipoUsuario = 'Especialista'" alt="img especialista" class="imagen-doctor">
+                <div class="btn-usuario" (click)="this.tipoUsuario = 'Especialista'">
+                    <img src="/imgs/doctor.png" alt="img especialista" class="imagen-usuario">
+                </div>
             </div>
 
             <form [formGroup]="this.formPaciente" class="form-paciente" *ngIf="this.tipoUsuario == 'Paciente'" (ngSubmit)="this.RegistroPaciente()">

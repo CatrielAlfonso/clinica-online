@@ -8,5 +8,6 @@ export interface Turno {
     valoracionConsulta: number;
     comentarioValoracion: string;
     especialidadSeleccionada?: string;
+    especialidadEspecialista?: string; // Agregado para mantener la especialidad
     imagenEspecialista?: string;
 }

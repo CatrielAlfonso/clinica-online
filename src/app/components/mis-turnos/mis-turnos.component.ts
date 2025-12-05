@@ -1,7 +1,6 @@
-import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AuthService, authResponse } from '../../services/auth.service';
 import { Router } from '@angular/router';
-//import { FirestoreService } from '../../services/firebase/firestore.service';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { Turno } from '../../interfaces/ITurno';
 import { Subscription } from 'rxjs';
@@ -18,7 +17,7 @@ import { MatSliderModule } from '@angular/material/slider';
   selector: 'app-mis-turnos',
   templateUrl: './mis-turnos.component.html',
   styleUrl: './mis-turnos.component.scss',
-  imports:[CommonModule,FormsModule, PipesModule, MatSliderModule]
+  imports:[CommonModule, FormsModule, PipesModule, MatSliderModule, MatSlideToggle]
 })
 export class MisTurnosComponent implements OnInit, OnDestroy {
   userService = inject(UserService);
@@ -27,29 +26,33 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   storageService = inject(SupabaseStorageService);
   formBuilder = inject(FormBuilder);
   router = inject(Router);
-
+  private cdr = inject(ChangeDetectorRef);
+  Object = Object;
   cargandoDatos: boolean;
+  procesandoFinalizacion: boolean = false;
 
   subscripciones: Subscription = new Subscription();
   subscripcionObtenerTurnos = new Subscription()
 
   rating = 5;
-  hover =0;
-  stars:number[]=Array(10);
+  hover = 0;
+  stars: number[] = Array(10);
+
+  rangoDinamico: number = 50;
+  numeroDinamico: number | null = null;
+  switchDinamico: boolean = false;
 
   formatLabel(value: number): string {
-    return `${value}`;        // «1», «2», …, «10»
+    return `${value}`;
   }
 
-  onSlider(valor: number) {
-  this.rating = valor;     // ya no es necesario si usás [(ngModel)]
-  // lógica extra…
-  console.log("Valor del slider:", this.rating);
+  onSliderChange(event: any) {
+    const target = event.target as HTMLInputElement;
+    this.rating = parseInt(target.value);
   }
 
-  setRating(value:number)
-  {
-    this.rating =value;
+  setRating(value: number) {
+    this.rating = value;
   }
 
   turnosObtenidos: any[];
@@ -81,8 +84,6 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   presionPaciente: number | null;
   diagnosticoPaciente: string;
   detalleDiagnosticoPaciente: string;
-
-
 
   constructor() 
   {
@@ -117,11 +118,9 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void 
   {
-    setTimeout(() => { this.ObtenerTurnos();
-      // this.ObtenerHistoriasClinicas();
-      // this.ObtenerEspecialistas();
-      // this.ObtenerPacientes();
-     }, 2000);
+    setTimeout(() => { 
+      this.ObtenerTurnos();
+    }, 2000);
   }
 
   ngOnDestroy(): void 
@@ -150,7 +149,6 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
 
     this.subscripciones.add(especialistasSubscription);
   }
-
 
   ObtenerPacientes(): void
   {
@@ -185,12 +183,13 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   ObtenerTurnos(): void
   {
     const turnosSubscription = this.authService.obtenerContenidoAsObservable("turnos").subscribe(turnos => {
-      this.turnosObtenidos.length = 0;
-      this.turnosPaciente.length = 0;
-      this.turnosEspecialista.length = 0;
-      this.turnosObtenidosBackup.length = 0;
-      this.turnosObtenidosPacienteBackup.length = 0;
-      this.turnosObtenidosEspecialistaBackup.length = 0;
+      this.turnosObtenidos = [];
+      this.turnosPaciente = [];
+      this.turnosEspecialista = [];
+      this.turnosObtenidosBackup = [];
+      this.turnosObtenidosPacienteBackup = [];
+      this.turnosObtenidosEspecialistaBackup = [];
+      
       for(const turno of turnos)
       {
         for(const especialista of this.especialistasObtenidos)
@@ -199,6 +198,8 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
           {
             if(turno.dniEspecialista == especialista.dni && turno.dniPaciente == paciente.dni)
             {
+              const especialidad = turno.especialidadSeleccionada || turno.especialidadEspecialista || especialista.especialidad;
+              
               const objetoTurnoTabla: any = {
                 id: turno.id,
                 fecha: turno.fecha,
@@ -211,9 +212,10 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
                 comentarioValoracion: turno.comentarioValoracion,
                 nombreEspecialista: especialista.nombre,
                 apellidoEspecialista: especialista.apellido,
-                especialidadEspecialista: turno.especialidadSeleccionada, //cambiar por especialidad seleccionada
-                //this.especialidadSeleccionada
+                especialidadEspecialista: especialidad,
+                especialidadSeleccionada: especialidad,
                 imagenPerfilEspecialista: turno.imagenEspecialista,
+                imagen1: especialista.imagen1,
                 nombrePaciente: paciente.nombre,
                 apellidoPaciente: paciente.apellido,
                 imagen1Paciente: paciente.imagen1,
@@ -223,7 +225,9 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
 
               for(const historia of this.historiasClinicasObtenidas)
               {
-                if(historia.dniPaciente == turno.dniPaciente) { objetoTurnoTabla.historiaClinica = historia; console.log(historia)}
+                if(historia.dniPaciente == turno.dniPaciente) { 
+                  objetoTurnoTabla.historiaClinica = historia;
+                }
               }
 
               this.turnosObtenidos.push(objetoTurnoTabla);
@@ -243,148 +247,123 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
       }
 
       this.cargandoDatos = false;
+      this.cdr.detectChanges();
     });
 
-    // this.subscripcionObtenerTurnos.unsubscribe();
     this.subscripcionObtenerTurnos.add(turnosSubscription);
   }
 
   private normalizar = (txt: string) =>
-  txt
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim();
+    txt
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
 
-//   Filtrar(filtroIngresado: string): void {
-//   const q = this.normalizar(filtroIngresado);
+  Filtrar(filtroIngresado: string): void {
+    const textoNormalizado = this.normalizar(filtroIngresado);
 
-//   /*  Sin texto => volvemos a mostrar todo  */
-//   if (!q) {
-//     this.turnosPaciente     = this.turnosBackup.filter(this.esPaciente);
-//     this.turnosEspecialista = this.turnosBackup.filter(this.esEspecialista);
-//     return;
-//   }
+    if (!textoNormalizado) {
+      this.turnosPaciente = [...this.turnosObtenidosPacienteBackup];
+      this.turnosEspecialista = [...this.turnosObtenidosEspecialistaBackup];
+      return;
+    }
 
-//   /* 1 sola pasada para encontrar coincidencias */
-//   const matches = this.turnosBackup.filter(t => t._search.includes(q));
+    if (this.turnosObtenidosPacienteBackup.length > 0) {
+      this.turnosPaciente = this.turnosObtenidosPacienteBackup.filter(turno => {
+        const campos = [
+          turno.fecha,
+          turno.horario,
+          turno.nombreEspecialista,
+          turno.apellidoEspecialista,
+          turno.especialidadEspecialista,
+          turno.estado,
+          turno.mensajeEstado || ''
+        ].map(campo => this.normalizar(String(campo)));
 
-//   /* Separá las vistas según rol */
-//   this.turnosPaciente     = matches.filter(this.esPaciente);
-//   this.turnosEspecialista = matches.filter(this.esEspecialista);
-// }
+        return campos.some(campo => campo.includes(textoNormalizado));
+      });
+    }
 
+    if (this.turnosObtenidosEspecialistaBackup.length > 0) {
+      this.turnosEspecialista = this.turnosObtenidosEspecialistaBackup.filter(turno => {
+        const campos = [
+          turno.fecha,
+          turno.horario,
+          turno.nombrePaciente,
+          turno.apellidoPaciente,
+          String(turno.dniPaciente),
+          turno.estado,
+          turno.mensajeEstado || ''
+        ].map(campo => this.normalizar(String(campo)));
 
- Filtrar(filtroIngresado: string): void {
-  const textoNormalizado = this.normalizar(filtroIngresado);
-
-  if (!textoNormalizado) {
-    // Si está vacío, restaurar todo
-    this.turnosPaciente = [...this.turnosObtenidosPacienteBackup];
-    this.turnosEspecialista = [...this.turnosObtenidosEspecialistaBackup];
-    return;
+        return campos.some(campo => campo.includes(textoNormalizado));
+      });
+    }
   }
 
-  // Filtrar pacientes
-  if (this.turnosObtenidosPacienteBackup.length > 0) {
-    this.turnosPaciente = this.turnosObtenidosPacienteBackup.filter(turno => {
-      const campos = [
-        turno.fecha,
-        turno.horario,
-        turno.nombreEspecialista,
-        turno.apellidoEspecialista,
-        turno.especialidadEspecialista,
-        turno.estado,
-        turno.mensajeEstado || ''
-      ].map(campo => this.normalizar(String(campo)));
+  FiltrarEspecialistas(filtroIngresado: string): void {
+    const textoNormalizado = this.normalizar(filtroIngresado);
 
-      return campos.some(campo => campo.includes(textoNormalizado));
+    if (!textoNormalizado) {
+      this.especialistasObtenidos = [...this.especialistasObtenidosBackup];
+      this.ObtenerTurnos();
+      return;
+    }
+
+    this.especialistasObtenidos = this.especialistasObtenidosBackup.filter(especialista => {
+      const nombreCompleto = this.normalizar(`${especialista.nombre} ${especialista.apellido}`);
+      return nombreCompleto.includes(textoNormalizado);
     });
+
+    if (this.subscripcionObtenerTurnos && !this.subscripcionObtenerTurnos.closed) {
+      this.subscripcionObtenerTurnos.unsubscribe();
+      this.subscripcionObtenerTurnos = new Subscription();
+    }
+
+    this.ObtenerTurnos();
   }
 
-  // Filtrar especialistas
-  if (this.turnosObtenidosEspecialistaBackup.length > 0) {
-    this.turnosEspecialista = this.turnosObtenidosEspecialistaBackup.filter(turno => {
-      const campos = [
-        turno.fecha,
-        turno.horario,
-        turno.nombrePaciente,
-        turno.apellidoPaciente,
-        String(turno.dniPaciente),
-        turno.estado,
-        turno.mensajeEstado || ''
-      ].map(campo => this.normalizar(String(campo)));
+  FiltrarEspecialidades(filtroIngresado: string): void {
+    const textoNormalizado = this.normalizar(filtroIngresado);
 
-      return campos.some(campo => campo.includes(textoNormalizado));
+    if (!textoNormalizado) {
+      this.especialistasObtenidos = [...this.especialistasObtenidosBackup];
+      this.ObtenerTurnos();
+      return;
+    }
+
+    this.especialistasObtenidos = this.especialistasObtenidosBackup.filter(especialista => {
+      const especialidadNormalizada = this.normalizar(especialista.especialidad || '');
+      return especialidadNormalizada.includes(textoNormalizado);
     });
-  }
-}
 
-// FILTRO POR ESPECIALISTA
-FiltrarEspecialistas(filtroIngresado: string): void {
-  const textoNormalizado = this.normalizar(filtroIngresado);
+    if (this.subscripcionObtenerTurnos && !this.subscripcionObtenerTurnos.closed) {
+      this.subscripcionObtenerTurnos.unsubscribe();
+      this.subscripcionObtenerTurnos = new Subscription();
+    }
 
-  if (!textoNormalizado) {
-    this.especialistasObtenidos = [...this.especialistasObtenidosBackup];
     this.ObtenerTurnos();
-    return;
   }
 
-  this.especialistasObtenidos = this.especialistasObtenidosBackup.filter(especialista => {
-    const nombreCompleto = this.normalizar(`${especialista.nombre} ${especialista.apellido}`);
-    return nombreCompleto.includes(textoNormalizado);
-  });
+  FiltrarPacientes(filtroIngresado: string): void {
+    const textoNormalizado = this.normalizar(filtroIngresado);
 
-  if (this.subscripcionObtenerTurnos && !this.subscripcionObtenerTurnos.closed) {
-    this.subscripcionObtenerTurnos.unsubscribe();
-    this.subscripcionObtenerTurnos = new Subscription();
-  }
+    if (!textoNormalizado) {
+      this.pacientesObtenidos = [...this.pacientesBackup];
+      this.ObtenerTurnos();
+      return;
+    }
 
-  this.ObtenerTurnos();
-}
+    this.pacientesObtenidos = this.pacientesBackup.filter(paciente => {
+      const nombreCompleto = this.normalizar(`${paciente.nombre} ${paciente.apellido}`);
+      return nombreCompleto.includes(textoNormalizado);
+    });
 
-// FILTRO POR ESPECIALIDAD
-FiltrarEspecialidades(filtroIngresado: string): void {
-  const textoNormalizado = this.normalizar(filtroIngresado);
-
-  if (!textoNormalizado) {
-    this.especialistasObtenidos = [...this.especialistasObtenidosBackup];
     this.ObtenerTurnos();
-    return;
   }
 
-  this.especialistasObtenidos = this.especialistasObtenidosBackup.filter(especialista => {
-    const especialidadNormalizada = this.normalizar(especialista.especialidad || '');
-    return especialidadNormalizada.includes(textoNormalizado);
-  });
-
-  if (this.subscripcionObtenerTurnos && !this.subscripcionObtenerTurnos.closed) {
-    this.subscripcionObtenerTurnos.unsubscribe();
-    this.subscripcionObtenerTurnos = new Subscription();
-  }
-
-  this.ObtenerTurnos();
-}
-
-// FILTRO POR PACIENTE
-FiltrarPacientes(filtroIngresado: string): void {
-  const textoNormalizado = this.normalizar(filtroIngresado);
-
-  if (!textoNormalizado) {
-    this.pacientesObtenidos = [...this.pacientesBackup];
-    this.ObtenerTurnos();
-    return;
-  }
-
-  this.pacientesObtenidos = this.pacientesBackup.filter(paciente => {
-    const nombreCompleto = this.normalizar(`${paciente.nombre} ${paciente.apellido}`);
-    return nombreCompleto.includes(textoNormalizado);
-  });
-
-  this.ObtenerTurnos();
-}
-
-  async CancelarTurno(turno: any, mensajeEstadoIngresado: string): Promise<void> //Añadir mensaje de cancelacion
+  async CancelarTurno(turno: any, mensajeEstadoIngresado: string): Promise<void>
   {
     const objetoTurnoNuevo: Turno = {
       dniEspecialista: turno.dniEspecialista,
@@ -393,13 +372,20 @@ FiltrarPacientes(filtroIngresado: string): void {
       horario: turno.horario,
       estado: "Cancelado",
       mensajeEstado: "Turno cancelado por: " + this.userService.rolUsuarioLogueado + " " + mensajeEstadoIngresado,
-      comentarioValoracion: "",
-      valoracionConsulta: 0
+      comentarioValoracion: turno.comentarioValoracion || "",
+      valoracionConsulta: turno.valoracionConsulta || 0,
+      especialidadSeleccionada: turno.especialidadSeleccionada
     }
-    console.log(turno.id);
+    
     await this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
-    this.ObtenerTurnos();
-
+    this.mensajeEstado = "";
+    
+    turno.estado = "Cancelado";
+    turno.mensajeEstado = objetoTurnoNuevo.mensajeEstado;
+    this.cdr.detectChanges();
+    
+    this.cerrarModal('modalCancelarTurnoPaciente');
+    this.cerrarModal('modalCancelarTurnoEspecialista');
   }
 
   async AceptarTurno(turno: any, mensajeEstadoIngresado: string): Promise<void>
@@ -411,15 +397,22 @@ FiltrarPacientes(filtroIngresado: string): void {
       horario: turno.horario,
       estado: "Aceptado",
       mensajeEstado: mensajeEstadoIngresado,
-      comentarioValoracion: "",
-      valoracionConsulta: 0
+      comentarioValoracion: turno.comentarioValoracion || "",
+      valoracionConsulta: turno.valoracionConsulta || 0,
+      especialidadSeleccionada: turno.especialidadSeleccionada
     }
 
     await this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
-    this.ObtenerTurnos();
+    this.mensajeEstado = "";
+    
+    turno.estado = "Aceptado";
+    turno.mensajeEstado = mensajeEstadoIngresado;
+    this.cdr.detectChanges();
+    
+    this.cerrarModal('modalAceptarTurnoEspecialista');
   }
 
-  async RechazarTurno(turno: any, mensajeEstadoIngresado: string):  Promise<void>
+  async RechazarTurno(turno: any, mensajeEstadoIngresado: string): Promise<void>
   {
     const objetoTurnoNuevo: Turno = {
       dniEspecialista: turno.dniEspecialista,
@@ -428,104 +421,205 @@ FiltrarPacientes(filtroIngresado: string): void {
       horario: turno.horario,
       estado: "Rechazado",
       mensajeEstado: mensajeEstadoIngresado,
-      comentarioValoracion: "",
-      valoracionConsulta: 0
+      comentarioValoracion: turno.comentarioValoracion || "",
+      valoracionConsulta: turno.valoracionConsulta || 0,
+      especialidadSeleccionada: turno.especialidadSeleccionada
     }
 
     await this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
-    this.ObtenerTurnos();
+    this.mensajeEstado = "";
+    
+    turno.estado = "Rechazado";
+    turno.mensajeEstado = mensajeEstadoIngresado;
+    this.cdr.detectChanges();
   }
 
   AsignarTurnoSeleccionado(turno: any): void
   {
     this.turnoSeleccionado = turno;
-    //console.log(this.turnoSeleccionado)
-    this.ObtenerTurnos();
+    this.rating = 5;
+    this.mensajeResenia = "";
+    
+    this.mensajeEstado = "";
+    this.alturaPaciente = null;
+    this.pesoPaciente = null;
+    this.temperaturaPaciente = null;
+    this.presionPaciente = null;
+    this.diagnosticoPaciente = "";
+    this.detalleDiagnosticoPaciente = "";
+    this.rangoDinamico = 50;
+    this.numeroDinamico = null;
+    this.switchDinamico = false;
   }
 
-  FinalizarTurno(turno: any, mensaje: string): void
+  async FinalizarTurno(turno: any, mensaje: string): Promise<void>
   {
-    const objetoTurnoNuevo: Turno = {
-      dniEspecialista: turno.dniEspecialista,
-      dniPaciente: turno.dniPaciente,
-      fecha: turno.fecha,
-      horario: turno.horario,
-      estado: "Finalizado",
-      mensajeEstado: mensaje,
-      valoracionConsulta: 0,
-      comentarioValoracion: "",
+    if(this.procesandoFinalizacion) {
+      return;
     }
-    
-    let crearHistoriaClinica: boolean = true; // Me va a servir para identificar si debo crear una historia o modificar una existente.
 
-    for(const paciente of this.pacientesObtenidos) 
-    {
-      if(paciente.dni == turno.dniPaciente) // Encuentro el paciente al que se le asignó el turno
+    if(turno.estado !== "Aceptado") {
+      this.swalService.showTemporaryAlert(
+        "Este turno ya fue finalizado o no está en estado Aceptado", 
+        "Error",
+        "error"
+      );
+      return;
+    }
+
+    if(!this.alturaPaciente || !this.pesoPaciente || !this.temperaturaPaciente || 
+       !this.presionPaciente || !this.diagnosticoPaciente || !this.detalleDiagnosticoPaciente) {
+      this.swalService.showTemporaryAlert(
+        "Por favor complete todos los campos obligatorios", 
+        "Campos incompletos",
+        "warning"
+      );
+      return;
+    }
+
+    this.procesandoFinalizacion = true;
+    
+    try {
+      const especialidadActual = turno.especialidadSeleccionada;
+      let crearHistoriaClinica: boolean = true;
+
+      for(const paciente of this.pacientesObtenidos) 
       {
-        for(const especialista of this.especialistasObtenidos)
+        if(paciente.dni == turno.dniPaciente)
         {
-          if(especialista.dni == turno.dniEspecialista) // Encuentro el especialista que atendió al paciente
+          for(const especialista of this.especialistasObtenidos)
           {
-            const objetoHistoriaClinica: any = {
-              especialidadVisitada: turno.especialidadSeleccionada,
-              nombreEspecialista: especialista.nombre,
-              dniEspecialista: especialista.dni,
-              fechaVisita: turno.fecha,
-              horarioVisita: turno.horario,
-              alturaPaciente: this.alturaPaciente,
-              pesoPaciente: this.pesoPaciente,
-              temperaturaPaciente: this.temperaturaPaciente,
-              presionPaciente: this.presionPaciente,
-              diagnosticoPaciente: this.diagnosticoPaciente,
-              detalleDiagnosticoPaciente: this.detalleDiagnosticoPaciente
-            }
-            
-            let historiaExistente: any = {}
-            for(const historia of this.historiasClinicasObtenidas)
+            if(especialista.dni == turno.dniEspecialista)
             {
-              if(historia.dniPaciente == paciente.dni) // Si encuentro una coincidencia significa que el paciente ya tiene historia clinica, por lo tanto debo modificarla. 
-              { 
-                crearHistoriaClinica = false;
-                historiaExistente = historia; 
+              // CAMBIO PRINCIPAL: Crear objeto con datos dinámicos en formato clave-valor
+              const datosDinamicos: any = {};
+              
+              if (this.rangoDinamico !== undefined && this.rangoDinamico !== null) {
+                datosDinamicos['Nivel de Severidad'] = {
+                  valor: this.rangoDinamico,
+                  unidad: '/100',
+                  tipo: 'rango'
+                };
               }
-            }
-    
-            if(crearHistoriaClinica) 
-            {
-              const nuevaHistoriaClinica: any = {
-                nombrePaciente: `${paciente.nombre} ${paciente.apellido}`,
-                edadPaciente: paciente.edad, 
-                dniPaciente: paciente.dni,
-                visitas: [ objetoHistoriaClinica ] 
+              
+              if (this.numeroDinamico !== undefined && this.numeroDinamico !== null) {
+                datosDinamicos['Frecuencia Cardíaca'] = {
+                  valor: this.numeroDinamico,
+                  unidad: 'ppm',
+                  tipo: 'numero'
+                };
+              }
+              
+              if (this.switchDinamico !== undefined) {
+                datosDinamicos['Requiere Seguimiento'] = {
+                  valor: this.switchDinamico ? 'Sí' : 'No',
+                  unidad: '',
+                  tipo: 'booleano'
+                };
               }
 
-              this.authService.GuardarContenido("historiasclinicas", nuevaHistoriaClinica);
-            }
-            else
-            {
-              const historiaClinicaModificada: any = {
-                nombrePaciente: historiaExistente.nombrePaciente,
-                edadPaciente: historiaExistente.edadPaciente, 
-                dniPaciente: historiaExistente.dniPaciente,
-                visitas: [ 
-                  ...historiaExistente.visitas, 
-                  objetoHistoriaClinica
-                ]
+              const objetoHistoriaClinica: any = {
+                especialidadVisitada: especialidadActual,
+                nombreEspecialista: especialista.nombre,
+                apellidoEspecialista: especialista.apellido,
+                dniEspecialista: especialista.dni,
+                fechaVisita: turno.fecha,
+                horarioVisita: turno.horario,
+                alturaPaciente: this.alturaPaciente,
+                pesoPaciente: this.pesoPaciente,
+                temperaturaPaciente: this.temperaturaPaciente,
+                presionPaciente: this.presionPaciente,
+                diagnosticoPaciente: this.diagnosticoPaciente,
+                detalleDiagnosticoPaciente: this.detalleDiagnosticoPaciente,
+                datosDinamicos: datosDinamicos // Guardar como objeto clave-valor
               }
+              
+              let historiaExistente: any = {}
+              for(const historia of this.historiasClinicasObtenidas)
+              {
+                if(historia.dniPaciente == paciente.dni) { 
+                  crearHistoriaClinica = false;
+                  historiaExistente = historia; 
+                }
+              }
+      
+              if(crearHistoriaClinica) 
+              {
+                const nuevaHistoriaClinica: any = {
+                  nombrePaciente: `${paciente.nombre} ${paciente.apellido}`,
+                  edadPaciente: paciente.edad, 
+                  dniPaciente: paciente.dni,
+                  visitas: [ objetoHistoriaClinica ] 
+                }
 
-              this.authService.modificarContenido("historiasclinicas", historiaExistente.id, historiaClinicaModificada);
+                await this.authService.GuardarContenido("historiasclinicas", nuevaHistoriaClinica);
+              }
+              else
+              {
+                const historiaClinicaModificada: any = {
+                  nombrePaciente: historiaExistente.nombrePaciente,
+                  edadPaciente: historiaExistente.edadPaciente, 
+                  dniPaciente: historiaExistente.dniPaciente,
+                  visitas: [ 
+                    ...historiaExistente.visitas, 
+                    objetoHistoriaClinica
+                  ]
+                }
+
+                await this.authService.modificarContenido("historiasclinicas", historiaExistente.id, historiaClinicaModificada);
+              }
             }
           }
         }
       }
-    }
 
-    this.mensajeEstado = "";
-    this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
-    this.ObtenerTurnos();
+      const objetoTurnoNuevo: Turno = {
+        dniEspecialista: turno.dniEspecialista,
+        dniPaciente: turno.dniPaciente,
+        fecha: turno.fecha,
+        horario: turno.horario,
+        estado: "Finalizado",
+        mensajeEstado: mensaje,
+        valoracionConsulta: turno.valoracionConsulta || 0,
+        comentarioValoracion: turno.comentarioValoracion || "",
+        especialidadSeleccionada: especialidadActual
+      }
+      
+      await this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
+
+      turno.estado = "Finalizado";
+      turno.mensajeEstado = mensaje;
+
+      this.mensajeEstado = "";
+      this.alturaPaciente = null;
+      this.pesoPaciente = null;
+      this.temperaturaPaciente = null;
+      this.presionPaciente = null;
+      this.diagnosticoPaciente = "";
+      this.detalleDiagnosticoPaciente = "";
+      this.rangoDinamico = 50;
+      this.numeroDinamico = null;
+      this.switchDinamico = false;
+      
+      this.cdr.detectChanges();
+      
+      this.swalService.showTemporaryAlert("Turno finalizado correctamente", "Finalizado", "success");
+      
+      this.cerrarModal('modalFinalizarTurno');
+      
+    } catch (error) {
+      console.error("Error al finalizar turno:", error);
+      this.swalService.showTemporaryAlert(
+        "Ocurrió un error al finalizar el turno", 
+        "Error",
+        "error"
+      );
+    } finally {
+      this.procesandoFinalizacion = false;
+    }
   }
 
-  GuardarValoracionUsuario(turno: any, comentario: string): void
+  async GuardarValoracionUsuario(turno: any, comentario: string): Promise<void>
   {
     const objetoTurnoNuevo: Turno = {
       dniEspecialista: turno.dniEspecialista,
@@ -535,12 +629,22 @@ FiltrarPacientes(filtroIngresado: string): void {
       estado: "Finalizado",
       mensajeEstado: turno.mensajeEstado,
       valoracionConsulta: this.rating,
-      comentarioValoracion: comentario
+      comentarioValoracion: comentario,
+      especialidadSeleccionada: turno.especialidadSeleccionada
     }
+    
+    await this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
+    
+    turno.valoracionConsulta = this.rating;
+    turno.comentarioValoracion = comentario;
+    
     this.mensajeResenia = "";
     this.rating = 5;
-    this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
-    this.ObtenerTurnos();
+    
+    this.cdr.detectChanges();
+    
+    this.swalService.showTemporaryAlert("Valoración guardada correctamente", "Guardado","success");
+    this.cerrarModal('modalCalificarAtencion');
   }
 
   RelacionarHistoriaClinica(dniPaciente: string | number): void
@@ -556,5 +660,36 @@ FiltrarPacientes(filtroIngresado: string): void {
     }
 
     if(!historiaAsignada) { this.historiaClinicaDetallada = {}; }
+  }
+
+  obtenerCamposDinamicos(datosDinamicos: any): any[] {
+    if (!datosDinamicos) return [];
+    
+    return Object.keys(datosDinamicos).map(clave => ({
+      clave: clave,
+      valor: datosDinamicos[clave].valor,
+      unidad: datosDinamicos[clave].unidad,
+      tipo: datosDinamicos[clave].tipo
+    }));
+  }
+
+  private cerrarModal(modalId: string): void {
+    const modalElement = document.getElementById(modalId);
+    if (modalElement) {
+      const modalBackdrop = document.querySelector('.modal-backdrop');
+      
+      const modal = (window as any).bootstrap?.Modal?.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+      
+      if (modalBackdrop) {
+        modalBackdrop.remove();
+      }
+      
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
   }
 }
