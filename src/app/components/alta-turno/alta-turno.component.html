@@ -1,156 +1,164 @@
 <div class="contenedor-registro">
-    <div *ngIf="this.cargandoDatos" class="spinner-overlay">
+    <!-- SPINNER -->
+    <div *ngIf="cargandoDatos" class="spinner-overlay">
         <div class="spinner-border text-primary" role="status">
             <span class="sr-only">-</span>
         </div>
     </div>
 
-    <div class="registro mat-elevation-z8" *ngIf="!this.cargandoDatos">
-        <h1 *ngIf="this.userService.rolUsuarioLogueado == 'Paciente'">Solicitud de turnos.</h1>
-        <h1 *ngIf="this.userService.rolUsuarioLogueado == 'Administrador'">Asignación de turnos.</h1>
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="registro mat-elevation-z8" *ngIf="!cargandoDatos">
+        <h1 *ngIf="userService.rolUsuarioLogueado == 'Paciente'">Solicitud de turnos</h1>
+        <h1 *ngIf="userService.rolUsuarioLogueado == 'Administrador'">Asignación de turnos</h1>
         
-        <div class="form-registro">
-            <form [formGroup]="this.formPaciente" class="form-paciente" *ngIf="this.userService.rolUsuarioLogueado == 'Paciente'" (ngSubmit)="this.SolicitarTurno()">
-                <div class="row g-3">
-                    <div class="col">
-                        <h4>Especialidades disponibles</h4>
-                        <div *ngFor="let especialidad of this.especialidadesDisponibles">
-                            <button appAgrandarOnHover appDeshabilitarOnClick appResaltarOnHover class="btn-especialidades" type="button" (click)="this.especialidadSeleccionada = 'Odontologia'" *ngIf="especialidad == 'Odontologia'" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad">
-                                <img src="/imgs/dentista.png" height="32px">
-                            </button>
-
-                            <button appAgrandarOnHover appDeshabilitarOnClick appResaltarOnHover class="btn-especialidades" type="button" (click)="this.especialidadSeleccionada = 'Dermatologia'" *ngIf="especialidad == 'Dermatologia'" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad">
-                                <img src="/imgs/dermatologia.png" height="32px">
-                            </button>
-
-                            <button appAgrandarOnHover appDeshabilitarOnClick appResaltarOnHover class="btn-especialidades" type="button" (click)="this.especialidadSeleccionada = 'Kinesiologia'" *ngIf="especialidad == 'Kinesiologia'" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad">
-                                <img src="/imgs/kinesiologo.png" height="32px">
-                            </button>
-
-                            <button appAgrandarOnHover appDeshabilitarOnClick appResaltarOnHover class="btn-especialidades" type="button" (click)="this.especialidadSeleccionada = 'Traumatologia'" *ngIf="especialidad == 'Traumatologia'" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad">
-                                <img src="/imgs/traumatologo.png" height="32px">
-                            </button>
-
-                            <button appAgrandarOnHover appDeshabilitarOnClick appResaltarOnHover class="btn-especialidades" type="button" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad" *ngIf="especialidad != 'Odontologia' && especialidad != 'Dermatologia' && especialidad != 'Kinesiologia' && especialidad != 'Traumatologia'">
-                                <img src="/imgs/otros.png" height="32px"> {{especialidad}}
-                            </button>
-                        </div>
-                    </div>
+        <!-- ==================== FORMULARIO PACIENTE ==================== -->
+        <form [formGroup]="formPaciente" *ngIf="userService.rolUsuarioLogueado == 'Paciente'" (ngSubmit)="SolicitarTurno()">
+            
+            <!-- PASO 1: SELECCIONAR ESPECIALISTA -->
+            <div class="seccion-seleccion">
+                <h4>1️⃣ Seleccione un profesional</h4>
+                <div class="grid-especialistas">
+                    <button type="button" 
+                            class="btn-especialista-cuadrado"
+                            [class.seleccionado]="especialistaSeleccionado?.dni === especialista.dni"
+                            *ngFor="let especialista of especialistasDisponibles"
+                            (click)="SeleccionarEspecialista(especialista)"
+                            appAgrandarOnHover
+                            appResaltarOnHover>
+                        <img [src]="especialista.imagen1" [alt]="especialista.nombre" class="img-especialista">
+                        <p class="nombre-especialista">{{especialista.nombre | acortarNombre}} {{especialista.apellido}}</p>
+                    </button>
                 </div>
+            </div>
 
-                <div class="row g-3">
-                    <div class="col-sm" *ngIf="this.especialidadSeleccionada">
-                        <h4>Seleccione un especialista</h4>
-                        <div *ngFor="let especialista of this.especialistasDisponibles">
-                            <button type="button" class="btn-especialistas" id="{{especialista.dni | formatearDni}}" appDeshabilitarOnClick appAgrandarOnHover appResaltarOnHover (click)="this.AsignarEspecialista(especialista)">
-                                {{especialista.nombre | acortarNombre}} {{especialista.apellido}}
-                                <br>
-                                <img src="{{especialista.imagen1}}" alt="" height="64px">
-                            </button>
-                        </div>
-                        <p *ngIf="this.especialistaSeleccionado">Especialista seleccionado: {{this.especialistaSeleccionado.nombre}}</p>
-                    </div>
+            <!-- PASO 2: SELECCIONAR ESPECIALIDAD -->
+            <div class="seccion-seleccion" *ngIf="especialistaSeleccionado">
+                <h4>2️⃣ Seleccione una especialidad</h4>
+                <div class="grid-especialidades">
+                    <button type="button"
+                            class="btn-especialidad-rectangular"
+                            [class.seleccionado]="especialidadSeleccionada === especialidad"
+                            *ngFor="let especialidad of especialidadesDelEspecialista"
+                            (click)="SeleccionarEspecialidad(especialidad)"
+                            appAgrandarOnHover
+                            appResaltarOnHover>
+                        <img [src]="ObtenerImagenEspecialidad(especialidad)" [alt]="especialidad" class="img-especialidad">
+                        <p class="nombre-especialidad">{{especialidad}}</p>
+                    </button>
                 </div>
+            </div>
 
-                <div class="row g-3 row-turnos" *ngIf="this.especialistaSeleccionado">
-                    <h4>Seleccione un turno</h4>
-                    <div class="col-3 col-turnos" *ngFor="let turno of this.turnosDisponibles">
-                        <button class="btn-turnos" appAgrandarOnHover appResaltarOnHover appDeshabilitarOnClick type="button" (click)="this.AsignarTurno(turno)">{{turno}}</button>
-                    </div>
+            <!-- PASO 3: SELECCIONAR TURNO -->
+            <div class="seccion-seleccion" *ngIf="especialidadSeleccionada">
+                <h4>3️⃣ Seleccione un turno disponible</h4>
+                <div class="grid-turnos">
+                    <button type="button"
+                            class="btn-turno-cuadrado"
+                            [class.seleccionado]="turnoSeleccionado === turno"
+                            *ngFor="let turno of turnosDisponibles"
+                            (click)="SeleccionarTurno(turno)"
+                            appAgrandarOnHover
+                            appResaltarOnHover>
+                        {{turno}}
+                    </button>
                 </div>
+                <p *ngIf="turnosDisponibles.length === 0" class="text-muted">No hay turnos disponibles</p>
+            </div>
 
-                <hr class="my-4">
-                
-                <button class="w-100 btn btn-primary btn-lg" type="submit" [disabled]="formPaciente.invalid">Solicitar turno.</button>
-            </form>
+            <hr class="my-4">
+            <button class="w-100 btn btn-primary btn-lg" type="submit" [disabled]="formPaciente.invalid">
+                Solicitar turno
+            </button>
+        </form>
 
-            <form [formGroup]="this.formAdministrador" class="form-paciente" *ngIf="this.userService.rolUsuarioLogueado == 'Administrador'" (ngSubmit)="this.SolicitarTurno()">
-                <div class="row g-3">
-                    <div class="col">
-                        <h4>Especialidades disponibles</h4>
-                        <div *ngFor="let especialidad of this.especialidadesDisponibles">
-                            <button mat-button type="button" *ngIf="especialidad == 'Odontologia'" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad">
-                                <img src="/imgs/dentista.png" height="32px">
-                            </button>
-
-                            <button mat-button type="button" *ngIf="especialidad == 'Dermatologia'" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad">
-                                <img src="/imgs/dermatologia.png" height="32px">
-                            </button>
-
-                            <button mat-button type="button" *ngIf="especialidad == 'Kinesiologia'" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad">
-                                <img src="/imgs/kinesiologo.png" height="32px">
-                            </button>
-
-                            <button mat-button type="button" *ngIf="especialidad == 'Traumatologia'" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad">
-                                <img src="/imgs/traumatologo.png" height="32px">
-                            </button>
-
-                            <button mat-button type="button" (click)="this.ObtenerEspecialistasDisponibles(especialidad); this.especialidadSeleccionada = especialidad" *ngIf="especialidad != 'Odontologia' && especialidad != 'Dermatologia' && especialidad != 'Kinesiologia' && especialidad != 'Traumatologia'">
-                                <img src="/imgs/otros.png" height="32px"> {{especialidad}}
-                            </button>
-                        </div>
-                    </div>
+        <!-- ==================== FORMULARIO ADMINISTRADOR ==================== -->
+        <form [formGroup]="formAdministrador" *ngIf="userService.rolUsuarioLogueado == 'Administrador'" (ngSubmit)="SolicitarTurno()">
+            
+            <!-- PASO 1: SELECCIONAR ESPECIALISTA -->
+            <div class="seccion-seleccion">
+                <h4>1️⃣ Seleccione un profesional</h4>
+                <div class="grid-especialistas">
+                    <button type="button" 
+                            class="btn-especialista-cuadrado"
+                            [class.seleccionado]="especialistaSeleccionado?.dni === especialista.dni"
+                            *ngFor="let especialista of especialistasDisponibles"
+                            (click)="SeleccionarEspecialista(especialista)"
+                            appAgrandarOnHover
+                            appResaltarOnHover>
+                        <img [src]="especialista.imagen1" [alt]="especialista.nombre" class="img-especialista">
+                        <p class="nombre-especialista">{{especialista.nombre | acortarNombre}} {{especialista.apellido}}</p>
+                    </button>
                 </div>
+            </div>
 
-                <div class="row g-3">
-                    <div class="col-sm" *ngIf="this.especialidadSeleccionada">
-                        <h4>Seleccione un especialista</h4>
-                        <div *ngFor="let especialista of this.especialistasDisponibles">
-                            <button type="button" class="btn-especialistas" id="{{especialista.dni | formatearDni }}" (click)="this.AsignarEspecialista(especialista)">
-                                {{especialista.nombre | acortarNombre }} {{especialista.apellido}}
-                                <br>
-                                <img src="{{especialista.imagen1}}" alt="" height="64px">
-                            </button>
-                        </div>
-                        <p *ngIf="this.especialistaSeleccionado">Especialista seleccionado: {{this.especialistaSeleccionado.nombre}}</p>
-                    </div>
+            <!-- PASO 2: SELECCIONAR ESPECIALIDAD -->
+            <div class="seccion-seleccion" *ngIf="especialistaSeleccionado">
+                <h4>2️⃣ Seleccione una especialidad</h4>
+                <div class="grid-especialidades">
+                    <button type="button"
+                            class="btn-especialidad-rectangular"
+                            [class.seleccionado]="especialidadSeleccionada === especialidad"
+                            *ngFor="let especialidad of especialidadesDelEspecialista"
+                            (click)="SeleccionarEspecialidad(especialidad)"
+                            appAgrandarOnHover
+                            appResaltarOnHover>
+                        <img [src]="ObtenerImagenEspecialidad(especialidad)" [alt]="especialidad" class="img-especialidad">
+                        <p class="nombre-especialidad">{{especialidad}}</p>
+                    </button>
                 </div>
+            </div>
 
-                <div class="row g-3" *ngIf="this.especialistaSeleccionado">
-                    <div class="col-sm">
-                        <h4>Asigne un paciente a {{this.especialistaSeleccionado.nombre | acortarNombre }}</h4>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Edad</th>
-                                    <th>Dni</th>
-                                    <th>Imagen 1</th>
-                                    <th>Imagen 2</th>
-                                </tr>
-                            </thead>
-    
-                            <tbody>
-                                <tr *ngFor="let paciente of this.pacientesObtenidos" (click)="this.AsignarPaciente(paciente)">
-                                    <td>{{paciente.nombre | acortarNombre }}</td>
-                                    <td>{{paciente.apellido}}</td>
-                                    <td>{{paciente.edad}}</td>
-                                    <td>{{paciente.dni | formatearDni}}</td>
-                                    <td><img src="{{paciente.imagen1}}" alt="" height="64px"></td>
-                                    <td><img src="{{paciente.imagen2}}" alt="" height="64px"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div *ngIf="formPaciente.get('paciente')?.invalid && formPaciente.get('paciente')?.touched" class="text-danger">
-                            La selección de un paciente es obligatoria
-                        </div>
-                        <p *ngIf="this.pacienteSeleccionado">Paciente seleccionado: {{this.pacienteSeleccionado.nombre | acortarNombre}}</p>
-                    </div>
+            <!-- PASO 3: SELECCIONAR PACIENTE -->
+            <div class="seccion-seleccion" *ngIf="especialidadSeleccionada">
+                <h4>3️⃣ Asigne un paciente</h4>
+                <div class="tabla-pacientes">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>DNI</th>
+                                <th>Edad</th>
+                                <th>Imagen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let paciente of pacientesObtenidos" 
+                                (click)="AsignarPaciente(paciente)"
+                                [class.table-active]="pacienteSeleccionado?.dni === paciente.dni"
+                                style="cursor: pointer;">
+                                <td>{{paciente.nombre | acortarNombre}}</td>
+                                <td>{{paciente.apellido}}</td>
+                                <td>{{paciente.dni | formatearDni}}</td>
+                                <td>{{paciente.edad}}</td>
+                                <td><img [src]="paciente.imagen1" height="48px"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-                <div class="row g-3 row-turnos" *ngIf="this.especialistaSeleccionado">
-                    <h4>Seleccione un turno</h4>
-                    <div class="col-3 col-turnos" *ngFor="let turno of this.turnosDisponibles">
-                        <button class="btn-turnos" appDeshabilitarOnClick appResaltarOnHover appAgrandarOnHover type="button" (click)="this.AsignarTurno(turno)">{{turno}}</button>
-                    </div>
+            <!-- PASO 4: SELECCIONAR TURNO -->
+            <div class="seccion-seleccion" *ngIf="pacienteSeleccionado">
+                <h4>4️⃣ Seleccione un turno disponible</h4>
+                <div class="grid-turnos">
+                    <button type="button"
+                            class="btn-turno-cuadrado"
+                            [class.seleccionado]="turnoSeleccionado === turno"
+                            *ngFor="let turno of turnosDisponibles"
+                            (click)="SeleccionarTurno(turno)"
+                            appAgrandarOnHover
+                            appResaltarOnHover>
+                        {{turno}}
+                    </button>
                 </div>
+                <p *ngIf="turnosDisponibles.length === 0" class="text-muted">No hay turnos disponibles</p>
+            </div>
 
-                <hr class="my-4">
-                
-                <button class="w-100 btn btn-primary btn-lg" type="submit" [disabled]="formPaciente.invalid">Solicitar turno.</button>
-            </form>
-        </div>
+            <hr class="my-4">
+            <button class="w-100 btn btn-primary btn-lg" type="submit" [disabled]="formAdministrador.invalid">
+                Asignar turno
+            </button>
+        </form>
     </div>
 </div>

@@ -11,18 +11,29 @@ import { RegistroComponent } from './components/registro/registro.component';
 import { InicioSesionComponent } from './components/inicio-sesion/inicio-sesion.component';
 
 export const routes: Routes = [
-
     {path: '', redirectTo: 'bienvenida', pathMatch: 'full'},
+    
+    // LandingPage - Página de bienvenida
     { path: 'bienvenida', component: BienvenidaComponent, data: {animation: 'LandingPage'} },
-    /**cuando implementar lazy loading */ 
+    
+    // IngresoPage - Inicio de sesión
     {path: 'inicio-sesion', component: InicioSesionComponent, data: { animation: 'IngresoPage'}},
+    
+    // RegistroPage - Registro
     {path: 'registro', component: RegistroComponent, data: { animation: 'RegistroPage'} },
-    { path: 'inicio',component: InicioComponent,canActivate: [usuarioLogueadoGuard], data: { animation:'HomePage'}}, 
-    { path: "mi-perfil", component: MiPerfilComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
-    { path: "solicitar-turno", component: AltaTurnoComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
-    { path: "mis-turnos", component: MisTurnosComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
-    { path: "mis-pacientes", component: MisPacientesComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'LoggedPage' } },
+    
+    // HomePage - Inicio (después de loguearse)
+    { path: 'inicio', component: InicioComponent, canActivate: [usuarioLogueadoGuard], data: { animation:'HomePage'}}, 
+    
+    // MiPerfilPage - Mi perfil
+    { path: "mi-perfil", component: MiPerfilComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'MiPerfilPage' } },
+    
+    // LoggedPage - Para las páginas restantes (solicitar turno, mis turnos, mis pacientes)
+    { path: "solicitar-turno", component: AltaTurnoComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'SolicitarTurnoPage' } },
+    { path: "mis-turnos", component: MisTurnosComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'MisTurnosPage' } },
+    { path: "mis-pacientes", component: MisPacientesComponent, canActivate: [usuarioLogueadoGuard], data: { animation: 'MisPacientesPage' } },
+    
+    // Módulos con lazy loading
     { path: "error", loadChildren: () => import('./modules/pipes/error/error.module').then(m => m.ErrorModule) },
     { path: "administrador", loadChildren: () => import('./modules/pipes/administrador/administrador.module').then(m => m.AdministradorModule) },
-
 ];

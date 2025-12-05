@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+// ===== REEMPLAZA TODO EL COMPONENTE TypeScript =====
+
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { Turno } from '../../interfaces/ITurno';
 import { Subscription } from 'rxjs';
-import { AuthService, authResponse } from '../../services/auth.service';
-import { SupabaseStorageService } from '../../services/supabase-storage.service';
+import { AuthService } from '../../services/auth.service';
 import { SweetAlertService } from '../../services/sweet-alert.service';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
@@ -18,80 +19,71 @@ import { ResaltarOnHoverDirective } from '../../directives/resaltar-on-hover.dir
   selector: 'app-alta-turno',
   templateUrl: './alta-turno.component.html',
   styleUrl: './alta-turno.component.scss',
-  imports: [FormsModule,CommonModule, PipesModule, ReactiveFormsModule, AgrandarOnHoverDirective, DeshabilitarOnClickDirective,
-    ResaltarOnHoverDirective
-  ],
-  encapsulation: ViewEncapsulation.None,
+  imports: [FormsModule, CommonModule, PipesModule, ReactiveFormsModule, 
+            AgrandarOnHoverDirective, DeshabilitarOnClickDirective, ResaltarOnHoverDirective]
 })
 export class AltaTurnoComponent implements OnInit, OnDestroy {
   userService = inject(UserService);
   swalService = inject(SweetAlertService);
   firestoreService = inject(AuthService);
-  storageService = inject(SupabaseStorageService);
   formBuilder = inject(FormBuilder);
   router = inject(Router);
 
-  cargandoDatos: boolean;
-
-  especialidadSeleccionada: string;
-  especialistaSeleccionado: any;
-  diaSeleccionado: string;
-  horarioSeleccionado: string;
-
-  subscripciones: Subscription = new Subscription();
-
-  especialidadesDisponibles: string[];
-  especialistasDisponibles: any[];
-  diasDisponibles: any[];
-  horariosDisponibles: any[];
-  pacientesObtenidos: any[];
-  pacienteSeleccionado: any;
+  cargandoDatos: boolean = true;
   
-  especialistasObtenidos: any[];
-
+  // NUEVO FLUJO: 1. Especialista → 2. Especialidad → 3. Turno
+  especialistaSeleccionado: any = null;
+  especialidadSeleccionada: string = "";
+  turnoSeleccionado: string = "";
+  
+  especialistasDisponibles: any[] = [];
+  especialidadesDelEspecialista: string[] = [];
+  turnosDisponibles: string[] = [];
+  
+  pacientesObtenidos: any[] = [];
+  pacienteSeleccionado: any = null;
+  
+  diasDisponibles: string[] = [];
+  subscripciones: Subscription = new Subscription();
+  
   formPaciente!: FormGroup;
   formAdministrador!: FormGroup;
 
-  constructor() 
-  {
-    this.cargandoDatos = true;
+  // Mapeo de imágenes por especialidad
+  imagenesEspecialidades: { [key: string]: string } = {
+    'Odontologia': '/imgs/dentista.png',
+    'Odontología': '/imgs/dentista.png',
+    'Dermatologia': '/imgs/dermatologia.png',
+    'Dermatología': '/imgs/dermatologia.png',
+    'Kinesiologia': '/imgs/kinesiologo.png',
+    'Kinesiología': '/imgs/kinesiologo.png',
+    'Traumatologia': '/imgs/traumatologo.png',
+    'Traumatología': '/imgs/traumatologo.png'
+  };
 
+  constructor() {
     this.formPaciente = this.formBuilder.group({
       especialista: ['', [Validators.required]],
-      dia: ['', [Validators.required]],
-      horario: ['', [Validators.required]],
+      especialidad: ['', [Validators.required]],
+      turno: ['', [Validators.required]]
     });
 
     this.formAdministrador = this.formBuilder.group({
       paciente: ['', [Validators.required]],
       especialista: ['', [Validators.required]],
-      dia: ['', [Validators.required]],
-      horario: ['', [Validators.required]],
+      especialidad: ['', [Validators.required]],
+      turno: ['', [Validators.required]]
     });
 
-    this.especialidadSeleccionada = "";
-    this.especialistaSeleccionado = null;
-    this.pacienteSeleccionado = null;
-    this.diaSeleccionado = "";
-    this.horarioSeleccionado = "";
-
-    this.especialistasObtenidos = [];
-    this.especialidadesDisponibles = [];
-    this.especialistasDisponibles = [];
-    this.diasDisponibles = [];
-    this.horariosDisponibles = [];
-    this.pacientesObtenidos = [];
-
     this.ObtenerEspecialistas();
-    this.ObtenerDiasDisponibles();
     this.ObtenerPacientes();
+    this.ObtenerDiasDisponibles();
   }
 
-  ngOnInit(): void 
-  {
+  ngOnInit(): void {
     setTimeout(() => {
       this.cargandoDatos = false;
-      console.log(`rolusuariologueado ${this.userService.rolUsuarioLogueado}`)
+      console.log(`✅ Componente cargado. Rol: ${this.userService.rolUsuarioLogueado}`);
     }, 2000);
   }
 
@@ -99,372 +91,234 @@ export class AltaTurnoComponent implements OnInit, OnDestroy {
     this.subscripciones.unsubscribe();
   }
 
-  /**
-   * 🔧 ACTUALIZADO: Ahora obtiene especialidades de un array en lugar de un string único
-   * Recorre todos los especialistas y extrae todas sus especialidades únicas
-   */
-  ObtenerEspecialidades(): void
-  {
-    console.log('📋 Obteniendo especialidades de especialistas...');
+  // 📋 PASO 1: Obtener TODOS los especialistas habilitados
+  ObtenerEspecialistas(): void {
+    const sub = this.firestoreService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
+      this.especialistasDisponibles = usuarios.filter(u => 
+        u.rol === "Especialista" && u.habilitado === true
+      );
+      console.log(`👨‍⚕️ ${this.especialistasDisponibles.length} especialistas habilitados`);
+    });
+    this.subscripciones.add(sub);
+  }
+
+  // 📋 Obtener pacientes (solo para Admin)
+  ObtenerPacientes(): void {
+    const sub = this.firestoreService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
+      this.pacientesObtenidos = usuarios.filter(u => u.rol === "Paciente");
+    });
+    this.subscripciones.add(sub);
+  }
+
+  // 🔹 PASO 2: Usuario selecciona un ESPECIALISTA
+  SeleccionarEspecialista(especialista: any): void {
+    console.log(`✅ Especialista seleccionado: ${especialista.nombre} ${especialista.apellido}`);
     
-    // Limpiar el array antes de llenarlo
-    this.especialidadesDisponibles = [];
+    this.especialistaSeleccionado = especialista;
+    this.especialidadSeleccionada = "";
+    this.turnoSeleccionado = "";
+    this.turnosDisponibles = [];
     
-    for(const especialista of this.especialistasObtenidos) 
-    { 
-      // Verificar si el especialista tiene el campo especialidades y es un array
-      if(especialista.especialidades && Array.isArray(especialista.especialidades))
-      {
-        // Recorrer cada especialidad del array
-        for(const especialidad of especialista.especialidades)
-        {
-          // Solo agregar si no existe ya en la lista
-          if(!this.especialidadesDisponibles.includes(especialidad)) 
-          { 
-            this.especialidadesDisponibles.push(especialidad); 
-            console.log(`✅ Especialidad agregada: ${especialidad}`);
-          }
-        }
-      }
-      // COMPATIBILIDAD: Si el especialista tiene el formato antiguo (string)
-      else if(especialista.especialidad && typeof especialista.especialidad === 'string')
-      {
-        if(!this.especialidadesDisponibles.includes(especialista.especialidad)) 
-        { 
-          this.especialidadesDisponibles.push(especialista.especialidad); 
-          console.log(`✅ Especialidad agregada (formato antiguo): ${especialista.especialidad}`);
-        }
-      }
+    // Obtener las especialidades de ESTE especialista
+    this.especialidadesDelEspecialista = [];
+    
+    if (especialista.especialidades && Array.isArray(especialista.especialidades)) {
+      this.especialidadesDelEspecialista = [...especialista.especialidades];
+    } else if (especialista.especialidad && typeof especialista.especialidad === 'string') {
+      this.especialidadesDelEspecialista = [especialista.especialidad];
     }
     
-    console.log('📊 Especialidades disponibles:', this.especialidadesDisponibles);
-  }
-
-  ObtenerEspecialistas(): void
-  {
-    this.firestoreService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
-      // Limpiar array antes de llenar
-      this.especialistasObtenidos = [];
-      
-      for(const usuario of usuarios)
-      {
-        // Solo agregar especialistas habilitados
-        if(usuario.rol == "Especialista" && usuario.habilitado === true) 
-        { 
-          this.especialistasObtenidos.push(usuario); 
-        }
-      }
-      
-      console.log(`👨‍⚕️ Especialistas habilitados obtenidos: ${this.especialistasObtenidos.length}`);
-      this.ObtenerEspecialidades();
-    });
-  }
-
-  ObtenerPacientes(): void
-  {
-    this.firestoreService.obtenerContenidoAsObservable("usuarios").subscribe(usuarios => {
-      // Limpiar array antes de llenar
-      this.pacientesObtenidos = [];
-      
-      for(const usuario of usuarios)
-      {
-        if(usuario.rol == "Paciente") { this.pacientesObtenidos.push(usuario); }
-      }
-    });
-  }
-
-  /**
-   * 🔧 ACTUALIZADO: Ahora busca la especialidad en el array especialidades[]
-   * en lugar de comparar con un string único
-   */
-  ObtenerEspecialistasDisponibles(especialidadIngresada: string): void
-  {
-    console.log(`🔍 Buscando especialistas para: ${especialidadIngresada}`);
+    console.log(`📋 Especialidades disponibles:`, this.especialidadesDelEspecialista);
     
-    this.especialistasDisponibles = [];
-    this.diaSeleccionado = "";
-    this.horarioSeleccionado = "";
-    this.formPaciente.patchValue({dia: "", horario: ""});
-    this.formAdministrador.patchValue({dia: "", horario: ""});
-    
-    for(const especialista of this.especialistasObtenidos)
-    {
-      // NUEVO: Verificar si la especialidad está en el array
-      if(especialista.especialidades && Array.isArray(especialista.especialidades))
-      {
-        if(especialista.especialidades.includes(especialidadIngresada))
-        {
-          this.especialistasDisponibles.push(especialista);
-          console.log(`✅ Especialista encontrado: ${especialista.nombre} ${especialista.apellido}`);
-        }
-      }
-      // COMPATIBILIDAD: Formato antiguo (string)
-      else if(especialista.especialidad === especialidadIngresada)
-      {
-        this.especialistasDisponibles.push(especialista);
-        console.log(`✅ Especialista encontrado (formato antiguo): ${especialista.nombre} ${especialista.apellido}`);
-      }
-    }
-    
-    console.log(`📊 Total especialistas disponibles: ${this.especialistasDisponibles.length}`);
+    this.formPaciente.patchValue({ especialista: especialista.dni, especialidad: '', turno: '' });
+    this.formAdministrador.patchValue({ especialista: especialista.dni, especialidad: '', turno: '' });
   }
 
-  AsignarEspecialista(especialistaSeleccionado: any)
-  {
-    this.diaSeleccionado = "";
-    this.horarioSeleccionado = "";
-    this.formPaciente.patchValue({dia: "", horario: ""});
-    this.formAdministrador.patchValue({dia: "", horario: ""});
-    this.formPaciente.patchValue({especialista: especialistaSeleccionado.dni});
-    this.formAdministrador.patchValue({especialista: especialistaSeleccionado.dni});
-    this.especialistaSeleccionado = especialistaSeleccionado;
-    this.horarioSeleccionado = "";
-    this.diaSeleccionado = "";
+  // 🔹 PASO 3: Usuario selecciona una ESPECIALIDAD
+  SeleccionarEspecialidad(especialidad: string): void {
+    console.log(`✅ Especialidad seleccionada: ${especialidad}`);
+    
+    this.especialidadSeleccionada = especialidad;
+    this.turnoSeleccionado = "";
+    
+    this.formPaciente.patchValue({ especialidad, turno: '' });
+    this.formAdministrador.patchValue({ especialidad, turno: '' });
+    
+    // Generar turnos disponibles
     this.ObtenerTurnosDisponibles();
-
-    let btnEspecialistaSeleccionado: HTMLButtonElement = <HTMLButtonElement> document.getElementById(especialistaSeleccionado.dni);
-    let btnEspecialistas: HTMLCollectionOf<Element> = document.getElementsByClassName("btn-especialistas");
-
-    for(let i = 0; i < btnEspecialistas.length; i++)
-    {
-      let btnEspecialista = btnEspecialistas.item(i) as HTMLElement;
-      if(btnEspecialista){ btnEspecialista.style.backgroundColor = "#ffffff00"; }
-    }
-    
-    if(btnEspecialistaSeleccionado) {
-      btnEspecialistaSeleccionado.style.backgroundColor = "#55ddffd7"
-    }
-    
-    console.log(`✅ Especialista seleccionado: ${especialistaSeleccionado.nombre} ${especialistaSeleccionado.apellido}`);
   }
 
-  AsignarPaciente(pacienteSeleccionado: any)
-  {
-    this.formAdministrador.patchValue({paciente: pacienteSeleccionado.dni});
-    this.pacienteSeleccionado = pacienteSeleccionado;
-    this.horarioSeleccionado = "";
-    this.diaSeleccionado = "";
-    console.log(`✅ Paciente seleccionado: ${pacienteSeleccionado.nombre} ${pacienteSeleccionado.apellido}`);
+  // 🔹 PASO 4: Usuario selecciona un TURNO
+  SeleccionarTurno(turno: string): void {
+    console.log(`✅ Turno seleccionado: ${turno}`);
+    
+    this.turnoSeleccionado = turno;
+    
+    this.formPaciente.patchValue({ turno });
+    this.formAdministrador.patchValue({ turno });
   }
 
-  /**
-   * 🔧 ACTUALIZADO: Ahora genera exactamente 15 días hábiles (sin domingos)
-   * y valida que no se generen más días de los necesarios
-   */
-  ObtenerDiasDisponibles(): void
-  {
+  // 👤 Admin selecciona paciente
+  AsignarPaciente(paciente: any): void {
+    console.log(`✅ Paciente seleccionado: ${paciente.nombre} ${paciente.apellido}`);
+    this.pacienteSeleccionado = paciente;
+    this.formAdministrador.patchValue({ paciente: paciente.dni });
+  }
+
+  // 📅 Generar 15 días hábiles (sin domingos)
+  ObtenerDiasDisponibles(): void {
     this.diasDisponibles = [];
-    let fecha: Date = new Date();
-    const DIAS_MAXIMOS = 15; // 📌 Límite de 15 días
+    let fecha = new Date();
     let diasAgregados = 0;
+    const DIAS_MAXIMOS = 15;
 
-    console.log(`📅 Generando ${DIAS_MAXIMOS} días disponibles desde ${fecha.toLocaleDateString()}`);
-
-    // Seguir agregando hasta tener exactamente 15 días hábiles
-    while(diasAgregados < DIAS_MAXIMOS) 
-    {
-      // Solo agregar si NO es domingo (día 0)
-      if(fecha.getDay() !== 0) 
-      { 
+    while (diasAgregados < DIAS_MAXIMOS) {
+      if (fecha.getDay() !== 0) { // No es domingo
         const diaFormateado = `${this.ParsearDia(fecha.getDay())} ${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
         this.diasDisponibles.push(diaFormateado);
         diasAgregados++;
-        console.log(`📆 Día ${diasAgregados}: ${diaFormateado}`);
       }
-      
-      // Avanzar al siguiente día
       fecha.setDate(fecha.getDate() + 1);
     }
     
-    console.log(`✅ Total días disponibles generados: ${this.diasDisponibles.length}`);
+    console.log(`✅ ${this.diasDisponibles.length} días disponibles generados`);
   }
 
-  ParsearDiaIndex(diaNombre: string): number 
-  {
-    switch (diaNombre) {
-      case "Lunes": return 0;
-      case "Martes": return 1;
-      case "Miércoles": return 2;
-      case "Jueves": return 3;
-      case "Viernes": return 4;
-      case "Sábado": return 5;
-      default: return -1;
-    }
-  }
-
-  ParsearHora(horaStr: string): Date 
-  {
-    const [horas, minutos] = horaStr.split(':').map(Number);
-    const fecha = new Date();
-    fecha.setHours(horas, minutos, 0, 0);
-    return fecha;
-  }
-  
-  turnosDisponibles: any[] = [];
-  
-  /**
-   * 🔧 MEJORADO: Agregados más logs para debugging
-   * Valida que solo se muestren turnos dentro de los 15 días disponibles
-   */
-  ObtenerTurnosDisponibles(): void
-  {
+  // 🕒 Generar turnos disponibles
+  ObtenerTurnosDisponibles(): void {
     this.turnosDisponibles = [];
+    
+    let dniPaciente: number = 0;
+    if (this.userService.rolUsuarioLogueado === "Administrador") {
+      if (!this.pacienteSeleccionado) {
+        console.warn('⚠️ Debes seleccionar un paciente primero');
+        return;
+      }
+      dniPaciente = this.pacienteSeleccionado.dni;
+    } else {
+      dniPaciente = this.userService.dniUsuarioLogueado;
+    }
 
-    let dni: number = 0;
-    let horariosNoDisponibles: string[] = [];
-    let horarios: string[] = [];
-
-    if(this.userService.rolUsuarioLogueado == "Administrador") { dni = this.pacienteSeleccionado.dni; }
-    else if(this.userService.rolUsuarioLogueado == "Paciente") { dni = this.userService.dniUsuarioLogueado; }
-
-    console.log(`🔍 Obteniendo turnos disponibles para DNI: ${dni}`);
-    console.log(`👨‍⚕️ Especialista: ${this.especialistaSeleccionado.nombre}`);
-    console.log(`📅 Días disponibles (${this.diasDisponibles.length}):`, this.diasDisponibles);
-
-    const subTurnos: Subscription = this.firestoreService.obtenerContenidoAsObservable("turnos").subscribe(turnos => {
-      if(this.diasDisponibles && this.especialistaSeleccionado)
-      {
-        // Recorrer SOLO los 15 días disponibles
-        for(const dia of this.diasDisponibles)
-        {
-          const diaIndex = this.ParsearDiaIndex(dia.split(" ")[0]);
-          horariosNoDisponibles = []; // Limpiar para cada día
-          
-          // Buscar turnos ocupados para este día específico
-          for(const turno of turnos)
-          {
-            if(turno.fecha == dia && 
-               (turno.dniPaciente == dni || turno.dniEspecialista == this.especialistaSeleccionado.dni) && 
-               turno.estado != "Cancelado")
-            {
-              console.log(`❌ Turno ocupado: ${dia} ${turno.horario}`);
-              horariosNoDisponibles.push(turno.horario);
-            }
-          }
-
-          // Generar horarios según el día de la semana
-          if(dia.split(" ")[0] == "Sábado")
-          {
-            horarios = [ "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00" ];
-            
-            for(const horario of horarios)
-            {
-              if(!horariosNoDisponibles.includes(horario) && 
-                 this.especialistaSeleccionado.horariosDisponibles &&
-                 this.especialistaSeleccionado.horariosDisponibles[5] &&
-                 horario >= this.especialistaSeleccionado.horariosDisponibles[5].split("-")[0] && 
-                 horario <= this.especialistaSeleccionado.horariosDisponibles[5].split("-")[1]) 
-              { 
-                const diaParseado = dia.split(" ")[1].split("/")[0] + "/" + dia.split(" ")[1].split("/")[1]
-                this.turnosDisponibles.push(diaParseado + " " + horario);             
-              }
-            }
-          }
-          else 
-          {
-            horarios = [ "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00" ];
-            
-            for(const horario of horarios)
-            {
-              if(!horariosNoDisponibles.includes(horario) && 
-                 this.especialistaSeleccionado.horariosDisponibles &&
-                 this.especialistaSeleccionado.horariosDisponibles[diaIndex] &&
-                 horario >= this.especialistaSeleccionado.horariosDisponibles[diaIndex].split("-")[0] && 
-                 horario <= this.especialistaSeleccionado.horariosDisponibles[diaIndex].split("-")[1]) 
-              { 
-                const diaParseado = dia.split(" ")[1].split("/")[0] + "/" + dia.split(" ")[1].split("/")[1]
-                this.turnosDisponibles.push(diaParseado + " " + horario); 
-              }
-            }
+    const sub = this.firestoreService.obtenerContenidoAsObservable("turnos").subscribe(turnos => {
+      for (const dia of this.diasDisponibles) {
+        const diaIndex = this.ParsearDiaIndex(dia.split(" ")[0]);
+        const horariosOcupados: string[] = [];
+        
+        // Buscar turnos ocupados
+        for (const turno of turnos) {
+          if (turno.fecha === dia && 
+              (turno.dniPaciente == dniPaciente || turno.dniEspecialista == this.especialistaSeleccionado.dni) && 
+              turno.estado !== "Cancelado") {
+            horariosOcupados.push(turno.horario);
           }
         }
-        
-        console.log(`✅ Total turnos disponibles generados: ${this.turnosDisponibles.length}`);
+
+        // Generar horarios según día
+        const horarios = dia.split(" ")[0] === "Sábado"
+          ? ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00"]
+          : ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", 
+             "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
+
+        for (const horario of horarios) {
+          if (!horariosOcupados.includes(horario) && 
+              this.especialistaSeleccionado.horariosDisponibles &&
+              this.especialistaSeleccionado.horariosDisponibles[diaIndex] &&
+              horario >= this.especialistaSeleccionado.horariosDisponibles[diaIndex].split("-")[0] && 
+              horario <= this.especialistaSeleccionado.horariosDisponibles[diaIndex].split("-")[1]) {
+            
+            // Formato: "2021-09-09 1:15 PM"
+            const [year, month, day] = dia.split(" ")[1].split("/").reverse();
+            const [hora, minutos] = horario.split(":");
+            const horaNum = parseInt(hora);
+            const ampm = horaNum >= 12 ? "PM" : "AM";
+            const hora12 = horaNum > 12 ? horaNum - 12 : (horaNum === 0 ? 12 : horaNum);
+            
+            const turnoFormateado = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${hora12}:${minutos} ${ampm}`;
+            this.turnosDisponibles.push(turnoFormateado);
+          }
+        }
       }
+      
+      console.log(`✅ ${this.turnosDisponibles.length} turnos disponibles`);
     });
 
-    this.subscripciones.add(subTurnos);
+    this.subscripciones.add(sub);
   }
 
-  AsignarTurno(turno: string)
-  {
-    for(const dia of this.diasDisponibles)
-    {
-      const diaSeparado: string = dia.split(" ")[1];
-      const diaParseado: string = diaSeparado.split("/")[0] + "/" + diaSeparado.split("/")[1]; 
-
-      if(turno.split(" ")[0] == diaParseado) 
-      {
-        this.diaSeleccionado = dia;
-        this.horarioSeleccionado = turno.split(" ")[1]; 
-        this.formPaciente.patchValue({dia: dia});
-        this.formAdministrador.patchValue({dia: dia});
-        this.formPaciente.patchValue({horario: turno.split(" ")[1]});
-        this.formAdministrador.patchValue({horario: turno.split(" ")[1]});
-        
-        console.log(`✅ Turno asignado: ${dia} ${this.horarioSeleccionado}`);
+  // 💾 Guardar turno
+  SolicitarTurno(): void {
+    try {
+      let dniPaciente: number = 0;
+      if (this.userService.rolUsuarioLogueado === "Administrador") {
+        dniPaciente = this.pacienteSeleccionado.dni;
+      } else {
+        dniPaciente = this.userService.dniUsuarioLogueado;
       }
-    }
-  }
 
-  ParsearDia(dia: number): string
-  {
-    if(dia == 0) { return "Domingo"; }
-    else if(dia == 1) { return "Lunes"; }
-    else if(dia == 2) { return "Martes"; }
-    else if(dia == 3) { return "Miércoles"; }
-    else if(dia == 4) { return "Jueves"; }
-    else if(dia == 5) { return "Viernes"; }
-    else { return "Sábado"; }
-  }
+      // Convertir formato de fecha de vuelta
+      const [fechaParte, horaParte] = this.turnoSeleccionado.split(" ");
+      const [year, month, day] = fechaParte.split("-");
+      const hora24 = this.Convertir12a24(horaParte);
+      
+      const diaLargo = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      const fechaFinal = `${this.ParsearDia(diaLargo.getDay())} ${day}/${month}/${year}`;
 
-  SolicitarTurno()
-  {
-    try 
-    {
-      let dni: number = 0;
-
-      if(this.userService.rolUsuarioLogueado == "Administrador") { dni = this.pacienteSeleccionado.dni; }
-      else if(this.userService.rolUsuarioLogueado == "Paciente") { dni = this.userService.dniUsuarioLogueado; }
-
-      const objetoTurno: Turno = { 
-
-        dniEspecialista: this.especialistaSeleccionado.dni, 
-        dniPaciente: dni.toString(), 
-        fecha: this.diaSeleccionado, 
-        horario: this.horarioSeleccionado, 
+      const objetoTurno: Turno = {
+        dniEspecialista: this.especialistaSeleccionado.dni,
+        dniPaciente: dniPaciente.toString(),
+        fecha: fechaFinal,
+        horario: hora24,
         estado: "Pendiente",
         mensajeEstado: "",
         valoracionConsulta: 0,
         comentarioValoracion: "",
-        especialidadSeleccionada: this.especialidadSeleccionada,
+        especialidadSeleccionada: this.especialidadSeleccionada
       };
 
       console.log('💾 Guardando turno:', objetoTurno);
 
       this.firestoreService.GuardarContenido("turnos", objetoTurno);
-      this.swalService.LanzarAlert("Turno agendado exitosamente!", "success", "El turno fue agendado y queda a la espera de la aprobación por parte del especialista. Puedes ver tu turno en la sección 'Mis turnos'!");
+      this.swalService.LanzarAlert("Turno agendado exitosamente!", "success", "El turno fue agendado y queda a la espera.");
       
-      // Resetear formularios y variables
-      this.formPaciente.reset();
-      this.formAdministrador.reset();
-      this.diaSeleccionado = "";
-      this.horarioSeleccionado = "";
-      this.pacienteSeleccionado = null;
+      // Resetear
       this.especialistaSeleccionado = null;
       this.especialidadSeleccionada = "";
-      
-      // Limpiar estilos de botones
-      let btnEspecialistas: HTMLCollectionOf<Element> = document.getElementsByClassName("btn-especialistas");
-      for(let i = 0; i < btnEspecialistas.length; i++)
-      {
-        let btnEspecialista = btnEspecialistas.item(i) as HTMLElement;
-        if(btnEspecialista){ btnEspecialista.style.backgroundColor = "#ffffff00"; }
-      }
+      this.turnoSeleccionado = "";
+      this.pacienteSeleccionado = null;
+      this.turnosDisponibles = [];
+      this.especialidadesDelEspecialista = [];
+      this.formPaciente.reset();
+      this.formAdministrador.reset();
+    } catch (error) {
+      console.error('❌ Error:', error);
+      this.swalService.LanzarAlert("Error al agendar", "error", `${error}`);
     }
-    catch(error) { 
-      console.error('❌ Error al agendar turno:', error);
-      this.swalService.LanzarAlert("Error al agendar el turno", "error", `${error}`); 
-    }
+  }
+
+  // Helpers
+  ParsearDia(dia: number): string {
+    const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    return dias[dia];
+  }
+
+  ParsearDiaIndex(diaNombre: string): number {
+    const indices: { [key: string]: number } = {
+      "Lunes": 0, "Martes": 1, "Miércoles": 2, "Jueves": 3, "Viernes": 4, "Sábado": 5
+    };
+    return indices[diaNombre] ?? -1;
+  }
+
+  Convertir12a24(hora12: string): string {
+    const [tiempo, periodo] = hora12.split(" ");
+    let [hora, minutos] = tiempo.split(":").map(Number);
+    
+    if (periodo === "PM" && hora !== 12) hora += 12;
+    if (periodo === "AM" && hora === 12) hora = 0;
+    
+    return `${hora.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+  }
+
+  ObtenerImagenEspecialidad(especialidad: string): string {
+    return this.imagenesEspecialidades[especialidad] || '/imgs/otros.png';
   }
 }
