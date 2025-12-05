@@ -1,23 +1,34 @@
-import { CommonModule,  } from '@angular/common';
-import { Component, NgModule, inject } from '@angular/core';
+// bienvenida.component.ts - ACTUALIZADO
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { Router, RouterModule, RouterLink } from '@angular/router';
+
+// Importar las directivas
+import { FadeInScrollDirective } from './../../directives/fade-in-scroll.directive';
+//import { TypewriterDirective } from './../../directives/typewriter.directive';
+//import { ShakeDirective } from './../../directives/shake.directive';
+import { ConfettiClickDirective } from './../../directives/confetti-click.directive';
 
 @Component({
   selector: 'app-bienvenida',
-  imports: [CommonModule, FormsModule, RouterModule, RouterLink],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule, 
+    RouterLink,
+    FadeInScrollDirective,
+    //TypewriterDirective,
+    //ShakeDirective,
+    ConfettiClickDirective
+  ],
   templateUrl: './bienvenida.component.html',
   styleUrl: './bienvenida.component.css'
 })
 export class BienvenidaComponent {
-
-    rolSeleccionado: 'paciente' | 'especialista' | 'admin' | null = null;
+  rolSeleccionado: 'paciente' | 'especialista' | 'admin' | null = null;
 
   constructor(private router: Router) {}
-
-
-  
 
   iniciarSesion() {
     if (this.rolSeleccionado) {
@@ -38,6 +49,4 @@ export class BienvenidaComponent {
       alert('Por favor, seleccioná tu rol antes de registrarte.');
     }
   }
-   
-
 }

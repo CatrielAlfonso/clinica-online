@@ -1,33 +1,53 @@
 <div class="contenedor-landing-page">
     <div class="landing-page mat-elevation-z8">
-        <h1>Bienvenido a CliniCat Salud Online</h1>
+        <!-- Typewriter en el título principal -->
+        <h1 appTypewriter >Bienvenido a CliniCat Salud Online</h1>
         
         <div class="info">
-            <h2>¿Quiénes somos?</h2>
-            <p>Especialistas en salud comprometidos con el bienestar de nuestros pacientes.</p>
+            <!-- FadeIn en cada sección con delays progresivos -->
+            <h2 appFadeInScroll [fadeInDelay]="0">¿Quiénes somos?</h2>
+            <p appFadeInScroll [fadeInDelay]="200">Especialistas en salud comprometidos con el bienestar de nuestros pacientes.</p>
 
-            <h2>Nuestra clínica</h2>
-            <p>
-            CliniCat cuenta con <strong>6 consultorios</strong>, <strong>2 laboratorios</strong> y
-            una <strong>sala de espera general</strong>. Nuestros profesionales de diversas especialidades
-            atienden de lunes a viernes de 8:00 a 19:00 y los sábados de 8:00 a 14:00.
+            <h2 appFadeInScroll [fadeInDelay]="400">Nuestra clínica</h2>
+            <p appFadeInScroll [fadeInDelay]="600">
+                CliniCat cuenta con <strong>6 consultorios</strong>, <strong>2 laboratorios</strong> y
+                una <strong>sala de espera general</strong>. Nuestros profesionales de diversas especialidades
+                atienden de lunes a viernes de 8:00 a 19:00 y los sábados de 8:00 a 14:00.
             </p>
 
-            <h2>Horarios de Atención</h2>
-            <p><strong>Lunes a Viernes:</strong> 8:00 - 19:00</p>
-            <p><strong>Sábados:</strong> 8:00 - 14:00</p>
+            <h2 appFadeInScroll [fadeInDelay]="800">Horarios de Atención</h2>
+            <p appFadeInScroll [fadeInDelay]="1000"><strong>Lunes a Viernes:</strong> 8:00 - 19:00</p>
+            <p appFadeInScroll [fadeInDelay]="1200"><strong>Sábados:</strong> 8:00 - 14:00</p>
         
-            <h2>¿Cómo funciona?</h2>
-            <p>
+            <h2 appFadeInScroll [fadeInDelay]="1400">¿Cómo funciona?</h2>
+            <p appFadeInScroll [fadeInDelay]="1600">
                 Los turnos son solicitados en línea, seleccionando el profesional o especialidad. 
                 La duración mínima de un turno es de 30 minutos, pero se adapta según las necesidades
                 del paciente.
             </p>
         </div>
         
-        <button class="iniciar-sesion-btn" mat-flat-button routerLink="/inicio-sesion">Iniciar Sesión</button>
+        <!-- Shake cuando no hay rol seleccionado + confetti al hacer click -->
+        <button 
+            class="iniciar-sesion-btn" 
+            mat-flat-button 
+            routerLink="/inicio-sesion"
+            appShake 
+            
+            appConfettiClick
+            [confettiColors]="['#28a745', '#218838', '#ffffff']">
+            Iniciar Sesión
+        </button>
 
         <p style="margin-top: 1rem;">No tiene cuenta? <a routerLink="/registro">Registrese aquí</a></p>
-         <img src="imgs/catclinic.png" class="cat-doctor-img" alt="Gato Doctor">
+        
+        <!-- Confetti en la imagen del gato -->
+        <img 
+            src="imgs/catclinic.png" 
+            class="cat-doctor-img" 
+            alt="Gato Doctor"
+            appConfettiClick
+            [confettiCount]="40"
+            [confettiColors]="['#24109b', '#007bff', '#28a745', '#ffc107']">
     </div>
 </div>
