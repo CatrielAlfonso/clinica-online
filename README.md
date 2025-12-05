@@ -40,7 +40,7 @@
 ---
 
 ## 🎬 Bienvenida
-
+Pantalla inicial que recibe al usuario, ofreciendo accesos rápidos según su tipo de cuenta. Es el punto de partida para navegar por la clínica online de manera clara y visual.
 <div align="center">
   <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//bienvenida.jpg" alt="Bienvenida" width="720"/>
 </div>
@@ -48,14 +48,20 @@
 ---
 
 ## 🎬 Registros
-
+Sección donde el usuario elige si registrarse como Paciente o Especialista.
+Cada rol despliega su propio formulario con validaciones, carga de datos personales e imágenes.
 <div align="center">
   <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//registros.jpg" alt="Registros" width="720"/>
 </div>
 
 ---
 ## 🎬 Admin
-
+Panel exclusivo para el Administrador, donde puede:
+Gestionar usuarios
+Habilitar o inhabilitar cuentas
+Revisar actividad general
+Acceder a herramientas internas
+Es el centro de control del sistema.
 <div align="center">
   <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//admin.jpg" alt="Admin" width="720"/>
 </div>
@@ -63,7 +69,15 @@
 ---
 
 ## 🎬 Turnos - Paciente
+Permite solicitar turnos totalmente online.
+El paciente selecciona:
 
+El profesional
+
+La especialidad
+
+Día y horario disponible
+Todo mostrado de forma simple y ordenada.
 <div align="center">
   <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//turnos.jpg" alt="PacientesTurnos" width="720"/>
 </div>
@@ -71,14 +85,26 @@
 ---
 
 ## 🎬 Turnos - Especialistas
+Vista destinada a los especialistas.
+Aquí pueden:
 
+Ver todos sus turnos
+
+Aceptar o rechazar solicitudes
+
+Acceder a la historia clínica para completarla con los datos del paciente
 <div align="center">
   <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//turnosE.jpg" alt="EspecialistasTurnos" width="720"/>
 </div>
 
 ---
 ## 🎬 Graficos
-
+Panel con estadísticas y métricas visuales, ideal para administración y análisis.
+Incluye información como:
+Cantidad de turnos por día
+Demanda por especialidad
+Actividad de profesionales
+Horarios con mayor movimiento
 <div align="center">
   <img src="https://xgmbvbjnuipnpovwzikt.supabase.co/storage/v1/object/public/imagenes//graficos.jpg" alt="EspecialistasTurnos" width="720"/>
 </div>
