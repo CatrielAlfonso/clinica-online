@@ -187,6 +187,17 @@
     pointer-events: none;
 }
 
+.agregarEspecialidad
+{
+    color:#000000;
+    /*cambiar el color del texto en el */
+}
+
+
+button.agregarEspecialidad mat-icon {
+  color: #000 !important;
+}
+
 .custum-file-upload.has-preview:hover::after {
     opacity: 1;
 }

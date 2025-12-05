@@ -115,6 +115,10 @@ export class RegistroComponent {
     
     // Actualizar el FormControl
     this.formEspecialista.get('especialidad')!.setValue(especialidades);
+    
+    // Marcar como touched para activar validaciones
+    this.formEspecialista.get('especialidad')!.markAsTouched();
+    
     console.log('Especialidades actuales:', especialidades);
   }
 
@@ -123,21 +127,28 @@ export class RegistroComponent {
 
     if (!nueva) return;
 
-    // Obtenemos el array actual
+    // Obtenemos el array actual del FormControl
     const especialidades = [...(this.formEspecialista.get('especialidad')!.value as string[])];
 
-    // Verificamos que no exista ya
+    // Verificamos que no exista ya en el FormControl
     if (!especialidades.includes(nueva)) {
+      // 1. Agregar al FormControl
       especialidades.push(nueva);
-      
-      // Actualizar el FormControl
       this.formEspecialista.get('especialidad')!.setValue(especialidades);
       
-      // Agregar a las personalizadas para mostrar como chip
-      this.especialidadesPersonalizadas.push(nueva);
+      // 2. Agregar a las personalizadas SOLO si no está ya ahí
+      if (!this.especialidadesPersonalizadas.includes(nueva)) {
+        this.especialidadesPersonalizadas.push(nueva);
+      }
       
-      console.log('Especialidad agregada:', nueva);
-      console.log('Especialidades totales:', especialidades);
+      // Marcar como touched para activar validaciones
+      this.formEspecialista.get('especialidad')!.markAsTouched();
+      
+      console.log('✅ Especialidad agregada:', nueva);
+      console.log('📋 Especialidades totales en FormControl:', especialidades);
+      console.log('🎨 Especialidades personalizadas visibles:', this.especialidadesPersonalizadas);
+    } else {
+      console.log('⚠️ La especialidad ya existe:', nueva);
     }
 
     // Limpiar el input
@@ -145,17 +156,20 @@ export class RegistroComponent {
   }
 
   quitarEspecialidadPersonalizada(esp: string) {
-    // Quitar de las personalizadas
+    // 1. Quitar de las personalizadas visibles
     this.especialidadesPersonalizadas = this.especialidadesPersonalizadas.filter(e => e !== esp);
 
-    // Quitar del FormControl
+    // 2. Quitar del FormControl
     const especialidades = (this.formEspecialista.get('especialidad')!.value as string[])
       .filter(e => e !== esp);
 
     this.formEspecialista.get('especialidad')!.setValue(especialidades);
     
-    console.log('Especialidad eliminada:', esp);
-    console.log('Especialidades restantes:', especialidades);
+    // Marcar como touched
+    this.formEspecialista.get('especialidad')!.markAsTouched();
+    
+    console.log('🗑️ Especialidad eliminada:', esp);
+    console.log('📋 Especialidades restantes en FormControl:', especialidades);
   }
 
   onArchivoSeleccionado(event: Event, imagen1: boolean = false): void 
@@ -278,16 +292,26 @@ export class RegistroComponent {
 
   async RegistroEspecialista()
   {
+    console.log('🔍 INICIO RegistroEspecialista()');
+    console.log('📝 Form válido?:', this.formEspecialista.valid);
+    console.log('🖼️ Imagen cargada?:', !!this.archivoImagenPerfil);
+    
     if(this.formEspecialista.valid && this.archivoImagenPerfil)
     {
       this.subiendoDatos = true;
       
       const { nombre, apellido, edad, dni, email, clave, especialidad } = this.formEspecialista.value;
       
-      // IMPORTANTE: Usamos el array del FormControl, no la variable especialidadesSeleccionadas
-      const especialidadesFinales = especialidad as string[];
+      // OBTENER TODAS LAS ESPECIALIDADES DEL FORMCONTROL
+      // Este es el array completo que incluye tanto las predefinidas como las personalizadas
+      const especialidadesFinales = [...(especialidad as string[])];
       
-      console.log('Registrando especialista con especialidades:', especialidadesFinales);
+      console.log('🔍 REGISTRO ESPECIALISTA - Debug detallado:');
+      console.log('📋 Especialidades del FormControl:', especialidad);
+      console.log('✅ Especialidades finales (copia):', especialidadesFinales);
+      console.log('🎨 Especialidades personalizadas (solo display):', this.especialidadesPersonalizadas);
+      console.log('📦 Objeto completo del form:', this.formEspecialista.value);
+      console.log('📊 Cantidad de especialidades:', especialidadesFinales.length);
       
       const estadoRegistro: authResponse = await this.authService.registrarUser({
         email: email, 
@@ -303,6 +327,8 @@ export class RegistroComponent {
     
       if(!estadoRegistro.huboError) 
       {
+        console.log('✅ Usuario registrado en Auth, subiendo imagen...');
+        
         await this.storageService.guardarImagen('especialistas',`${email}/imagen1.jpg`, this.archivoImagenPerfil);
         
         // Esperar a que se guarde la imagen
@@ -322,20 +348,45 @@ export class RegistroComponent {
           habilitado: false,
         };
 
-        console.log('Guardando especialista:', objetoEspecialista);
+        console.log('💾 OBJETO FINAL A GUARDAR EN SUPABASE:');
+        console.log('📋 especialidades array:', objetoEspecialista.especialidades);
+        console.log('📊 cantidad:', objetoEspecialista.especialidades.length);
+        console.log('🔍 especialidades:', JSON.stringify(objetoEspecialista.especialidades));
 
         await this.authService.guardarContenido("usuarios", objetoEspecialista);
+        
+        console.log('✅ Especialista guardado exitosamente en Supabase');
+        
         await this.swalService.LanzarAlert("Registro del especialista exitoso!", "success", estadoRegistro.mensajeExito);
         this.router.navigateByUrl("/bienvenida");
       }
       else { 
+        console.log('❌ Error en registro Auth:', estadoRegistro.mensajeError);
         this.swalService.LanzarAlert("Error en el registro del especialista!", "error", estadoRegistro.mensajeError); 
       }    
 
       this.subiendoDatos = false;
     } else {
-      console.log('Formulario inválido o falta imagen');
-      console.log('Especialidades actuales:', this.formEspecialista.get('especialidad')?.value);
+      console.log('❌ Formulario inválido o falta imagen');
+      console.log('📋 Estado del form:', this.formEspecialista.valid);
+      console.log('🖼️ Imagen cargada:', !!this.archivoImagenPerfil);
+      console.log('✅ Especialidades actuales:', this.formEspecialista.get('especialidad')?.value);
+      console.log('📊 Cantidad de especialidades:', (this.formEspecialista.get('especialidad')?.value as string[]).length);
+      
+      // Mostrar errores específicos
+      Object.keys(this.formEspecialista.controls).forEach(key => {
+        const control = this.formEspecialista.get(key);
+        if (control?.invalid) {
+          console.log(`⚠️ Campo inválido: ${key}`, control.errors);
+        }
+      });
+      
+      // Validación específica de especialidades
+      const especialidadesActuales = this.formEspecialista.get('especialidad')?.value as string[];
+      if (!especialidadesActuales || especialidadesActuales.length === 0) {
+        console.log('❌ ERROR: No hay especialidades seleccionadas');
+        this.swalService.LanzarAlert("Error", "error", "Debe seleccionar al menos una especialidad");
+      }
     }
   }
 

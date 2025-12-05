@@ -1,64 +1,92 @@
+<div class="contenedor-mis-turnos">
+  <h1>Estadísticas de la Clínica</h1>
 
-<h2>Ingresos de usuarios hoy</h2>
-<table border="1">
-    <thead>
-      <tr>
-        <th>Usuario</th>
-        <th>Fecha</th>
-        <th>Horario</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let ingreso of this.ingresosObtenidos">
-        <td>{{ ingreso.usuario }}</td>
-        <td>{{ ingreso.fecha }}</td>
-        <td>{{ ingreso.horario }}</td>
-      </tr>
-    </tbody>
-</table>
   
-
-<div class="espaciado-x3">
-    <h2>Gráfico de barras para los turnos solicitados por especialidad</h2>
+    <h2>Ingresos de usuarios hoy</h2>
     
-    <div class="contenedor-canvas">
+    <!-- Gráfico de torta de ingresos -->
+    <div class="espaciado-x3">
+      <div class="contenedor-canvas">
+        <canvas id="chart-ingresos-hoy"></canvas>
+      </div>
+      <p class="info-grafico" *ngIf="ingresosObtenidos.length > 0">
+        Total de ingresos hoy: <strong>{{ ingresosObtenidos.length }}</strong>
+      </p>
+      <p class="info-grafico" *ngIf="ingresosObtenidos.length === 0">
+        No hay ingresos registrados para hoy
+      </p>
+    </div>
+
+    <hr class="my-4"/>
+
+    <!-- Tabla de detalles -->
+    <h3>Detalle de ingresos</h3>
+    <div class="contenedor-tabla">
+      <table border="1">
+        <thead class="head">
+          <tr>
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Horario</th>
+          </tr>
+        </thead>
+        <tbody class="body">
+          <tr *ngFor="let ingreso of this.ingresosObtenidos">
+            <td>{{ ingreso.usuario }}</td>
+            <td>{{ ingreso.fecha }}</td>
+            <td>{{ ingreso.horario }}</td>
+          </tr>
+          <tr *ngIf="ingresosObtenidos.length === 0">
+            <td colspan="3" style="text-align: center; padding: 20px;">
+              No hay ingresos registrados para hoy
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="my-4"/>
+
+    <div class="espaciado-x3">
+      <h2>Gráfico de barras para los turnos solicitados por especialidad</h2>
+      <div class="contenedor-canvas">
         <canvas id="chart-turnos-por-especialidad"></canvas>
+      </div>
     </div>
-</div>
 
-<hr class="my-4"/>
+    <hr class="my-4"/>
 
-<div class="espaciado-x3">
-    <h2>Gráfico de lineas para los turnos más solicitados por día</h2>
-    
-    <div class="contenedor-canvas">
+    <div class="espaciado-x3">
+      <h2>Gráfico de líneas para los turnos más solicitados por día</h2>
+      <div class="contenedor-canvas">
         <canvas id="chart-turnos-por-dia"></canvas>
+      </div>
     </div>
-</div>
 
-<hr class="my-4"/>
+    <hr class="my-4"/>
 
-
-<div class="espaciado-x3">
-    <h2>Gráfico de torta para los especialistas con turnos solicitados en un lapso de 15 días</h2>
-    
-    <div class="contenedor-canvas">
+    <div class="espaciado-x3">
+      <h2>Gráfico de torta para los especialistas con turnos solicitados en un lapso de 15 días</h2>
+      <div class="contenedor-canvas">
         <canvas id="chart-turnos-solicitados-lapso"></canvas>
+      </div>
     </div>
-</div>
 
-<hr class="my-4"/>
+    <hr class="my-4"/>
 
-<div class="espaciado-x3">
-    <h2>Gráfico de dona para los especialistas con turnos finalizados en un lapso de 15 días</h2>
-    
-    <div class="contenedor-canvas">
+    <div class="espaciado-x3">
+      <h2>Gráfico de dona para los especialistas con turnos finalizados en un lapso de 15 días</h2>
+      <div class="contenedor-canvas">
         <canvas id="chart-turnos-finalizados-lapso"></canvas>
+      </div>
     </div>
-</div>
 
-<hr class="my-4"/>
+    <hr class="my-4"/>
 
-<div class="contenedor-pdf espaciado-t-x1">
-    <button mat-flat-button (click)="this.DescargarPDF()" class=" mat-elevation-z8"><img src="/imgs/pdf.png" height="42px">Exportar gráficos como PDF.</button>
+    <div class="contenedor-pdf espaciado-t-x1">
+      <button mat-flat-button (click)="this.DescargarPDF()" class="mat-elevation-z8">
+        <img src="/imgs/pdf.png" height="42px">
+        Exportar gráficos como PDF
+      </button>
+    </div>
 </div>

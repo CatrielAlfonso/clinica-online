@@ -7,4 +7,6 @@ export interface Turno {
     mensajeEstado: string;
     valoracionConsulta: number;
     comentarioValoracion: string;
+    especialidadSeleccionada?: string;
+    imagenEspecialista?: string;
 }

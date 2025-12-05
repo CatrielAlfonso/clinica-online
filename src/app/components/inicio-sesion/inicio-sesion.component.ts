@@ -120,7 +120,7 @@ export class InicioSesionComponent {
         horario: horario
       }
 
-      this.authService.GuardarContenido("Ingresos", objetoDatosIngreso);
+      this.authService.GuardarContenido("ingresos", objetoDatosIngreso);
 
       if(objetoUsuarioObtenido.rol == "Especialista" || objetoUsuarioObtenido.rol == "Administrador")
       {

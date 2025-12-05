@@ -11,6 +11,8 @@ import { AngularMaterialModule } from '../angular-material/angular-material.modu
 import { TurnosComponent } from './turnos/turnos.component';
 import { EstadisticasComponent } from './panel-administracion-usuarios/components/estadisticas/estadisticas.component';
 import { PipesModule } from '../pipes/pipes.module';
+import { CaptchaComponent } from './panel-administracion-usuarios/components/captcha/captcha.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { PipesModule } from '../pipes/pipes.module';
     AdministracionEspecialistasComponent,
     InformacionUsuariosComponent,
     TurnosComponent,
-    EstadisticasComponent
+      EstadisticasComponent,
+    CaptchaComponent 
   ],
   imports: [
     CommonModule,
@@ -27,7 +30,8 @@ import { PipesModule } from '../pipes/pipes.module';
     FormsModule, 
     ReactiveFormsModule,
     AngularMaterialModule,
-    PipesModule
+    PipesModule,
+    MatCheckboxModule,
   ]
 })
 export class AdministradorModule { }

@@ -106,6 +106,27 @@
 
 - Una vez seleccionada la especialidad, aparecerán los días y horarios con turnos disponibles para ese PROFESIONAL. Estos botones deben ser cuadrados. Formato (2021-09-09 1:15 PM)
 
+## SPRINT 3 (14/11/25)
+
+
+* Sección Pacientes,
+para los especialistas. Solo deberá mostrar los usuarios que el especialista haya atendido al menos 1 vez.
+mostrar los usuarios con CARD , con un detalle de CUANDO FUERON LOS ULTIMOS 3 TURNOS de ese paciente, junto con un acceso a su historia clinica
+
+* Sección usuarios
+solamente para el perfil Administrador, poder dedscargar un excel general con los datos de todos los
+usuarios.
+mostrar los usuarios con CARD y al seleccionar un paciente me descarga los datos de que turnos tomo y con quien los tomó, también en excel
+Mi perfil
+Para los usuarios paciente, poder descargar un pdf con toda su historia clínica. El PDF tiene que tener
+logo de la clínica, título del informe y fecha de emisión.
+Poder bajar Todas las atenciones que realice segun una ESPECIALIDAD seleccionada
+
+* Animaciones
+Se debe agregar al menos 2, como mínimo, animaciones de transición entre componentes al navegar
+la aplicación.
+Una debe ser de izquierda a derecha
+
 ---
 
 ## ✨ Características

@@ -205,7 +205,7 @@
     
                 <div class="row g-3">
                     <div class="col">
-                        <label>¿Cuáles son sus especialidades?</label>
+                               <label>¿Cuáles son sus especialidades?</label>
                         <p class="especialidades-help-text">Puede seleccionar una o más especialidades</p>
                         <br/>
                         <div class="especialidades-container">
@@ -222,23 +222,25 @@
                         <!-- Opción de especialidad personalizada -->  
                         <div class="otra-especialidad">
                             <mat-form-field appearance="outline" class="mt-3 w-100">
-                                <mat-label>Agregar otra especialidad</mat-label>
+                                <mat-label class="agregarEspecialidad">Agregar otra especialidad</mat-label>
                                 <input
                                     matInput
                                     [(ngModel)]="nuevaEspecialidad"
                                     [ngModelOptions]="{standalone: true}"
+                                    class="agregarEspecialidad"
                                     placeholder="Ejemplo: Cardiología"
                                     (keyup.enter)="agregarNuevaEspecialidad()"
                                 />
                                 <button
                                     mat-icon-button
                                     matSuffix
+                                    class="agregarEspecialidad"
                                     type="button"
                                     (click)="agregarNuevaEspecialidad()"
                                     [disabled]="!nuevaEspecialidad.trim()"
                                     aria-label="Agregar especialidad"
                                 >
-                                    <mat-icon>add</mat-icon>
+                                    <mat-icon class="agregarEspecialidad" color="#000000">+</mat-icon>
                                 </button>
                             </mat-form-field>
 
@@ -248,6 +250,7 @@
                                     *ngFor="let esp of especialidadesPersonalizadas"
                                     class="chip"
                                     (click)="quitarEspecialidadPersonalizada(esp)"
+                                    title="Click para eliminar"
                                 >
                                     {{ esp }} ✖
                                 </span>

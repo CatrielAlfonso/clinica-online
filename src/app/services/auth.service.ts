@@ -160,7 +160,8 @@ export class AuthService {
       if (error) {
         console.error(`❌ Error al guardar datos en la tabla ${tabla}:`, error.message);
       } else {
-        this.sweetAlertService.showAlert('✅ Datos guardados en la tabla ', tabla , 'success');
+        //this.sweetAlertService.showAlert('✅ Datos guardados ', tabla , 'success');
+        this.sweetAlertService.temporallyShowLoadingAlert('Iniciando Sesión', 'Por favor, espere...', 1000);
         // console.log(`✅ Datos guardados en la tabla '${tabla}':`, registros);
       }
     } catch (error: any) {
@@ -286,6 +287,38 @@ export class AuthService {
 
     return { huboError: false, mensajeExito: 'Usuario registrado correctamente' };
   }
+
+async registrarIngreso(usuario: string): Promise<void> {
+  try {
+    const ahora = new Date();
+    const fecha = ahora.toLocaleDateString('es-AR'); // Formato: DD/MM/YYYY
+    const horario = ahora.toLocaleTimeString('es-AR', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit'
+    }); // Formato: HH:MM:SS
+
+    const ingreso = {
+      usuario: usuario,
+      fecha: fecha,
+      horario: horario,
+      timestamp: ahora.toISOString() // Para ordenamiento
+    };
+
+    // Insertar en Supabase
+    const { data, error } = await supabase
+      .from('ingresos')
+      .insert([ingreso]);
+
+    if (error) {
+      console.error('Error al registrar ingreso:', error);
+    } else {
+      console.log('Ingreso registrado correctamente');
+    }
+  } catch (error) {
+    console.error('Error al registrar ingreso:', error);
+  }
+}
 
   async registrarUser(
     dto: {

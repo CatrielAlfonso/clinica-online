@@ -74,6 +74,7 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
   mensajeEstado: string;
   mensajeResenia: string;
 
+  especialidadSeleccionada: string = "";
   alturaPaciente: number | null;
   pesoPaciente: number | null;
   temperaturaPaciente: number | null;
@@ -100,6 +101,7 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
     this.turnoSeleccionado = null;
     this.mensajeEstado = "";
     this.mensajeResenia = "";
+    this.especialidadSeleccionada= "";
     this.alturaPaciente = null;
     this.pesoPaciente = null;
     this.temperaturaPaciente = null;
@@ -209,8 +211,9 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
                 comentarioValoracion: turno.comentarioValoracion,
                 nombreEspecialista: especialista.nombre,
                 apellidoEspecialista: especialista.apellido,
-                especialidadEspecialista: especialista.especialidad,
-                imagenPerfilEspecialista: especialista.imagenPerfil,
+                especialidadEspecialista: turno.especialidadSeleccionada, //cambiar por especialidad seleccionada
+                //this.especialidadSeleccionada
+                imagenPerfilEspecialista: turno.imagenEspecialista,
                 nombrePaciente: paciente.nombre,
                 apellidoPaciente: paciente.apellido,
                 imagen1Paciente: paciente.imagen1,
@@ -248,9 +251,9 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
 
   private normalizar = (txt: string) =>
   txt
-    .toLocaleLowerCase()
-    .normalize('NFD')                 // separa caracteres + acento
-    .replace(/[\u0300-\u036f]/g, '') // quita diacríticos
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .trim();
 
 //   Filtrar(filtroIngresado: string): void {
@@ -272,170 +275,116 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
 // }
 
 
-  Filtrar(filtroIngresado: string): void
-  {
-    
+ Filtrar(filtroIngresado: string): void {
+  const textoNormalizado = this.normalizar(filtroIngresado);
 
-    let coincidenciaEncontrada: boolean = false;
-    if(filtroIngresado)
-    {
-      let nuevosTurnosPaciente: any[] = [];
-      let nuevosTurnosEspecialista: any[] = [];
-      console.log(this.turnosPaciente)
-
-      if(this.turnosObtenidosPacienteBackup.length > 0)
-      {
-        for(const turno of this.turnosObtenidosPacienteBackup)
-        {
-          if(JSON.stringify(turno).includes(filtroIngresado))
-          {
-            coincidenciaEncontrada = true;
-            nuevosTurnosPaciente.push(turno);
-          }
-        }
-      }
-
-      if(this.turnosObtenidosEspecialistaBackup.length > 0)
-      {
-        for(const turno of this.turnosObtenidosEspecialistaBackup)
-        {
-          if(JSON.stringify(turno).includes(filtroIngresado)) 
-          {
-            coincidenciaEncontrada = true; 
-            nuevosTurnosEspecialista.push(turno); 
-          }
-        }   
-      }
-
-      this.turnosPaciente.length = 0;
-      this.turnosEspecialista.length = 0;
-
-      if(coincidenciaEncontrada) 
-      {
-        if(nuevosTurnosEspecialista.length > 0) { this.turnosEspecialista = [...nuevosTurnosEspecialista]; }
-  
-        if(nuevosTurnosPaciente.length > 0) { this.turnosPaciente = [...nuevosTurnosPaciente]; }
-      }
-    }
-    else 
-    { 
-      this.turnosPaciente.length = 0;
-      this.turnosEspecialista.length = 0;
-      this.turnosPaciente = [...this.turnosObtenidosPacienteBackup];
-      this.turnosEspecialista = [...this.turnosObtenidosEspecialistaBackup];
-    }
+  if (!textoNormalizado) {
+    // Si está vacío, restaurar todo
+    this.turnosPaciente = [...this.turnosObtenidosPacienteBackup];
+    this.turnosEspecialista = [...this.turnosObtenidosEspecialistaBackup];
+    return;
   }
 
-  FiltrarEspecialistas(filtroIngresado: string): void
-  {
-    const normalizar = (txt: string) =>
-    txt.toLocaleLowerCase()
-       .normalize('NFD')
-       .replace(/[\u0300-\u036f]/g, '');
+  // Filtrar pacientes
+  if (this.turnosObtenidosPacienteBackup.length > 0) {
+    this.turnosPaciente = this.turnosObtenidosPacienteBackup.filter(turno => {
+      const campos = [
+        turno.fecha,
+        turno.horario,
+        turno.nombreEspecialista,
+        turno.apellidoEspecialista,
+        turno.especialidadEspecialista,
+        turno.estado,
+        turno.mensajeEstado || ''
+      ].map(campo => this.normalizar(String(campo)));
 
-    const texto = normalizar(filtroIngresado.trim());
+      return campos.some(campo => campo.includes(textoNormalizado));
+    });
+  }
 
-    if(texto)
-    {
-      let nuevosEspecialistas: any[] = [];
-      for(const especialista of this.especialistasObtenidosBackup)
-      {
-        const nombreEspecialista: string = especialista.nombre;
-        if(nombreEspecialista.includes(filtroIngresado)) { nuevosEspecialistas.push(especialista); }
-      }
-      this.especialistasObtenidos.length = 0;
-      this.especialistasObtenidos = nuevosEspecialistas;
-    }
-    else 
-    { 
-      this.especialistasObtenidos = [...this.especialistasObtenidosBackup];
-    }
+  // Filtrar especialistas
+  if (this.turnosObtenidosEspecialistaBackup.length > 0) {
+    this.turnosEspecialista = this.turnosObtenidosEspecialistaBackup.filter(turno => {
+      const campos = [
+        turno.fecha,
+        turno.horario,
+        turno.nombrePaciente,
+        turno.apellidoPaciente,
+        String(turno.dniPaciente),
+        turno.estado,
+        turno.mensajeEstado || ''
+      ].map(campo => this.normalizar(String(campo)));
 
-    if(this.subscripcionObtenerTurnos && !this.subscripcionObtenerTurnos.closed) 
-    {
-      this.subscripcionObtenerTurnos.unsubscribe(); 
-      this.subscripcionObtenerTurnos = new Subscription();
-    }
+      return campos.some(campo => campo.includes(textoNormalizado));
+    });
+  }
+}
 
+// FILTRO POR ESPECIALISTA
+FiltrarEspecialistas(filtroIngresado: string): void {
+  const textoNormalizado = this.normalizar(filtroIngresado);
+
+  if (!textoNormalizado) {
+    this.especialistasObtenidos = [...this.especialistasObtenidosBackup];
     this.ObtenerTurnos();
+    return;
   }
 
-  FiltrarEspecialidades(filtroIngresado: string): void
-  {
-    if(filtroIngresado != "")
-    {
-      let nuevosEspecialistas: any[] = [];
-      for(const especialista of this.especialistasObtenidosBackup)
-      {
-        const especialidadEspecialista: string = especialista.especialidad;
-        if(especialidadEspecialista.includes(filtroIngresado)) {console.log("coincidencia"); nuevosEspecialistas.push(especialista); }
-      }
-      this.especialistasObtenidos.length = 0;
-      this.especialistasObtenidos = nuevosEspecialistas;
-    }
-    else 
-    { 
-      this.especialistasObtenidos = [...this.especialistasObtenidosBackup];
-    }
+  this.especialistasObtenidos = this.especialistasObtenidosBackup.filter(especialista => {
+    const nombreCompleto = this.normalizar(`${especialista.nombre} ${especialista.apellido}`);
+    return nombreCompleto.includes(textoNormalizado);
+  });
 
-    if(this.subscripcionObtenerTurnos && !this.subscripcionObtenerTurnos.closed) 
-    {
-      this.subscripcionObtenerTurnos.unsubscribe(); 
-      this.subscripcionObtenerTurnos = new Subscription();
-    }
+  if (this.subscripcionObtenerTurnos && !this.subscripcionObtenerTurnos.closed) {
+    this.subscripcionObtenerTurnos.unsubscribe();
+    this.subscripcionObtenerTurnos = new Subscription();
+  }
 
+  this.ObtenerTurnos();
+}
+
+// FILTRO POR ESPECIALIDAD
+FiltrarEspecialidades(filtroIngresado: string): void {
+  const textoNormalizado = this.normalizar(filtroIngresado);
+
+  if (!textoNormalizado) {
+    this.especialistasObtenidos = [...this.especialistasObtenidosBackup];
     this.ObtenerTurnos();
+    return;
   }
 
-  FiltrarPacientes(filtroIngresado: string): void
-  {
-    this.cargandoDatos = true;
-    //this.ObtenerPacientes()
-    const normalizar = (txt: string) =>
-    txt.toLocaleLowerCase()
-       .normalize('NFD')
-       .replace(/[\u0300-\u036f]/g, '');
+  this.especialistasObtenidos = this.especialistasObtenidosBackup.filter(especialista => {
+    const especialidadNormalizada = this.normalizar(especialista.especialidad || '');
+    return especialidadNormalizada.includes(textoNormalizado);
+  });
 
-    const texto = normalizar(filtroIngresado.trim());
-     if (texto) {
-          this.pacientesObtenidos = this.pacientesBackup.filter(p => {
-          const nombreCompleto = normalizar(`${p.nombre} ${p.apellido}`);
-          return nombreCompleto.includes(texto);
-        });
-      } else {
-        this.pacientesObtenidos = [...this.pacientesBackup];
-      }
-
-      this.ObtenerTurnos(); 
-    // setTimeout(() => {
-    //   if(filtroIngresado != "")
-    //   {
-    //     let nuevosPacientes: any[] = [];
-    //     for(const paciente of this.pacientesObtenidos)
-    //     {
-    //       const nombrePaciente: string = `${paciente.nombre} ${paciente.apellido}`;
-    //       if(nombrePaciente.includes(filtroIngresado)) { nuevosPacientes.push(paciente); }
-    //     }
-    //     this.pacientesObtenidos.length = 0;
-    //     this.pacientesObtenidos = nuevosPacientes;
-    //   }
-    //   else 
-    //   { 
-    //     this.ObtenerEspecialistas();
-    //     this.ObtenerPacientes()
-    //     this.ObtenerTurnos(); 
-    //   }
-    // }, 2000);
-
-
-    // setTimeout(() => { 
-    //   this.ObtenerTurnos(); 
-    //   this.cargandoDatos = false;
-    // }, 2000);
-    // this.filtroPaciente = "";
+  if (this.subscripcionObtenerTurnos && !this.subscripcionObtenerTurnos.closed) {
+    this.subscripcionObtenerTurnos.unsubscribe();
+    this.subscripcionObtenerTurnos = new Subscription();
   }
 
-  CancelarTurno(turno: any, mensajeEstadoIngresado: string): void //Añadir mensaje de cancelacion
+  this.ObtenerTurnos();
+}
+
+// FILTRO POR PACIENTE
+FiltrarPacientes(filtroIngresado: string): void {
+  const textoNormalizado = this.normalizar(filtroIngresado);
+
+  if (!textoNormalizado) {
+    this.pacientesObtenidos = [...this.pacientesBackup];
+    this.ObtenerTurnos();
+    return;
+  }
+
+  this.pacientesObtenidos = this.pacientesBackup.filter(paciente => {
+    const nombreCompleto = this.normalizar(`${paciente.nombre} ${paciente.apellido}`);
+    return nombreCompleto.includes(textoNormalizado);
+  });
+
+  this.ObtenerTurnos();
+}
+
+  async CancelarTurno(turno: any, mensajeEstadoIngresado: string): Promise<void> //Añadir mensaje de cancelacion
   {
     const objetoTurnoNuevo: Turno = {
       dniEspecialista: turno.dniEspecialista,
@@ -448,10 +397,12 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
       valoracionConsulta: 0
     }
     console.log(turno.id);
-    this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
+    await this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
+    this.ObtenerTurnos();
+
   }
 
-  AceptarTurno(turno: any, mensajeEstadoIngresado: string): void
+  async AceptarTurno(turno: any, mensajeEstadoIngresado: string): Promise<void>
   {
     const objetoTurnoNuevo: Turno = {
       dniEspecialista: turno.dniEspecialista,
@@ -464,11 +415,11 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
       valoracionConsulta: 0
     }
 
-    this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
+    await this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
     this.ObtenerTurnos();
   }
 
-  RechazarTurno(turno: any, mensajeEstadoIngresado: string): void
+  async RechazarTurno(turno: any, mensajeEstadoIngresado: string):  Promise<void>
   {
     const objetoTurnoNuevo: Turno = {
       dniEspecialista: turno.dniEspecialista,
@@ -481,7 +432,7 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
       valoracionConsulta: 0
     }
 
-    this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
+    await this.authService.modificarContenido("turnos", turno.id, objetoTurnoNuevo);
     this.ObtenerTurnos();
   }
 
@@ -516,7 +467,7 @@ export class MisTurnosComponent implements OnInit, OnDestroy {
           if(especialista.dni == turno.dniEspecialista) // Encuentro el especialista que atendió al paciente
           {
             const objetoHistoriaClinica: any = {
-              especialidadVisitada: especialista.especialidad,
+              especialidadVisitada: turno.especialidadSeleccionada,
               nombreEspecialista: especialista.nombre,
               dniEspecialista: especialista.dni,
               fechaVisita: turno.fecha,
